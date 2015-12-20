@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
    
-meter = require '../meter_as_rhythm.coffee'
+meter = require '../meter_rhythm.coffee'
 chai = require 'chai'
 expect = chai.expect
 should = chai.should()
