@@ -73,19 +73,44 @@ States:
   the second sound up to now, including the silence, has 'projective potential'
   to be reproduced.";
   - 15
-- commAbPLimitMove = "The time since the beginning of the second sound is mensurally indeterminate, having no projective potential to be reproduced.";
+- commAbPLimitMove = "The time since the beginning of the second sound is
+  mensurally indeterminate, having no projective potential to be reproduced.";
   - 16
-- commdP2bAE175bEvent = "The beginning of the third sound is earlier than projected. The second interonset duration is shorter than, but at least three-fourths of the first interonset duration. We feel an *acceleration* because we sense the realization of the first projected duration even as we also perceive the difference between the two durations.";
+- commdP2bAE175bEvent = "The beginning of the third sound is earlier than
+  projected. The second interonset duration is shorter than, but at least
+  three-fourths of the first interonset duration. We feel an *acceleration*
+  because we sense the realization of the first projected duration even as we
+  also perceive the difference between the two durations.";
   - 17
-- commdE2bEvent = "Since the third sound begins exactly at the end of the projected duration (the upper dashed arc), the projected duration is 'realized'. A new projection is created,conditioned by the first, in which the second interonset duration has the projective potential (the lower arrow) to be reproduced.";
+- commdE2bEvent = "Since the third sound begins exactly at the end of the
+  projected duration (the upper dashed arc), the projected duration is
+  'realized'. A new projection is created,conditioned by the first, in which the
+  second interonset duration has the projective potential (the lower arrow) to
+  be reproduced.";
   - 18
-- commAbPLimitEvent = "The projective potential of the first interonset duration (the dashed arc) is realized, but the projective potential of the second interonset duration is not, since it is mensurally indeterminate. Because the third sound begins much later than projected, we may come to feel 'hiatus' (symbolized by the double bar)--a break between the realization of projected potential and a new beginning. A new and relatively unconditioned potential emerges from the beginning of the third sound.";
+- commAbPLimitEvent = "The projective potential of the first interonset duration
+  (the dashed arc) is realized, but the projective potential of the second
+  interonset duration is not, since it is mensurally indeterminate. Because the
+  third sound begins much later than projected, we may come to feel 'hiatus'
+  (symbolized by the double bar)--a break between the realization of projected
+  potential and a new beginning. A new and relatively unconditioned potential
+  emerges from the beginning of the third sound.";
   - 19
-- commdP175bEvent1 = "The projection of the first interonset duration is realized. Another projection (the rightmost arrow and dashed arc) can be completed within the promised duration, so may enhance its mensural determinacy. The emergence of a new beginning, shown in parentheses, would clarify this.";
+- commdP175bEvent1 = "The projection of the first interonset duration is
+  realized. Another projection (the rightmost arrow and dashed arc) can be
+  completed within the promised duration, so may enhance its mensural
+  determinacy. The emergence of a new beginning, shown in parentheses, would
+  clarify this.";
   - 20
-- commdP175bEvent2 = "In this interpretation the accent symbolizes an unequivocal second beginning that denies the projection of the first interonset duration in order to realize a larger projective potential, symbolized by the large arrow.";
+- commdP175bEvent2 = "In this interpretation the accent symbolizes an
+  unequivocal second beginning that denies the projection of the first
+  interonset duration in order to realize a larger projective potential,
+  symbolized by the large arrow.";
   - 21
-- commdB2t25Event = "The beginning of the third sound is slightly later than projected. We hear a *deceleration* because we sense the realization of the first projected duration even as we also perceive the difference between the two durations.";
+- commdB2t25Event = "The beginning of the third sound is slightly later than
+  projected. We hear a *deceleration* because we sense the realization of the
+  first projected duration even as we also perceive the difference between the
+  two durations.";
   - 22
 - commA25bPbPLimitEvent = "The third sound begins somewhat later than projected. A new projection, indicated by the lowest arrow and dashed arc, emerges, breaking off from the emerging first projection. We reject the relevance of the first projection to the mensural determinacy of the second interonset duration.";
   - 23
@@ -152,45 +177,3 @@ Instructions:
   - 24 - commdB2t25Event
 - instrA25bPbPLimitEvent =  "Click on 'Back one step' to define a different third sound or 'Restart' to begin again.";
   - 25 - commA25bPbPLimitEvent
-
-Movements:
-
-state go_back(state, point_count)
-  switch(point_count) {
-  case 0:
-    
-
-// State Variables and Constants in pseudo-Go notation:
-
-type Point int
-
-const (
-  firstSoundStart Point = iota
-  firstSoundEnd
-  secondSoundStart
-  secondSoundEnd
-  thirdSoundStart
-  thirdSoundEnd
-)
-
-type PointPos map[Point]float
-
-// The x position of all defined points.
-var pointPosition PointPos
-var numPoints = len(pointPosition)
-
-func (pp PointPos) joined(p1 Point, p2 Point) bool {
-  if p1 >= p2 {
-    return false
-  }
-
-  if pp[p1] == 0 || pp[p2] == 0 {
-    return false
-  }
-
-  // TODO(tmroeder): add distance constraints here.
-  return true
-}
-
-Transitions:
-

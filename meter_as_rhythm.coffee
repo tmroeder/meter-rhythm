@@ -151,6 +151,7 @@ States =
     comment: "The second sound exceeds the duration projected at its onset; " +
              "the projection is not clearly realized, as indicated by the X " +
              "through the dashed arc."
+    # TODO(tmroeder): "... or make the sound shorter to realize the projection."
     message: "Click the mouse to end the second sound."
     transitions:
       sound2Continues: true
@@ -215,7 +216,12 @@ States =
     transitions:
       pause2: true
       pause2Negative: true
-      sound3Starts: true
+      pause2TooLong: true
+      sound3StartsEarly: true
+      sound3StartsExactly: true
+      sound3StartsNewProjection: true
+      sound3StartsSlightlyLate: true
+      sound3StartsSlightlyLateNewProjection: true
 
   # The second pause is negative.
   pause2Negative:
@@ -225,6 +231,115 @@ States =
     transitions:
       pause2: true
 
+  pause2TooLong:
+    comment: "The time since the beginning of the second sound is mensurally " +
+             "indeterminate, having no projective potential to be reproduced."
+    message: "Click the mouse button to begin the third sound (earlier if " +
+             "you want a projection)."
+    transitions:
+      pause2: true
+      pause2TooLong: true
+      sound3StartsTooLate: true
+
+  ##
+  ## Sound 3
+  ##
+
+  # The third sound starts earlier than expected.
+  sound3StartsEarly:
+    comment: "The beginning of the third sound is earlier than projected. " +
+             "The second interonset duration is shorter than, but at least " +
+             "three-fourths of the first interonset duration. We feel an " +
+             "*acceleration* because we sense the realization of the first " +
+             "projected duration even as we also perceive the difference " +
+             "between the two durations."
+    message: "Click on 'Back one step' to define a different third sound or " +
+             "'Restart' to begin again."
+    transitions:
+      pause2: true
+      start: true
+
+  # The third sound starts exactly when expected.
+  sound3StartsExactly:
+    comment: "Since the third sound begins exactly at the end of the " +
+             "projected duration (the upper dashed arc), the projected " +
+             "duration is 'realized'. A new projection is created, " +
+             "conditioned by the first, in which the second interonset " +
+             "duration has the projective potential (the lower arrow) to be " +
+             "reproduced."
+    message: "Click on 'Back one step' to define a different third sound or " +
+             "'Restart' to begin again."
+    transitions:
+      pause2: true
+      start: true
+
+  # The third sound starts too late to be mensurally determinate.
+  sound3StartsTooLate:
+    comment: "The projective potential of the first interonset duration (the " +
+             "dashed arc) is realized, but the projective potential of the " +
+             "second interonset duration is not, since it is mensurally " +
+             "indeterminate. Because the third sound begins much later than " +
+             "projected, we may come to feel 'hiatus' (symbolized by the " +
+             "double bar)--a break between the realization of projected " +
+             "potential and a new beginning. A new and relatively " +
+             "unconditioned potential emerges from the beginning of the " +
+             "third sound."
+    message: "Click on 'Back one step' to define a different third sound or " +
+             "'Restart' to begin again."
+    transitions:
+      pause2: true
+      start: true
+
+  # The third sound starts and suggests a new projection.
+  # TODO(tmroeder): figure out how to reach this state.
+  sound3StartsNewProjection:
+    comment: "The projection of the first interonset duration is realized. " +
+             "Another projection (the rightmost arrow and dashed arc) can be " +
+             "completed within the promised duration, so may enhance its " +
+             "mensural determinacy. The emergence of a new beginning, shown " +
+             "in parentheses, would clarify this."
+    message: "Click anywhere to see an alternate interpretation."
+    transitions:
+      sound3StartsAltInterpretation: true
+
+  # A second interpretation of sound3StartsNewProjection.
+  sound3StartsAltInterpretation:
+    comment: "In this interpretation the accent symbolizes an unequivocal " +
+             "second beginning that denies the projection of the first " +
+             "interonset duration in order to realize a larger projective " +
+             "potential, symbolized by the large arrow."
+    message: "Click on 'Back one step' to define a different third sound or " +
+             "'Restart' to begin again."
+    transitions:
+      pause2: true
+      start: true
+
+  # The third sound starts earlier than expected.
+  sound3StartsSlightlyLate:
+    comment: "The beginning of the third sound is slightly later than " +
+             "projected. We hear a *deceleration* because we sense the " +
+             "realization of the first projected duration even as we also " +
+             "perceive the difference between the two durations."
+    message: "Click on 'Back one step' to define a different third sound or " +
+             "'Restart' to begin again."
+    transitions:
+      pause2: true
+      start: true
+
+  # The third sound starts slightly late and suggests a new projection.
+  sound3StartsSlightlyLateNewProjection:
+    comment: "The third sound begins somewhat later than projected. A new " +
+             "projection, indicated by the lowest arrow and dashed arc, " +
+             "emerges, breaking off from the emerging first projection. We " +
+             "reject the relevance of the first projection to the mensural " +
+             "determinacy of the second interonset duration."
+    message: "Click on 'Back one step' to define a different third sound or " +
+             "'Restart' to begin again."
+    transitions:
+      pause2: true
+      start: true
+
+
 # TODO(tmroeder): pull out the test cases into proper tests, probably with the
 # Mocha test framework.
 
@@ -233,6 +348,7 @@ States =
 #     coffee meter_as_rhythm.coffee | dot -Tpdf -o meter.pdf
 # TODO(tmroeder): one test should make sure this graph is connected.
 console.log("strict digraph Meter {")
-(console.log("\t#{name} -> #{dest}") for dest of States[name].transitions) for name of States
+for name of States
+  for dest of States[name].transitions
+    console.log("  #{name} -> #{dest}")
 console.log("}")
-
