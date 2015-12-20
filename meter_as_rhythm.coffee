@@ -339,7 +339,6 @@ States =
       pause2: true
       start: true
 
-
 # TODO(tmroeder): pull out the test cases into proper tests, probably with the
 # Mocha test framework.
 
@@ -347,8 +346,33 @@ States =
 # Generate the graph with the following command.
 #     coffee meter_as_rhythm.coffee | dot -Tpdf -o meter.pdf
 # TODO(tmroeder): one test should make sure this graph is connected.
-console.log("strict digraph Meter {")
-for name of States
-  for dest of States[name].transitions
-    console.log("  #{name} -> #{dest}")
-console.log("}")
+exports.writeGraph = ->
+  g = "strict digraph Meter {\n"
+  g += "  #{src} -> #{dst}\n" for dst of val.transitions for src, val of States
+  for name of States
+    for dest of States[name].transitions
+      graph += "  #{name} -> #{dest}\n"
+  graph + "}"
+
+exports.states = States
+
+# visit walks the states graph using depth-first search from the start node and
+# applies the given function to each node.
+exports.visit = (states, fn) ->
+  # Put all the states into the visited object, each with a value of false.
+  visited = {}
+  (visited[name] = false) for name of states
+
+  visitHelper(states, 'start', visited, fn)
+  visited
+
+# visitHelper keeps track of visited states as it traverses the graph.
+visitHelper = (states, state, visited, fn) ->
+  return if visited[state]
+  visited[state] = true
+
+  # Call the function if it is not null or undefined.
+  fn?(state)
+
+  for neighbor of states[state].transitions
+    visitHelper(states, neighbor, visited, fn)
