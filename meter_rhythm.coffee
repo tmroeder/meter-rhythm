@@ -386,3 +386,56 @@ visitHelper = (states, state, visited, fn) ->
 # draw extra elements. If not, then it ignores them.
 # TODO(tmroeder): add tests that exercise the interesting functionality. Does
 # Node.js have a good coverage library?
+
+# PointError is thrown for error cases that happen in methods of the Points
+# class.
+exports.PointError = class PointError extends Error
+  name: 'PointError'
+  constructor: (message) ->
+    @message = message
+
+# Points keeps track of the current point positions and the properties of these
+# positions with respect to each other and with respect to determinacy.
+exports.Points = class Points
+  @sound1First: 0
+  @sound1Second: 1
+  @sound2First: 2
+  @sound2Second: 3
+  @sound3First: 4
+  @sound3Second: 5
+  
+  constructor: (maxDeterminateLen) ->
+    @points = []
+    @maxDeterminateLen = maxDeterminateLen
+
+  # pushPoint puts a new point at the end of the points.
+  pushPoint: (pos) ->
+    throw new PointError('all points already defined') if @points.length > 5
+    @points.push(pos)
+
+  # popPoint removes and returns the last point in the array, if any.
+  popPoint: ->
+    throw new PointError('no points to remove') if @points.length == 0
+    @points.pop()
+
+  isDeterminate: (first, second) ->
+    second - first < @maxDeterminateLen
+
+  # projectFirstLength is true if the current state of the first sound and the
+  # first pause are both determinate. It takes the current position as input.
+  projectFirstLength: (cur) ->
+    # The first projection is never present once the second sound has started or
+    # before the first sound has started.
+    pointCount = @points.length
+    return false if pointCount > 2 or pointCount == 0
+
+    first = @points[Points.sound1First]
+    if pointCount == 1
+      return @isDeterminate first, cur
+
+    second = @points[Points.sound1Second]
+    return false if not @isDeterminate first, second
+
+    # If there's a cur point and it's greater than second, then make sure it's
+    # determinate.
+    not cur? or cur <= second or @isDeterminate second, cur
