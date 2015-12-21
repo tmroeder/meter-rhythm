@@ -28,3 +28,13 @@ describe 'The declarative States object', ->
     visited = meter.visit(states)
     unvisited = (src for src, val of visited when !val)
     expect(unvisited).to.be.empty
+
+# A regular expression that describes a valid GraphViz edge for the states.
+edgeRegex = /^\s*\w+ -> \w+$/
+
+describe 'The writeGraph function', ->
+  it 'should return a valid GraphViz graph', ->
+    graph = meter.writeGraph(meter.states)
+    lines = graph.split "\n"
+    expect(lines).to.not.be.empty
+    expect(line).to.match(edgeRegex) for line in lines

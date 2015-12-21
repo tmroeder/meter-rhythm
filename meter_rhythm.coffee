@@ -49,11 +49,11 @@ States =
       sound1ContinuesTooLong: true
       sound1Ends: true
 
-  # The first sound has exceeded kMaxSoundLen.
+  # The first sound is too long.
   sound1ContinuesTooLong:
     comment: "The first sound's duration is so long that it is 'mensurally " +
              "indeterminate'--it has lost its projective potential to be " +
-             "reproduced.";
+             "reproduced."
     message: "To make the first sound's duration determinate, move the mouse " +
              "back to the left. Or click to end the sound."
     transitions:
@@ -87,7 +87,7 @@ States =
              "relatively indeterminate, if our attention is focused on the " +
              "beginning of sounds. The growing arc indicates that the " +
              "duration of the first sound *plus* the following silence " +
-             "itself has the 'projective potential' to be reproduced.";
+             "itself has the 'projective potential' to be reproduced."
     message: "Click the mouse to begin the second sound."
     transitions:
       pause1: true
@@ -98,7 +98,6 @@ States =
   # The pause between sounds can't be negative.
   pause1Negative:
     # The comment does not change from pause1.
-    # TODO(tmroeder): Is this correct?
     comment: ""
     message: "Click the mouse at the end of the first sound or later."
     transitions:
@@ -118,7 +117,7 @@ States =
              "duration. The dotted arc, extending for this duration into the " +
              "future, symbolizes this 'projected potential'."
     message: "Perform the second sound by moving the mouse to the right."
-    transitions: 
+    transitions:
       sound2Continues: true
 
   # The beginning of the second sound after too long of a pause.
@@ -129,7 +128,7 @@ States =
              "is no projection."
     message: "Click on the 'Back one step' button to select an earlier " +
              "beginning for the second sound, or click 'Restart'."
-    transitions: 
+    transitions:
       pause1: true
       start: true
 
@@ -151,8 +150,8 @@ States =
     comment: "The second sound exceeds the duration projected at its onset; " +
              "the projection is not clearly realized, as indicated by the X " +
              "through the dashed arc."
-    # TODO(tmroeder): "... or make the sound shorter to realize the projection."
-    message: "Click the mouse to end the second sound."
+    message: "Move the mouse to the left to shorten the second sound, or " +
+             "click the mouse to end it."
     transitions:
       sound2Continues: true
       sound2ContinuesWithoutProjection: true
@@ -225,7 +224,6 @@ States =
 
   # The second pause is negative.
   pause2Negative:
-    # TODO(tmroeder): missing comment?
     comment: ""
     message: "Click the mouse at the end of the second sound or later."
     transitions:
@@ -291,7 +289,6 @@ States =
       start: true
 
   # The third sound starts and suggests a new projection.
-  # TODO(tmroeder): figure out how to reach this state.
   sound3StartsNewProjection:
     comment: "The projection of the first interonset duration is realized. " +
              "Another projection (the rightmost arrow and dashed arc) can be " +
@@ -339,20 +336,17 @@ States =
       pause2: true
       start: true
 
-# TODO(tmroeder): pull out the test cases into proper tests, probably with the
-# Mocha test framework.
-
-# Output a GraphViz diagram to check the state machine.
-# Generate the graph with the following command.
-#     coffee meter_as_rhythm.coffee | dot -Tpdf -o meter.pdf
-# TODO(tmroeder): one test should make sure this graph is connected.
-exports.writeGraph = ->
-  g = "strict digraph Meter {\n"
-  g += "  #{src} -> #{dst}\n" for dst of val.transitions for src, val of States
-  for name of States
-    for dest of States[name].transitions
-      graph += "  #{name} -> #{dest}\n"
-  graph + "}"
+# writeGraph outputs a GraphViz diagram to check the state machine.
+# Generate the graph with dot -Tpdf -o meter.pdf. The output must be wrapped in
+# a graph statement like `strict digraph Meter {` (and with a closing bracket at
+# the end).
+exports.writeGraph = (states) ->
+  graph = ""
+  for name of states
+    for dest of states[name].transitions
+      graph += "\n" if graph != ""
+      graph += "  #{name} -> #{dest}"
+  graph
 
 exports.states = States
 
