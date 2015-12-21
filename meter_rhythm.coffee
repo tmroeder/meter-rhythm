@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
    
-States =
+# The states object holds the state machine for the simulation. It consists of a
+# set of named states (like 'start'), each with a comment and a message. The
+# comment provides an interpretation of the current state, and the message
+# suggests actions to take in the current state.
+exports.states =
   # The starting state of the program.
   start:
     comment: "This demonstrates the concepts in Chapter 7 of Christopher " +
@@ -348,19 +352,17 @@ exports.writeGraph = (states) ->
       graph += "  #{name} -> #{dest}"
   graph
 
-exports.states = States
-
-# visit walks the states graph using depth-first search from the start node and
+# visit walks a states graph using depth-first search from the start node and
 # applies the given function to each node.
 exports.visit = (states, fn) ->
-  # Put all the states into the visited object, each with a value of false.
+  # Put all states into the visited object, each with a value of false.
   visited = {}
   (visited[name] = false) for name of states
 
   visitHelper(states, 'start', visited, fn)
   visited
 
-# visitHelper keeps track of visited states as it traverses the graph.
+# visitHelper keeps track of visited states as it traverses a graph.
 visitHelper = (states, state, visited, fn) ->
   return if visited[state]
   visited[state] = true
@@ -403,9 +405,14 @@ exports.Points = class Points
   @sound2Second: 3
   @sound3First: 4
   @sound3Second: 5
+
+  @projectionOn: 10
+  @projectionOff: 11
+  @projectionBroken: 12
   
-  constructor: (maxDeterminateLen) ->
-    @points = []
+  constructor: (maxDeterminateLen, points...) ->
+    throw new PointError('too many points') if points.length > 6
+    @points = points
     @maxDeterminateLen = maxDeterminateLen
 
   # pushPoint puts a new point at the end of the points.
@@ -418,6 +425,8 @@ exports.Points = class Points
     throw new PointError('no points to remove') if @points.length == 0
     @points.pop()
 
+  # isDeterminate checks to make sure that the difference between the first and
+  # second points is less than the amount needed to be mensurally determinate.
   isDeterminate: (first, second) ->
     second - first < @maxDeterminateLen
 
@@ -427,15 +436,34 @@ exports.Points = class Points
     # The first projection is never present once the second sound has started or
     # before the first sound has started.
     pointCount = @points.length
-    return false if pointCount > 2 or pointCount == 0
+    return Points.projectionOff if pointCount > 2 or pointCount == 0
 
     first = @points[Points.sound1First]
     if pointCount == 1
-      return @isDeterminate first, cur
+      if not @isDeterminate first, cur
+        return Points.projectionOff
+      return Points.projectionOn
 
     second = @points[Points.sound1Second]
-    return false if not @isDeterminate first, second
+    return Points.projectionOff if not @isDeterminate first, second
 
     # If there's a cur point and it's greater than second, then make sure it's
     # determinate.
-    not cur? or cur <= second or @isDeterminate second, cur
+    if not cur? or cur <= second or @isDeterminate second, cur
+      return Points.projectionOn
+
+    Points.projectionOff
+
+  projectSecondLength: (cur) ->
+    pointCount = @points.length
+    return Points.projectionOff if pointCount < 3 or pointCount > 4
+
+    first = @points[Points.sound1First]
+    if pointCount == 3
+      return Points.projectionOn if @isDeterminate first, cur
+
+    second = @points[Points.sound1Second]
+    if not cur? or cur <= second or @isDeterminate second, cur
+      return Points.projectionOn
+
+    Points.projectionOff

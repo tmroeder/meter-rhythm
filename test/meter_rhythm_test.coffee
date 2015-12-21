@@ -17,7 +17,15 @@ chai = require 'chai'
 expect = chai.expect
 should = chai.should()
 
-describe 'The declarative States object', ->
+projectionOff = meter.Points.projectionOff
+projectionOn = meter.Points.projectionOn
+projectionBroken = meter.Points.projectionBroken
+
+##
+## Test the states object
+##
+
+describe 'The states object', ->
   states = meter.states
   it 'should have a start state', ->
     states.should.have.property 'start'
@@ -28,6 +36,10 @@ describe 'The declarative States object', ->
     visited = meter.visit(states)
     unvisited = (src for src, val of visited when !val)
     expect(unvisited).to.be.empty
+
+##
+## Test the graph-writing function.
+##
 
 # A regular expression that describes a valid GraphViz edge for the states.
 edgeRegex = /^\s*\w+ -> \w+$/
@@ -56,45 +68,54 @@ describe 'The writeGraph function', ->
     expect(lines).to.not.be.empty
     expect(line).to.match(edgeRegex) for line in lines
 
-# Check the push/pop point methods.
-maxDeterminateLen = 100
+##
+## Test the Points class and its push/pop methods.
+##
+
+maxLen = 100
 describe 'The Points class', ->
   it 'should allow points to be added', ->
-    p = new meter.Points maxDeterminateLen
-    p.pushPoint(13)
+    p = new meter.Points maxLen, 13
+  it 'should throw in the constructor if given too many points', ->
+    expect(meter.Points.bind(null, maxLen, [0..7]...)).to.throw(
+      meter.PointError, 'too many points')
   it 'should throw a PointError if more than 6 points are added', ->
-    p = new meter.Points maxDeterminateLen
-    p.pushPoint(13 + i) for i in [0..5]
+    p = new meter.Points maxLen, [13..18]...
     expect(p.pushPoint.bind(p, 20)).to.throw(meter.PointError,
                                             'all points already defined')
   it 'should fail popPoint when no points are present', ->
-    p = new meter.Points maxDeterminateLen
+    p = new meter.Points maxLen
     expect(p.popPoint.bind(p)).to.throw(meter.PointError, 'no points to remove')
   it 'should pop a point when popPoint is called', ->
-    p = new meter.Points maxDeterminateLen
-    p.pushPoint(13 + i) for i in [0..5]
+    p = new meter.Points maxLen, [13..18]...
     x = p.popPoint()
     expect(x).to.exist
     expect(p.pushPoint.bind(p, 20)).to.not.throw(Error)
 
-# Check the projection of the first length.
-maxDeterminateLen = 10
+##
+## Test the projection calculations for the first length.
+##
+
+maxLen = 10
 describe 'The first length', ->
   it 'should project if an in-progress sound is determinate', ->
-    p = new meter.Points maxDeterminateLen
-    p.pushPoint(0)
-    p.projectFirstLength(8).should.be.true
- it 'should not project if an in-progress sound is indeterminate', ->
-    p = new meter.Points maxDeterminateLen
-    p.pushPoint(0)
-    p.projectFirstLength(11).should.be.false
- it 'should not project if a completed first sound is indeterminate', ->
-    p = new meter.Points maxDeterminateLen
-    p.pushPoint(0)
-    p.pushPoint(11)
-    p.projectFirstLength().should.be.false
- it 'should project if a completed first sound is determinate', ->
-    p = new meter.Points maxDeterminateLen
-    p.pushPoint(0)
-    p.pushPoint(1)
-    p.projectFirstLength().should.be.true
+    p = new meter.Points maxLen, 0
+    p.projectFirstLength(8).should.equal(projectionOn)
+  it 'should not project if an in-progress sound is indeterminate', ->
+    p = new meter.Points maxLen, 0
+    p.projectFirstLength(11).should.equal(projectionOff)
+  it 'should not project if a completed first sound is indeterminate', ->
+    p = new meter.Points maxLen, 0, 11
+    p.projectFirstLength().should.equal(projectionOff)
+  it 'should project if a completed first sound is determinate', ->
+    p = new meter.Points maxLen, 0, 1
+    p.projectFirstLength().should.equal(projectionOn)
+
+##
+## Test the projection calculations for the second length.
+##
+
+describe 'The second length', ->
+  it 'should not project outside the second sound and subsequent pause', ->
+    p = new meter.Points maxLen, [0..5]...
+    p.projectSecondLength().should.equal(projectionOff)
