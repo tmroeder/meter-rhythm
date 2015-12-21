@@ -370,3 +370,19 @@ visitHelper = (states, state, visited, fn) ->
 
   for neighbor of states[state].transitions
     visitHelper(states, neighbor, visited, fn)
+
+# TODO(tmroeder): Add a class that handles the current positions of points that
+# have been determined. It should have properties on it that can be used to
+# decide about projective potential.
+# TODO(tmroeder): Add a dummy drawing class that has methods drawSoundStart(x),
+# drawDuration(start, end), drawSoundEnd(x), drawProjection(start, end,
+# unrealized), writeComment(txt), writeMessage(text), drawHiatus(pos),
+# drawPotentialDuration(start, end), and maybe others. Use this to mock out the
+# UI calls, and write a text-based version as well as an SVG (?) version.
+# TODO(tmroeder): Add to the position class a function that draws the standard
+# elements in the standard way, since most elements are always drawn the same
+# way if they're present. It uses the current positions, and it uses the current
+# state. It then looks to see if the state has a function that should be used to
+# draw extra elements. If not, then it ignores them.
+# TODO(tmroeder): add tests that exercise the interesting functionality. Does
+# Node.js have a good coverage library?
