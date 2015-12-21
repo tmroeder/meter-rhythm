@@ -33,6 +33,23 @@ describe 'The declarative States object', ->
 edgeRegex = /^\s*\w+ -> \w+$/
 
 describe 'The writeGraph function', ->
+  it 'should return a graph that matches its input', ->
+    states =
+      start:
+        transitions:
+          second: true
+      second:
+        transitions:
+          end: true
+          start: true
+      end:
+        transitions:
+          second: true
+    graph = meter.writeGraph(states)
+    expected = "  start -> second\n  second -> end\n  second -> start\n  " +
+               "end -> second"
+    expect(graph).to.not.be.empty
+    graph.should.equal(expected)
   it 'should return a valid GraphViz graph', ->
     graph = meter.writeGraph(meter.states)
     lines = graph.split "\n"
