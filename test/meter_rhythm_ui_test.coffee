@@ -12,18 +12,66 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-meterUI = require '../meter_rhythm_ui.coffee'
+ui = require '../meter_rhythm_ui.coffee'
 chai = require 'chai'
 expect = chai.expect
 should = chai.should()
 
 ##
-## Test the MeterTextUI object.
+## Test the TextDraw object.
 ##
 
-describe 'The MeterTextUI object', ->
+describe 'The TextDraw object', ->
   it 'should succeed in its constructor', ->
-    expect(meterUI.MeterTextUI.bind(null, 10, 20)).to.not.throw(Error)
-    expect(meterUI.MeterTextUI.bind(null, 10, 20)).to.not.throw(undefined)
-    expect(meterUI.MeterTextUI.bind(null, 10, 20)).to.not.throw(null)
-    expect(meterUI.MeterTextUI.bind(null, 10, 20)).to.not.throw(meterUI.UIError)
+    expect(ui.TextDraw.bind(null)).to.not.throw(Error)
+    expect(ui.TextDraw.bind(null)).to.not.throw(undefined)
+    expect(ui.TextDraw.bind(null)).to.not.throw(null)
+    expect(ui.TextDraw.bind(null)).to.not.throw(ui.UIError)
+
+# MockInput is an Input class that can be used to programmatically drive tests
+# over the input-dependent code.
+class MockInput extends ui.Input
+  constructor: () ->
+    @moveRegistry = []
+    @clickRegistry = []
+
+  registerMouseMove: (fn) ->
+    @moveRegistry.push fn
+
+  registerMouseUp: (fn) ->
+    @clickRegistry.push fn
+
+  # move is a method used to mock mouse movement events to registered functions.
+  move: (x, y) ->
+    for fn in @moveRegistry
+      fn? x, y
+
+  # click is a method used to mock mouse click events to registered functions.
+  click: (x, y) ->
+    for fn in @clickRegistry
+      fn? x, y
+
+describe 'The MockInput class', ->
+  it 'should send movement events', ->
+    latestX = 0
+    latestY = 0
+    fn = (x, y) ->
+      latestX = x
+      latestY = y
+    m = new MockInput()
+    m.registerMouseMove(fn)
+    m.move(1, 1)
+    expect(latestX).to.equal(1)
+    expect(latestY).to.equal(1)
+  it 'should send click events', ->
+    latestX = 0
+    latestY = 0
+    fn = (x, y) ->
+      latestX = x
+      latestY = y
+    m = new MockInput()
+    m.registerMouseUp(fn)
+    m.click(2, 2)
+    expect(latestX).to.equal(2)
+    expect(latestY).to.equal(2)
+

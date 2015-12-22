@@ -12,18 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# UIError is thrown for error cases that happen in methods of the UIs
-# class.
+# UIError is thrown for error cases that happen in methods of the Draw
+# classes.
 exports.UIError = class UIError extends Error
   name: 'UIError'
   constructor: (message) ->
     @message = message
 
-# MeterUI gives the interface for UI classes that can be used by the state
+# Draw gives the interface for Draw classes that can be used by the state
 # machine states to draw themselves.
-exports.MeterUI = class MeterUI
+exports.Draw = class Draw
   constructor: ->
-    throw UIError("MeterUI cannot be constructed directly")
+    throw new UIError("Draw cannot be constructed directly")
 
   # The default drawing function.
   draw: (points, state, states, cur) ->
@@ -74,57 +74,45 @@ exports.MeterUI = class MeterUI
     # There are no dynamic components to the third sound, and its ending point
     # is defined simultaneously with its starting point.
     sound3Start = points.points[Points.sound3Start]
-    sound3End = points.points[Points.sound3Start]
+    sound3End = points.points[Points.sound3End]
     return unless sound3Start? and sound3End?
     drawSoundStart sound3Start
     drawDuration sound3Start, sound3End
     drawSoundEnd sound3End
 
   # drawSoundStart draws the beginning of a sound.
-  drawSoundStart: (x) ->
-    return
+  drawSoundStart: (x) -> return
 
   # drawDuration draws the length of a duration.
-  drawDuration: (start, end) ->
-    return
+  drawDuration: (start, end) -> return
 
   # drawSoundEnd draws the endpoint of a sound.
-  drawSoundEnd: (x) ->
-    return
+  drawSoundEnd: (x) -> return
 
   # drawProjection draws a projection, potentially one that is not realized.
-  drawProjection: (start, end, weak) ->
-    return
+  drawProjection: (start, end, weak) -> return
 
   # writeComment outputs comment text.
-  writeComment: (text) ->
-    return
+  writeComment: (text) -> return
 
   # writeMessage outputs message text.
-  writeMessage: (text) ->
-    return
+  writeMessage: (text) -> return
 
   # drawHiatus outputs something that represents a hiatus.
-  drawHiatus: (pos) ->
-    return
+  drawHiatus: (pos) -> return
 
-# MeterTextUI is a UI class that is used to output elements of the simulation.
-exports.MeterTextUI = class MeterTextUI extends MeterUI
-  constructor: (width, length) ->
-    @width = width
-    @length = length
+# TextDraw is a Draw class that is used to output elements of the simulation.
+exports.TextDraw = class TextDraw extends Draw
+  constructor: () -> return
 
   # drawSoundStart draws the beginning of a sound.
-  drawSoundStart: (x) ->
-    console.log "Sound started at position #{x}"
+  drawSoundStart: (x) -> console.log "Sound started at position #{x}"
 
   # drawDuration draws the length of a duration.
-  drawDuration: (start, end) ->
-    console.log "Duration from #{start} to #{end}"
+  drawDuration: (start, end) -> console.log "Duration from #{start} to #{end}"
 
   # drawSoundEnd draws the endpoint of a sound.
-  drawSoundEnd: (x) ->
-    console.log "Sound ended at position #{x}"
+  drawSoundEnd: (x) -> console.log "Sound ended at position #{x}"
 
   # drawProjection draws a projection, potentially one that is not realized.
   drawProjection: (start, end, weak) ->
@@ -134,13 +122,27 @@ exports.MeterTextUI = class MeterTextUI extends MeterUI
       console.log "Projection from #{start} to #{end}"
 
   # writeComment outputs comment text.
-  writeComment: (text) ->
-    console.log "Comment: #{text}"
+  writeComment: (text) -> console.log "Comment: #{text}"
 
   # writeMessage outputs message text.
-  writeMessage: (text) ->
-    console.log "Message: #{text}"
+  writeMessage: (text) -> console.log "Message: #{text}"
 
   # drawHiatus outputs something that represents a hiatus.
-  drawHiatus: (pos) ->
-    console.log "Hiatus occurs at #{pos}"
+  drawHiatus: (pos) -> console.log "Hiatus occurs at #{pos}"
+
+# The Input class is an interface for registering input handlers. Subclasses
+# need to provide a connection to a source of input events.
+exports.Input = class Input
+  constructor: ->
+    throw new UIError("The Input class cannot be constructed directly")
+
+  # registerMouseMove takes a function and registers it to receive notification
+  # when the mouse moves. The function will be called as fn(x, y) where x and y
+  # are the current x and y positions of the mouse after its motion.
+  registerMouseMove: (fn) -> return
+
+  # registerMouseUp takes a function and registers it to receive notification
+  # when the mouse is done with a click. The function will be called as
+  # fn(x, y), where x and y are the current x and y positions of the mouse after
+  # its motion.
+  registerMouseUp: (fn) -> return
