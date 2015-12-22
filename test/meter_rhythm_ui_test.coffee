@@ -75,3 +75,68 @@ describe 'The MockInput class', ->
     expect(latestX).to.equal(2)
     expect(latestY).to.equal(2)
 
+# MockDraw tracks the draw events that have been sent to it.
+class MockDraw extends ui.Draw
+  constructor: ->
+    @soundStartCount = 0
+    @durationCount = 0
+    @soundEndCount = 0
+    @projectionCount = 0
+    @weakProjectionCount = 0
+    @commentCount = 0
+    @messageCount = 0
+    @hiatusCount = 0
+
+  drawSoundStart: (x) -> @soundStartCount++
+
+  # drawDuration draws the length of a duration.
+  drawDuration: (start, end) -> @durationCount++
+
+  # drawSoundEnd draws the endpoint of a sound.
+  drawSoundEnd: (x) -> @soundEndCount++
+
+  # drawProjection draws a projection, potentially one that is not realized.
+  drawProjection: (start, end, weak) ->
+    if weak
+      @weakProjectionCount++
+    else
+      @projectionCount++
+
+  # writeComment outputs comment text.
+  writeComment: (text) -> @commentCount++
+
+  # writeMessage outputs message text.
+  writeMessage: (text) -> @messageCount++
+
+  # drawHiatus outputs something that represents a hiatus.
+  drawHiatus: (pos) -> @hiatusCount++
+
+
+describe 'The MockDraw class', ->
+  md = new MockDraw()
+  it 'should capture start events', ->
+    md.drawSoundStart(50)
+    md.soundStartCount.should.equal(1)
+  it 'should capture duration events', ->
+    md.drawDuration(50, 100)
+    md.durationCount.should.equal(1)
+  it 'should capture end events', ->
+    md.drawSoundEnd(50)
+    md.soundEndCount.should.equal(1)
+  it 'should capture projection events', ->
+    md.drawProjection(50, 100, false)
+    md.projectionCount.should.equal(1)
+    md.weakProjectionCount.should.equal(0)
+
+    md.drawProjection(150, 200, true)
+    md.projectionCount.should.equal(1)
+    md.weakProjectionCount.should.equal(1)
+  it 'should capture comment events', ->
+    md.writeComment('Test comment')
+    md.commentCount.should.equal(1)
+  it 'should capture message events', ->
+    md.writeMessage('Test message')
+    md.messageCount.should.equal(1)
+  it 'should capture hiatus events', ->
+    md.drawHiatus(50)
+    md.hiatusCount.should.equal(1)
