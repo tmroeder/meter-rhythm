@@ -399,6 +399,7 @@ exports.PointError = class PointError extends Error
 # Points keeps track of the current point positions and the properties of these
 # positions with respect to each other and with respect to determinacy.
 exports.Points = class Points
+  # These variables name positions in the @points array.
   @sound1First: 0
   @sound1Second: 1
   @sound2First: 2
@@ -406,9 +407,10 @@ exports.Points = class Points
   @sound3First: 4
   @sound3Second: 5
 
-  @projectionOn: 10
-  @projectionOff: 11
-  @projectionWeak: 12
+  # These variables are the return values of the projective potential functions.
+  @projectionOn: "Projection On"
+  @projectionOff: "Projection Off"
+  @projectionWeak: "Projection Weak"
   
   constructor: (maxDeterminateLen, points...) ->
     throw new PointError('too many points') if points.length > 6
@@ -436,9 +438,8 @@ exports.Points = class Points
     return false if second <= 2 * first
     @isDeterminate first, second
 
-  # projectFirstLength is true if the current state of the first sound and the
-  # first pause are both determinate. It takes the current position as input.
-  projectFirstLength: (cur) ->
+  # firstProjection describes the projective potential of the first sound.
+  firstProjection: (cur) ->
     # The first projection is never present once the second sound has started or
     # before the first sound has started.
     pointCount = @points.length
@@ -460,7 +461,9 @@ exports.Points = class Points
 
     Points.projectionOff
 
-  projectSecondLength: (cur) ->
+  # secondProjection describes the current projective potential of the second
+  # sound.
+  secondProjection: (cur) ->
     pointCount = @points.length
     return Points.projectionOff if pointCount < 3 or pointCount > 4
 
