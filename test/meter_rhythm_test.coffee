@@ -19,7 +19,7 @@ should = chai.should()
 
 projectionOff = meter.Points.projectionOff
 projectionOn = meter.Points.projectionOn
-projectionBroken = meter.Points.projectionBroken
+projectionWeak = meter.Points.projectionWeak
 
 ##
 ## Test the states object
@@ -29,9 +29,11 @@ describe 'The states object', ->
   states = meter.states
   it 'should have a start state', ->
     states.should.have.property 'start'
+
   it 'should have at least one end state', ->
     endNodes = (src for src, val of states when 'start' of val.transitions)
     expect(endNodes).to.not.be.empty
+
   it 'should be able to reach every node from start', ->
     visited = meter.visit(states)
     unvisited = (src for src, val of visited when !val)
@@ -62,6 +64,7 @@ describe 'The writeGraph function', ->
                "end -> second"
     expect(graph).to.not.be.empty
     graph.should.equal(expected)
+
   it 'should return a valid GraphViz graph', ->
     graph = meter.writeGraph(meter.states)
     lines = graph.split "\n"
@@ -76,16 +79,20 @@ maxLen = 100
 describe 'The Points class', ->
   it 'should allow points to be added', ->
     p = new meter.Points maxLen, 13
+
   it 'should throw in the constructor if given too many points', ->
     expect(meter.Points.bind(null, maxLen, [0..7]...)).to.throw(
       meter.PointError, 'too many points')
+
   it 'should throw a PointError if more than 6 points are added', ->
     p = new meter.Points maxLen, [13..18]...
     expect(p.pushPoint.bind(p, 20)).to.throw(meter.PointError,
                                             'all points already defined')
+
   it 'should fail popPoint when no points are present', ->
     p = new meter.Points maxLen
     expect(p.popPoint.bind(p)).to.throw(meter.PointError, 'no points to remove')
+
   it 'should pop a point when popPoint is called', ->
     p = new meter.Points maxLen, [13..18]...
     x = p.popPoint()
@@ -101,12 +108,15 @@ describe 'The first length', ->
   it 'should project if an in-progress sound is determinate', ->
     p = new meter.Points maxLen, 0
     p.projectFirstLength(8).should.equal(projectionOn)
+
   it 'should not project if an in-progress sound is indeterminate', ->
     p = new meter.Points maxLen, 0
     p.projectFirstLength(11).should.equal(projectionOff)
+
   it 'should not project if a completed first sound is indeterminate', ->
     p = new meter.Points maxLen, 0, 11
     p.projectFirstLength().should.equal(projectionOff)
+
   it 'should project if a completed first sound is determinate', ->
     p = new meter.Points maxLen, 0, 1
     p.projectFirstLength().should.equal(projectionOn)
@@ -119,3 +129,32 @@ describe 'The second length', ->
   it 'should not project outside the second sound and subsequent pause', ->
     p = new meter.Points maxLen, [0..5]...
     p.projectSecondLength().should.equal(projectionOff)
+
+    p2 = new meter.Points maxLen, 0, 1
+    p2.projectSecondLength().should.equal(projectionOff)
+
+  it 'should project if a determinate second event is in progress', ->
+    p = new meter.Points maxLen, 0, 9, 18
+    p.projectSecondLength(20).should.equal(projectionOn)
+    p.projectSecondLength(27).should.equal(projectionOn)
+
+  it 'should project weakly if pos is greater than 2*start but determinate', ->
+    p = new meter.Points maxLen, 0, 4, 8
+    p.projectSecondLength(17).should.equal(projectionWeak)
+
+  it 'should not project if an in-progress sound is indeterminate', ->
+    p = new meter.Points maxLen, 0, 4, 8
+    p.projectSecondLength(19).should.equal(projectionOff)
+
+  it 'should project if a determinate second sound has been formed', ->
+    p = new meter.Points maxLen, 0, 4, 8, 12
+    p.projectSecondLength().should.equal(projectionOn)
+    p.projectSecondLength(10).should.equal(projectionOn)
+
+  it 'should project if a determinate pause is occurring', ->
+    p = new meter.Points maxLen, 0, 4, 8, 12
+    p.projectSecondLength(14).should.equal(projectionOn)
+
+  it 'should not project if an indeterminate pause is occurring', ->
+    p = new meter.Points maxLen, 0, 4, 8, 12
+    p.projectSecondLength(23).should.equal(projectionOff)

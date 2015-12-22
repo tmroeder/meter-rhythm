@@ -408,7 +408,7 @@ exports.Points = class Points
 
   @projectionOn: 10
   @projectionOff: 11
-  @projectionBroken: 12
+  @projectionWeak: 12
   
   constructor: (maxDeterminateLen, points...) ->
     throw new PointError('too many points') if points.length > 6
@@ -429,6 +429,12 @@ exports.Points = class Points
   # second points is less than the amount needed to be mensurally determinate.
   isDeterminate: (first, second) ->
     second - first < @maxDeterminateLen
+
+  # isWeakDeterminate is like isDeterminate, but it fails if second <= 2 *
+  # first. In other words, it's the upper range of mensural determinacy.
+  isWeakDeterminate: (first, second) ->
+    return false if second <= 2 * first
+    @isDeterminate first, second
 
   # projectFirstLength is true if the current state of the first sound and the
   # first pause are both determinate. It takes the current position as input.
@@ -458,12 +464,23 @@ exports.Points = class Points
     pointCount = @points.length
     return Points.projectionOff if pointCount < 3 or pointCount > 4
 
-    first = @points[Points.sound1First]
+    first = @points[Points.sound2First]
     if pointCount == 3
-      return Points.projectionOn if @isDeterminate first, cur
+      # Weak projection occurs if cur is the right amount beyond the first
+      # sound.
+      if @isWeakDeterminate first, cur
+        return Points.projectionWeak
+      if @isDeterminate first, cur
+        return Points.projectionOn
+      return Points.projectionOff
 
-    second = @points[Points.sound1Second]
-    if not cur? or cur <= second or @isDeterminate second, cur
-      return Points.projectionOn
+    # Projection occurs if there's no current point or it's between the first
+    # and second points.
+    second = @points[Points.sound2Second]
+    return Points.projectionOn if not cur? or cur <= second
+
+    # Projection also occurs if cur is a mensurally determinate distance past
+    # the second sound.
+    return Points.projectionOn if @isDeterminate second, cur
 
     Points.projectionOff
