@@ -11,7 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-   
+
 # The states object holds the state machine for the simulation. It consists of a
 # set of named states (like 'start'), each with a comment and a message. The
 # comment provides an interpretation of the current state, and the message
@@ -359,7 +359,7 @@ exports.visit = (states, fn) ->
   visited = {}
   (visited[name] = false) for name of states
 
-  visitHelper(states, 'start', visited, fn)
+  visitHelper states, 'start', visited, fn
   visited
 
 # visitHelper keeps track of visited states as it traverses a graph.
@@ -368,19 +368,11 @@ visitHelper = (states, state, visited, fn) ->
   visited[state] = true
 
   # Call the function if it is not null or undefined.
-  fn?(state)
+  fn? state
 
   for neighbor of states[state].transitions
-    visitHelper(states, neighbor, visited, fn)
+    visitHelper states, neighbor, visited, fn
 
-# TODO(tmroeder): Add a class that handles the current positions of points that
-# have been determined. It should have properties on it that can be used to
-# decide about projective potential.
-# TODO(tmroeder): Add a dummy drawing class that has methods drawSoundStart(x),
-# drawDuration(start, end), drawSoundEnd(x), drawProjection(start, end,
-# unrealized), writeComment(txt), writeMessage(text), drawHiatus(pos),
-# drawPotentialDuration(start, end), and maybe others. Use this to mock out the
-# UI calls, and write a text-based version as well as an SVG (?) version.
 # TODO(tmroeder): Add to the position class a function that draws the standard
 # elements in the standard way, since most elements are always drawn the same
 # way if they're present. It uses the current positions, and it uses the current
@@ -438,6 +430,14 @@ exports.Points = class Points
     return false if second <= 2 * first
     @isDeterminate first, second
 
+  # Whether or not this set of points is in the first sound.
+  inFirstSound: ->
+    @points.length == 1
+
+  # Whether or not this set of points is in the second sound.
+  inSecondSound: ->
+    @points.length == 3
+
   # firstProjection describes the projective potential of the first sound.
   firstProjection: (cur) ->
     # The first projection is never present once the second sound has started or
@@ -487,3 +487,4 @@ exports.Points = class Points
     return Points.projectionOn if @isDeterminate second, cur
 
     Points.projectionOff
+
