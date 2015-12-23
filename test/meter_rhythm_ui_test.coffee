@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ui = require '../meter_rhythm_ui.coffee'
-chai = require 'chai'
+meter = require "../meter_rhythm.coffee"
+ui = require "../meter_rhythm_ui.coffee"
+chai = require "chai"
 expect = chai.expect
 should = chai.should()
 
@@ -21,8 +22,8 @@ should = chai.should()
 ## Test the TextDraw object.
 ##
 
-describe 'The TextDraw object', ->
-  it 'should succeed in its constructor', ->
+describe "The TextDraw object", ->
+  it "should succeed in its constructor", ->
     expect(ui.TextDraw.bind(null)).to.not.throw(Error)
     expect(ui.TextDraw.bind(null)).to.not.throw(undefined)
     expect(ui.TextDraw.bind(null)).to.not.throw(null)
@@ -51,8 +52,8 @@ class MockInput extends ui.Input
     for fn in @clickRegistry
       fn? x, y
 
-describe 'The MockInput class', ->
-  it 'should send movement events', ->
+describe "The MockInput class", ->
+  it "should send movement events", ->
     latestX = 0
     latestY = 0
     fn = (x, y) ->
@@ -63,7 +64,8 @@ describe 'The MockInput class', ->
     m.move(1, 1)
     expect(latestX).to.equal(1)
     expect(latestY).to.equal(1)
-  it 'should send click events', ->
+
+  it "should send click events", ->
     latestX = 0
     latestY = 0
     fn = (x, y) ->
@@ -112,18 +114,21 @@ class MockDraw extends ui.Draw
   drawHiatus: (pos) -> @hiatusCount++
 
 
-describe 'The MockDraw class', ->
+describe "The MockDraw class", ->
   md = new MockDraw()
-  it 'should capture start events', ->
+  it "should capture start events", ->
     md.drawSoundStart(50)
     md.soundStartCount.should.equal(1)
-  it 'should capture duration events', ->
+
+  it "should capture duration events", ->
     md.drawDuration(50, 100)
     md.durationCount.should.equal(1)
-  it 'should capture end events', ->
+
+  it "should capture end events", ->
     md.drawSoundEnd(50)
     md.soundEndCount.should.equal(1)
-  it 'should capture projection events', ->
+
+  it "should capture projection events", ->
     md.drawProjection(50, 100, false)
     md.projectionCount.should.equal(1)
     md.weakProjectionCount.should.equal(0)
@@ -131,12 +136,32 @@ describe 'The MockDraw class', ->
     md.drawProjection(150, 200, true)
     md.projectionCount.should.equal(1)
     md.weakProjectionCount.should.equal(1)
-  it 'should capture comment events', ->
-    md.writeComment('Test comment')
+
+  it "should capture comment events", ->
+    md.writeComment("Test comment")
     md.commentCount.should.equal(1)
-  it 'should capture message events', ->
-    md.writeMessage('Test message')
+
+  it "should capture message events", ->
+    md.writeMessage("Test message")
     md.messageCount.should.equal(1)
-  it 'should capture hiatus events', ->
+
+  it "should capture hiatus events", ->
     md.drawHiatus(50)
     md.hiatusCount.should.equal(1)
+
+maxLen = 10
+describe "The Draw class", ->
+  it "should make the right calls for a simple state", ->
+    state = "sound2Continues"
+    states = meter.states
+    p = new meter.Points maxLen, 0, 4, 8
+    m = new MockDraw()
+    m.draw(p, state, states, 9)
+    m.soundStartCount.should.equal(2)
+    m.durationCount.should.equal(2)
+    m.soundEndCount.should.equal(1)
+    m.projectionCount.should.equal(1)
+    m.weakProjectionCount.should.equal(0)
+    m.messageCount.should.equal(1)
+    m.commentCount.should.equal(1)
+    m.hiatusCount.should.equal(0)

@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # The states object holds the state machine for the simulation. It consists of a
-# set of named states (like 'start'), each with a comment and a message. The
+# set of named states (like "start"), each with a comment and a message. The
 # comment provides an interpretation of the current state, and the message
 # suggests actions to take in the current state.
 exports.states =
@@ -41,7 +41,7 @@ exports.states =
     transitions:
       sound1Continues: true
 
-  # The first sound continues and isn't too long.
+  # The first sound continues and isn"t too long.
   sound1Continues:
     comment: "The first sound is becoming. Time 0 becomes its beginning. " +
              "'Projective potential'--the potential of a duration to be " +
@@ -65,7 +65,7 @@ exports.states =
       sound1ContinuesTooLong: true
       sound1EndsTooLong: true
 
-  # The first sound ends with a length that isn't too long.
+  # The first sound ends with a length that isn"t too long.
   sound1Ends:
     comment: "The first sound ends. Its duration is 'mensurally determinate' " +
              "because it has the potential for being precisely reproduced."
@@ -99,7 +99,7 @@ exports.states =
       sound2Starts: true
       sound2StartsTooLong: true
 
-  # The pause between sounds can't be negative.
+  # The pause between sounds can"t be negative.
   pause1Negative:
     # The comment does not change from pause1.
     comment: ""
@@ -355,11 +355,10 @@ exports.writeGraph = (states) ->
 # visit walks a states graph using depth-first search from the start node and
 # applies the given function to each node.
 exports.visit = (states, fn) ->
-  # Put all states into the visited object, each with a value of false.
   visited = {}
   (visited[name] = false) for name of states
 
-  visitHelper states, 'start', visited, fn
+  visitHelper states, "start", visited, fn
   visited
 
 # visitHelper keeps track of visited states as it traverses a graph.
@@ -367,7 +366,6 @@ visitHelper = (states, state, visited, fn) ->
   return if visited[state]
   visited[state] = true
 
-  # Call the function if it is not null or undefined.
   fn? state
 
   for neighbor of states[state].transitions
@@ -375,7 +373,7 @@ visitHelper = (states, state, visited, fn) ->
 
 # TODO(tmroeder): Add to the position class a function that draws the standard
 # elements in the standard way, since most elements are always drawn the same
-# way if they're present. It uses the current positions, and it uses the current
+# way if they"re present. It uses the current positions, and it uses the current
 # state. It then looks to see if the state has a function that should be used to
 # draw extra elements. If not, then it ignores them.
 # TODO(tmroeder): add tests that exercise the interesting functionality. Does
@@ -384,7 +382,7 @@ visitHelper = (states, state, visited, fn) ->
 # PointError is thrown for error cases that happen in methods of the Points
 # class.
 exports.PointError = class PointError extends Error
-  name: 'PointError'
+  name: "PointError"
   constructor: (message) ->
     @message = message
 
@@ -399,24 +397,29 @@ exports.Points = class Points
   @sound3First: 4
   @sound3Second: 5
 
+  @maxPointCount: 6
+
   # These variables are the return values of the projective potential functions.
   @projectionOn: "Projection On"
   @projectionOff: "Projection Off"
   @projectionWeak: "Projection Weak"
   
   constructor: (maxDeterminateLen, points...) ->
-    throw new PointError('too many points') if points.length > 6
+    if points.length > Points.maxPointCount
+      throw new PointError("too many points")
     @points = points
     @maxDeterminateLen = maxDeterminateLen
 
   # pushPoint puts a new point at the end of the points.
   pushPoint: (pos) ->
-    throw new PointError('all points already defined') if @points.length > 5
+    if @points.length > Points.maxPointCount - 1
+      throw new PointError("all points already defined")
     @points.push(pos)
 
   # popPoint removes and returns the last point in the array, if any.
   popPoint: ->
-    throw new PointError('no points to remove') if @points.length == 0
+    if @points.length == 0
+      throw new PointError("no points to remove")
     @points.pop()
 
   # isDeterminate checks to make sure that the difference between the first and
@@ -443,20 +446,21 @@ exports.Points = class Points
     # The first projection is never present once the second sound has started or
     # before the first sound has started.
     pointCount = @points.length
-    return Points.projectionOff if pointCount > 2 or pointCount == 0
+    if pointCount > 2 or pointCount == 0
+      return Points.projectionOff
 
     first = @points[Points.sound1First]
     if pointCount == 1
-      if not @isDeterminate first, cur
+      if not @isDeterminate(first, cur)
         return Points.projectionOff
       return Points.projectionOn
 
     second = @points[Points.sound1Second]
-    return Points.projectionOff if not @isDeterminate first, second
+    return Points.projectionOff if not @isDeterminate(first, second)
 
-    # If there's a cur point and it's greater than second, then make sure it's
+    # If there"s a cur point and it's greater than second, then make sure it's
     # determinate.
-    if not cur? or cur <= second or @isDeterminate second, cur
+    if not cur? or cur <= second or @isDeterminate(second, cur)
       return Points.projectionOn
 
     Points.projectionOff
@@ -471,20 +475,19 @@ exports.Points = class Points
     if pointCount == 3
       # Weak projection occurs if cur is the right amount beyond the first
       # sound.
-      if @isWeakDeterminate first, cur
+      if @isWeakDeterminate(first, cur)
         return Points.projectionWeak
-      if @isDeterminate first, cur
+      if @isDeterminate(first, cur)
         return Points.projectionOn
       return Points.projectionOff
 
-    # Projection occurs if there's no current point or it's between the first
+    # Projection occurs if there"s no current point or it's between the first
     # and second points.
     second = @points[Points.sound2Second]
     return Points.projectionOn if not cur? or cur <= second
 
     # Projection also occurs if cur is a mensurally determinate distance past
     # the second sound.
-    return Points.projectionOn if @isDeterminate second, cur
+    return Points.projectionOn if @isDeterminate(second, cur)
 
     Points.projectionOff
-

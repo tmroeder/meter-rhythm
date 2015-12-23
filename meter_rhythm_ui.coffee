@@ -12,10 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+meter = require "./meter_rhythm.coffee"
+Points = meter.Points
+
 # UIError is thrown for error cases that happen in methods of the Draw
 # classes.
 exports.UIError = class UIError extends Error
-  name: 'UIError'
+  name: "UIError"
   constructor: (message) ->
     @message = message
 
@@ -27,54 +30,54 @@ exports.Draw = class Draw
 
   # The default drawing function.
   draw: (points, state, states, cur) ->
-    drawComment states[state].comment
-    drawMessage states[state].message
+    @writeComment states[state].comment
+    @writeMessage states[state].message
 
     # Draw the start of the first sound.
-    sound1Start = points.points[Points.sound1Start]
+    sound1Start = points.points[Points.sound1First]
     return unless sound1Start?
-    drawSoundStart sound1Start
+    @drawSoundStart sound1Start
 
     # Draw the dynamic components of the first sound.
     if cur? and points.inFirstSound()
-      drawDuration sound1Start, cur
+      @drawDuration sound1Start, cur
 
     # TODO(tmroeder): figure out exactly where the projection should be drawn.
-    if points.firstProjection cur == Points.projectionOn
-      drawProjection sound1Start, cur
+    if points.firstProjection(cur) == Points.projectionOn
+      @drawProjection sound1Start, cur
 
     # Draw the end of the first sound.
-    sound1End = points.points[Points.sound1End]
+    sound1End = points.points[Points.sound1Second]
     return unless sound1End?
 
-    drawDuration sound1Start, sound1End
-    drawSoundEnd sound1End
+    @drawDuration sound1Start, sound1End
+    @drawSoundEnd sound1End
 
     # Draw the beginning of the second sound.
-    sound2Start = points.points[Points.sound2Start]
+    sound2Start = points.points[Points.sound2First]
     return unless sound2Start?
-    drawSoundStart sound2Start
+    @drawSoundStart sound2Start
 
     # Draw the dynamic components of the second sound
     if cur? and points.inSecondSound()
-      drawDuration sound2Start, cur
+      @drawDuration sound2Start, cur
 
-    if points.secondProjection cur == Points.projectionOn
-      drawProjection sound2Start, cur, false
-    else if points.secondProjection cur == Points.projectionWeak
-      drawProjection sound2Start, cur, true
+    if points.secondProjection(cur) == Points.projectionOn
+      @drawProjection sound2Start, cur, false
+    else if points.secondProjection(cur) == Points.projectionWeak
+      @drawProjection sound2Start, cur, true
 
     # Draw the end of the second sound.
-    sound2End = points.points[Points.sound2End]
+    sound2End = points.points[Points.sound2Second]
     return unless sound2End?
 
-    drawDuration sound2Start, sound2End
-    drawSoundEnd sound2End
+    @drawDuration sound2Start, sound2End
+    @drawSoundEnd sound2End
 
     # There are no dynamic components to the third sound, and its ending point
     # is defined simultaneously with its starting point.
-    sound3Start = points.points[Points.sound3Start]
-    sound3End = points.points[Points.sound3End]
+    sound3Start = points.points[Points.sound3First]
+    sound3End = points.points[Points.sound3Second]
     return unless sound3Start? and sound3End?
     drawSoundStart sound3Start
     drawDuration sound3Start, sound3End

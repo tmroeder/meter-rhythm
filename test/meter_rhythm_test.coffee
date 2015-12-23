@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
    
-meter = require '../meter_rhythm.coffee'
-chai = require 'chai'
+meter = require "../meter_rhythm.coffee"
+chai = require "chai"
 expect = chai.expect
 should = chai.should()
 
@@ -25,16 +25,16 @@ projectionWeak = meter.Points.projectionWeak
 ## Test the states object
 ##
 
-describe 'The states object', ->
+describe "The states object", ->
   states = meter.states
-  it 'should have a start state', ->
-    states.should.have.property 'start'
+  it "should have a start state", ->
+    states.should.have.property "start"
 
-  it 'should have at least one end state', ->
-    endNodes = (src for src, val of states when 'start' of val.transitions)
+  it "should have at least one end state", ->
+    endNodes = (src for src, val of states when "start" of val.transitions)
     expect(endNodes).to.not.be.empty
 
-  it 'should be able to reach every node from start', ->
+  it "should be able to reach every node from start", ->
     visited = meter.visit(states)
     unvisited = (src for src, val of visited when !val)
     expect(unvisited).to.be.empty
@@ -46,8 +46,8 @@ describe 'The states object', ->
 # A regular expression that describes a valid GraphViz edge for the states.
 edgeRegex = /^\s*\w+ -> \w+$/
 
-describe 'The writeGraph function', ->
-  it 'should return a graph that matches its input', ->
+describe "The writeGraph function", ->
+  it "should return a graph that matches its input", ->
     states =
       start:
         transitions:
@@ -65,7 +65,7 @@ describe 'The writeGraph function', ->
     expect(graph).to.not.be.empty
     graph.should.equal(expected)
 
-  it 'should return a valid GraphViz graph', ->
+  it "should return a valid GraphViz graph", ->
     graph = meter.writeGraph(meter.states)
     lines = graph.split "\n"
     expect(lines).to.not.be.empty
@@ -76,24 +76,24 @@ describe 'The writeGraph function', ->
 ##
 
 maxLen = 100
-describe 'The Points class', ->
-  it 'should allow points to be added', ->
+describe "The Points class", ->
+  it "should allow points to be added", ->
     p = new meter.Points maxLen, 13
 
-  it 'should throw in the constructor if given too many points', ->
+  it "should throw in the constructor if given too many points", ->
     expect(meter.Points.bind(null, maxLen, [0..7]...)).to.throw(
-      meter.PointError, 'too many points')
+      meter.PointError, "too many points")
 
-  it 'should throw a PointError if more than 6 points are added', ->
+  it "should throw a PointError if more than 6 points are added", ->
     p = new meter.Points maxLen, [13..18]...
     expect(p.pushPoint.bind(p, 20)).to.throw(meter.PointError,
-                                             'all points already defined')
+                                             "all points already defined")
 
-  it 'should fail popPoint when no points are present', ->
+  it "should fail popPoint when no points are present", ->
     p = new meter.Points maxLen
-    expect(p.popPoint.bind(p)).to.throw(meter.PointError, 'no points to remove')
+    expect(p.popPoint.bind(p)).to.throw(meter.PointError, "no points to remove")
 
-  it 'should pop a point when popPoint is called', ->
+  it "should pop a point when popPoint is called", ->
     p = new meter.Points maxLen, [13..18]...
     x = p.popPoint()
     expect(x).to.exist
@@ -104,20 +104,20 @@ describe 'The Points class', ->
 ##
 
 maxLen = 10
-describe 'The first length', ->
-  it 'should project if an in-progress sound is determinate', ->
+describe "The first length", ->
+  it "should project if an in-progress sound is determinate", ->
     p = new meter.Points maxLen, 0
     p.firstProjection(8).should.equal(projectionOn)
 
-  it 'should not project if an in-progress sound is indeterminate', ->
+  it "should not project if an in-progress sound is indeterminate", ->
     p = new meter.Points maxLen, 0
     p.firstProjection(11).should.equal(projectionOff)
 
-  it 'should not project if a completed first sound is indeterminate', ->
+  it "should not project if a completed first sound is indeterminate", ->
     p = new meter.Points maxLen, 0, 11
     p.firstProjection().should.equal(projectionOff)
 
-  it 'should project if a completed first sound is determinate', ->
+  it "should project if a completed first sound is determinate", ->
     p = new meter.Points maxLen, 0, 1
     p.firstProjection().should.equal(projectionOn)
 
@@ -125,36 +125,36 @@ describe 'The first length', ->
 ## Test the projection calculations for the second length.
 ##
 
-describe 'The second length', ->
-  it 'should not project outside the second sound and subsequent pause', ->
+describe "The second length", ->
+  it "should not project outside the second sound and subsequent pause", ->
     p = new meter.Points maxLen, [0..5]...
     p.secondProjection().should.equal(projectionOff)
 
     p2 = new meter.Points maxLen, 0, 1
     p2.secondProjection().should.equal(projectionOff)
 
-  it 'should project if a determinate second event is in progress', ->
+  it "should project if a determinate second event is in progress", ->
     p = new meter.Points maxLen, 0, 9, 18
     p.secondProjection(20).should.equal(projectionOn)
     p.secondProjection(27).should.equal(projectionOn)
 
-  it 'should project weakly if pos is greater than 2*start but determinate', ->
+  it "should project weakly if pos is greater than 2*start but determinate", ->
     p = new meter.Points maxLen, 0, 4, 8
     p.secondProjection(17).should.equal(projectionWeak)
 
-  it 'should not project if an in-progress sound is indeterminate', ->
+  it "should not project if an in-progress sound is indeterminate", ->
     p = new meter.Points maxLen, 0, 4, 8
     p.secondProjection(19).should.equal(projectionOff)
 
-  it 'should project if a determinate second sound has been formed', ->
+  it "should project if a determinate second sound has been formed", ->
     p = new meter.Points maxLen, 0, 4, 8, 12
     p.secondProjection().should.equal(projectionOn)
     p.secondProjection(10).should.equal(projectionOn)
 
-  it 'should project if a determinate pause is occurring', ->
+  it "should project if a determinate pause is occurring", ->
     p = new meter.Points maxLen, 0, 4, 8, 12
     p.secondProjection(14).should.equal(projectionOn)
 
-  it 'should not project if an indeterminate pause is occurring', ->
+  it "should not project if an indeterminate pause is occurring", ->
     p = new meter.Points maxLen, 0, 4, 8, 12
     p.secondProjection(23).should.equal(projectionOff)
