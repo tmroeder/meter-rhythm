@@ -16,6 +16,11 @@
 # set of named states (like "start"), each with a comment and a message. The
 # comment provides an interpretation of the current state, and the message
 # suggests actions to take in the current state.
+
+# TODO(tmroeder): write a function that operates over the states and moves them
+# through the state machine by receiving input from an input class and writing
+# output to a UI. Maybe have the states in a separate state_machine.coffee file,
+# along with this driver.
 exports.states =
   # The starting state of the program.
   start:
@@ -28,6 +33,7 @@ exports.states =
              "0, the leftmost point, but don't move it."
     transitions:
       sound1Starts: true
+    clickHandler: -> "sound1Starts"
 
   ##
   ## Sound 1
@@ -40,6 +46,7 @@ exports.states =
     message: "Perform the first sound by moving the mouse to the right."
     transitions:
       sound1Continues: true
+    moveHandler: -> "sound1Continues"
 
   # The first sound continues and isn"t too long.
   sound1Continues:
@@ -52,6 +59,11 @@ exports.states =
       sound1Continues: true
       sound1ContinuesTooLong: true
       sound1Ends: true
+    moveHandler: (points, x) ->
+      if not points.isDeterminate(points.points[Points.sound1First], x)
+        return "sound1ContinuesTooLong"
+      "sound1Continues"
+    clickHandler: -> "sound1Ends"
 
   # The first sound is too long.
   sound1ContinuesTooLong:
@@ -64,14 +76,20 @@ exports.states =
       sound1Continues: true
       sound1ContinuesTooLong: true
       sound1EndsTooLong: true
+    moveHandler: (points, x) ->
+      if not points.isDeterminate(points.points[Points.sound1First], x)
+        return "sound1ContinuesTooLong"
+      "sound1Continues"
+    clickHandler: -> "sound1EndsTooLong"
 
-  # The first sound ends with a length that isn"t too long.
+  # The first sound ends with a length that isn't too long.
   sound1Ends:
     comment: "The first sound ends. Its duration is 'mensurally determinate' " +
              "because it has the potential for being precisely reproduced."
     message: "To begin the second sound, click the mouse."
     transitions:
       pause1: true
+    moveHandler: -> "pause1"
   
   # The first sound ends with a length that exceeds kMaxSoundLen.
   sound1EndsTooLong:
@@ -98,8 +116,17 @@ exports.states =
       pause1Negative: true
       sound2Starts: true
       sound2StartsTooLong: true
+    # TODO(tmroeder): should there be a pause1TooLong?
+    moveHandler: (points, x) ->
+      if points.points[Points.sound1Second] > x
+        return "pause1Negative"
+      "pause1"
+    clickHandler: (points, x) ->
+      if not points.isDeterminate(points.points[Points.sound1Second], x)
+        return "sound2StartsTooLong"
+      "sound2Starts"
 
-  # The pause between sounds can"t be negative.
+  # The pause between sounds can't be negative.
   pause1Negative:
     # The comment does not change from pause1.
     comment: ""
@@ -107,6 +134,10 @@ exports.states =
     transitions:
       pause1: true
       pause1Negative: true
+    moveHandler: (points, x) ->
+      if x < points.points[Points.sound1Second]
+        return "pause1Negative"
+      "pause1"
 
   ##
   ## Sound 2
@@ -123,6 +154,7 @@ exports.states =
     message: "Perform the second sound by moving the mouse to the right."
     transitions:
       sound2Continues: true
+    moveHandler: -> "sound2Continues"
 
   # The beginning of the second sound after too long of a pause.
   sound2StartsTooLong:
@@ -148,6 +180,11 @@ exports.states =
       sound2Continues: true
       sound2ContinuesWithoutProjection: true
       sound2Ends: true
+    moveHandler: (points, x) ->
+      if points.isWeakDeterminate(points.points[Points.sound2First], x)
+        return "sound2ContinuesWithoutProjection"
+      "sound2Continues"
+    clickHandler: -> "sound2Ends"
 
   # The second sound continues too long to realize its projection.
   sound2ContinuesWithoutProjection:
@@ -161,6 +198,14 @@ exports.states =
       sound2ContinuesWithoutProjection: true
       sound2ContinuesTooLong: true
       sound2EndsWithoutProjection: true
+    moveHandler: (points, x) ->
+      start = points.points[Points.sound2First]
+      if points.isWeakDeterminate(start, x)
+        return "sound2ContinuesWithoutProjection"
+      else if points.isDeterminate(start, x)
+        return "sound2Continues"
+      "sound2ContinuesTooLong"
+    clickHandler: -> "sound2EndsWithoutProjection"
 
   # The second sound continues too long to be mensurally determinate.
   sound2ContinuesTooLong:
@@ -173,6 +218,11 @@ exports.states =
       sound2ContinuesWithoutProjection: true
       sound2ContinuesTooLong: true
       sound2EndsTooLong: true
+    moveHandler: (points, x) ->
+      if points.isWeakDeterminate(points.points[Points.sound2First], x)
+        return "sound2ContinuesWithoutProjection"
+      "sound2ContinuesTooLong"
+    clickHandler: -> "sound2EndsTooLong"
 
   # The second sound ends, realizing its projection.
   sound2Ends:
@@ -183,6 +233,7 @@ exports.states =
     message: "Click the mouse to begin the third sound."
     transitions:
       pause2: true
+    moveHandler: -> "pause2"
 
   # The second sound ends without realizing its projection.
   sound2EndsWithoutProjection:
@@ -225,6 +276,28 @@ exports.states =
       sound3StartsNewProjection: true
       sound3StartsSlightlyLate: true
       sound3StartsSlightlyLateNewProjection: true
+    moveHandler: (points, x) ->
+      start = points.points[Points.sound2Second]
+      if x < start
+        return "pause2Negative"
+      if not points.isDeterminate(start, x)
+        return "pause2TooLong"
+      "pause2"
+    clickHandler: (points, x) ->
+      start = points.points[Points.sound2Second]
+      if points.isEarly(start, x)
+        return "sound3StartsEarly"
+      if points.isExact(start, x)
+        return "sound3StartsExactly"
+      if points.isNewProjection(start, x)
+        return "sound3StartsNewProjection"
+      if points.isSlightlyLate(start, x)
+        return "sound3StartsSlightlyLate"
+      if points.isSlightlyLateNewProjection(start, x)
+        return "sound3StartsSlightlyLateNewProjection"
+      # It shouldn't be possible to reach this point, but if it happens, then
+      # ignore the click and remain in pause2.
+      "pause2"
 
   # The second pause is negative.
   pause2Negative:
@@ -232,7 +305,13 @@ exports.states =
     message: "Click the mouse at the end of the second sound or later."
     transitions:
       pause2: true
+      pause2Negative: true
+    moveHandler: (points, x) ->
+      if x < points.points[Points.sound2Second]
+        return "pause2Negative"
+      "pause2"
 
+  # The pause has lasted too long to be mensurally determinate.
   pause2TooLong:
     comment: "The time since the beginning of the second sound is mensurally " +
              "indeterminate, having no projective potential to be reproduced."
@@ -242,6 +321,11 @@ exports.states =
       pause2: true
       pause2TooLong: true
       sound3StartsTooLate: true
+    moveHandler: (points, x) ->
+      if not points.isDeterminate(points.points[Points.sound2Second], x)
+        return "pause2TooLong"
+      "pause2"
+    clickHandler: -> "sound3StartsTooLate"
 
   ##
   ## Sound 3
@@ -302,6 +386,7 @@ exports.states =
     message: "Click anywhere to see an alternate interpretation."
     transitions:
       sound3StartsAltInterpretation: true
+    clickHandler: -> "sound3StartsAltInterpretation"
 
   # A second interpretation of sound3StartsNewProjection.
   sound3StartsAltInterpretation:
@@ -370,14 +455,6 @@ visitHelper = (states, state, visited, fn) ->
 
   for neighbor of states[state].transitions
     visitHelper states, neighbor, visited, fn
-
-# TODO(tmroeder): Add to the position class a function that draws the standard
-# elements in the standard way, since most elements are always drawn the same
-# way if they"re present. It uses the current positions, and it uses the current
-# state. It then looks to see if the state has a function that should be used to
-# draw extra elements. If not, then it ignores them.
-# TODO(tmroeder): add tests that exercise the interesting functionality. Does
-# Node.js have a good coverage library?
 
 # PointError is thrown for error cases that happen in methods of the Points
 # class.
