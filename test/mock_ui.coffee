@@ -13,6 +13,7 @@
 # limitations under the License.
 
 {Draw, Input} = require "../meter_rhythm_ui.coffee"
+
 chai = require "chai"
 expect = chai.expect
 should = chai.should()
@@ -20,7 +21,7 @@ should = chai.should()
 # MockInput is an Input class that can be used to programmatically drive tests
 # over the input-dependent code.
 exports.MockInput = class MockInput extends Input
-  constructor: () ->
+  constructor: ->
     @moveRegistry = []
     @clickRegistry = []
 
@@ -65,73 +66,86 @@ describe "The MockInput class", ->
     expect(latestX).to.equal(2)
     expect(latestY).to.equal(2)
 
+exports.Counts = class Counts
+  constructor: (counts) ->
+    {
+      @start = 0
+      @line = 0
+      @end = 0
+      @proj = 0
+      @weakProj = 0
+      @comment = 0
+      @message = 0
+      @hiatus = 0
+    } = (counts ? {})
+
 # MockDraw tracks the draw events that have been sent to it.
 exports.MockDraw = class MockDraw extends Draw
   constructor: ->
-    @soundStartCount = 0
-    @durationCount = 0
-    @soundEndCount = 0
-    @projectionCount = 0
-    @weakProjectionCount = 0
-    @commentCount = 0
-    @messageCount = 0
-    @hiatusCount = 0
+    @counts = new Counts()
 
-  drawSoundStart: (x) -> @soundStartCount++
+  # drawSoundStart draws the starting point of a sound.
+  drawSoundStart: (x) -> @counts.start++
 
   # drawDuration draws the length of a duration.
-  drawDuration: (start, end) -> @durationCount++
+  drawDuration: (start, end) -> @counts.line++
 
   # drawSoundEnd draws the endpoint of a sound.
-  drawSoundEnd: (x) -> @soundEndCount++
+  drawSoundEnd: (x) -> @counts.end++
 
   # drawProjection draws a projection, potentially one that is not realized.
   drawProjection: (start, end, weak) ->
     if weak
-      @weakProjectionCount++
+      @counts.weakProj++
     else
-      @projectionCount++
+      @counts.proj++
 
   # writeComment outputs comment text.
-  writeComment: (text) -> @commentCount++
+  writeComment: (text) -> @counts.comment++
 
   # writeMessage outputs message text.
-  writeMessage: (text) -> @messageCount++
+  writeMessage: (text) -> @counts.message++
 
   # drawHiatus outputs something that represents a hiatus.
-  drawHiatus: (pos) -> @hiatusCount++
+  drawHiatus: (pos) -> @counts.hiatus++
 
 describe "The MockDraw class", ->
-  md = new MockDraw()
   it "should capture start events", ->
+    md = new MockDraw()
     md.drawSoundStart(50)
-    md.soundStartCount.should.equal(1)
+    md.counts.start.should.equal(1)
 
   it "should capture duration events", ->
+    md = new MockDraw()
     md.drawDuration(50, 100)
-    md.durationCount.should.equal(1)
+    md.counts.line.should.equal(1)
 
   it "should capture end events", ->
+    md = new MockDraw()
     md.drawSoundEnd(50)
-    md.soundEndCount.should.equal(1)
+    md.counts.end.should.equal(1)
 
   it "should capture projection events", ->
+    md = new MockDraw()
     md.drawProjection(50, 100, false)
-    md.projectionCount.should.equal(1)
-    md.weakProjectionCount.should.equal(0)
+    c = new Counts proj: 1
+    md.counts.should.deep.equal(c)
 
     md.drawProjection(150, 200, true)
-    md.projectionCount.should.equal(1)
-    md.weakProjectionCount.should.equal(1)
+    c.weakProj = 1
+    md.counts.should.deep.equal(c)
 
   it "should capture comment events", ->
+    md = new MockDraw()
     md.writeComment("Test comment")
-    md.commentCount.should.equal(1)
+    md.counts.comment.should.equal(1)
 
   it "should capture message events", ->
+    md = new MockDraw()
     md.writeMessage("Test message")
-    md.messageCount.should.equal(1)
+    md.counts.message.should.equal(1)
 
   it "should capture hiatus events", ->
+    md = new MockDraw()
     md.drawHiatus(50)
-    md.hiatusCount.should.equal(1)
+    md.counts.hiatus.should.equal(1)

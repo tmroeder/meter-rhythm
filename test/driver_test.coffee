@@ -14,7 +14,11 @@
 
 {Driver} = require "../driver.coffee"
 {Points, states} = require "../meter_rhythm.coffee"
-{MockDraw, MockInput} = require "./mock_ui.coffee"
+{Counts, MockDraw, MockInput} = require "./mock_ui.coffee"
+
+chai = require "chai"
+expect = chai.expect
+should = chai.should()
 
 maxLen = 10
 describe "The Driver class", ->
@@ -22,8 +26,8 @@ describe "The Driver class", ->
     mockDraw = new MockDraw()
     mockInput = new MockInput()
     d = new Driver maxLen, states, mockInput, mockDraw
-    mockDraw.commentCount.should.equal(1)
-    mockDraw.messageCount.should.equal(1)
+    c = new Counts comment: 1, message: 1
+    mockDraw.counts.should.deep.equal(c)
 
   it "should move from start to sound1Starts on a click event", ->
     mockDraw = new MockDraw()
@@ -34,6 +38,6 @@ describe "The Driver class", ->
 
     d.cur.should.equal("sound1Starts")
     d.points.points.length.should.equal(1)
-    mockDraw.commentCount.should.equal(2)
-    mockDraw.messageCount.should.equal(2)
-    mockDraw.soundStartCount.should.equal(1)
+
+    c = new Counts comment: 2, message: 2, start: 1
+    mockDraw.counts.should.deep.equal(c)

@@ -14,7 +14,7 @@
 
 {Points, states} = require "../meter_rhythm.coffee"
 {TextDraw, UIError} = require "../meter_rhythm_ui.coffee"
-{MockDraw} = require "./mock_ui.coffee"
+{Counts, MockDraw} = require "./mock_ui.coffee"
 
 chai = require "chai"
 expect = chai.expect
@@ -34,11 +34,6 @@ describe "The Draw class", ->
     p = new Points maxLen, 0, 4, 8
     m = new MockDraw()
     m.draw(p, state, states, 9)
-    m.soundStartCount.should.equal(2)
-    m.durationCount.should.equal(2)
-    m.soundEndCount.should.equal(1)
-    m.projectionCount.should.equal(2)
-    m.weakProjectionCount.should.equal(0)
-    m.messageCount.should.equal(1)
-    m.commentCount.should.equal(1)
-    m.hiatusCount.should.equal(0)
+
+    c = new Counts start: 2, line: 2, end: 1, proj: 2, message: 1, comment: 1
+    m.counts.should.deep.equal(c)
