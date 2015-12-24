@@ -19,6 +19,7 @@ should = chai.should()
 
 projectionOff = meter.Points.projectionOff
 projectionOn = meter.Points.projectionOn
+projectionCurrent = meter.Points.projectionCurrent
 projectionWeak = meter.Points.projectionWeak
 
 ##
@@ -107,7 +108,7 @@ maxLen = 10
 describe "The first length", ->
   it "should project if an in-progress sound is determinate", ->
     p = new meter.Points maxLen, 0
-    p.firstProjection(8).should.equal(projectionOn)
+    p.firstProjection(8).should.equal(projectionCurrent)
 
   it "should not project if an in-progress sound is indeterminate", ->
     p = new meter.Points maxLen, 0
@@ -115,11 +116,15 @@ describe "The first length", ->
 
   it "should not project if a completed first sound is indeterminate", ->
     p = new meter.Points maxLen, 0, 11
-    p.firstProjection().should.equal(projectionOff)
+    p.firstProjection(11).should.equal(projectionOff)
 
   it "should project if a completed first sound is determinate", ->
     p = new meter.Points maxLen, 0, 1
-    p.firstProjection().should.equal(projectionOn)
+    p.firstProjection(2).should.equal(projectionCurrent)
+
+  it "should not project if the sum of a sound and pause is indeterminate", ->
+    p = new meter.Points maxLen, 0, 5
+    p.firstProjection(11).should.equal(projectionOff)
 
 ##
 ## Test the projection calculations for the second length.

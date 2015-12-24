@@ -160,7 +160,7 @@ describe "The Draw class", ->
     m.soundStartCount.should.equal(2)
     m.durationCount.should.equal(2)
     m.soundEndCount.should.equal(1)
-    m.projectionCount.should.equal(1)
+    m.projectionCount.should.equal(2)
     m.weakProjectionCount.should.equal(0)
     m.messageCount.should.equal(1)
     m.commentCount.should.equal(1)

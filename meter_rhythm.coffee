@@ -479,18 +479,21 @@ exports.Points = class Points
   # These variables are the return values of the projective potential functions.
   @projectionOn: "Projection On"
   @projectionOff: "Projection Off"
+  @projectionCurrent: "Projection Current"
   @projectionWeak: "Projection Weak"
   
   constructor: (maxDeterminateLen, points...) ->
     if points.length > Points.maxPointCount
       throw new PointError("too many points")
     @points = points
+    @points[0] = 0 if points.length > 0
     @maxDeterminateLen = maxDeterminateLen
 
   # pushPoint puts a new point at the end of the points.
   pushPoint: (pos) ->
     if @points.length > Points.maxPointCount - 1
       throw new PointError("all points already defined")
+    pos = 0 if @points.length == 0
     @points.push(pos)
 
   # popPoint removes and returns the last point in the array, if any.
@@ -520,26 +523,18 @@ exports.Points = class Points
 
   # firstProjection describes the projective potential of the first sound.
   firstProjection: (cur) ->
-    # The first projection is never present once the second sound has started or
-    # before the first sound has started.
     pointCount = @points.length
-    if pointCount > 2 or pointCount == 0
+    if pointCount == 0
       return Points.projectionOff
 
     first = @points[Points.sound1First]
-    if pointCount == 1
-      if not @isDeterminate(first, cur)
+    determinate = @isDeterminate first, cur
+    if pointCount == 1 or pointCount == 2
+      if not determinate
         return Points.projectionOff
-      return Points.projectionOn
+      return Points.projectionCurrent
 
-    second = @points[Points.sound1Second]
-    return Points.projectionOff if not @isDeterminate(first, second)
-
-    # If there"s a cur point and it's greater than second, then make sure it's
-    # determinate.
-    if not cur? or cur <= second or @isDeterminate(second, cur)
-      return Points.projectionOn
-
+    return Points.projectionOn if pointCount > 2 and determinate
     Points.projectionOff
 
   # secondProjection describes the current projective potential of the second
