@@ -101,11 +101,11 @@ describe "The Points class", ->
     expect(p.pushPoint.bind(p, 20)).to.not.throw(Error)
 
 ##
-## Test the projection calculations for the first length.
+## Test the projection calculations for the first sound.
 ##
 
 maxLen = 10
-describe "The first length", ->
+describe "The first sound", ->
   it "should project if an in-progress sound is determinate", ->
     p = new meter.Points maxLen, 0
     p.firstProjection(8).should.equal(projectionCurrent)
@@ -127,10 +127,10 @@ describe "The first length", ->
     p.firstProjection(11).should.equal(projectionOff)
 
 ##
-## Test the projection calculations for the second length.
+## Test the projection calculations for the second sound.
 ##
 
-describe "The second length", ->
+describe "The second sound", ->
   it "should not project outside the second sound and subsequent pause", ->
     p = new meter.Points maxLen, [0..5]...
     p.secondProjection().should.equal(projectionOff)
