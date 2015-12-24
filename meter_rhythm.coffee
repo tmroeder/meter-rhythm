@@ -505,7 +505,7 @@ exports.Points = class Points
   # isDeterminate checks to make sure that the difference between the first and
   # second points is less than the amount needed to be mensurally determinate.
   isDeterminate: (first, second) ->
-    second - first < @maxDeterminateLen
+    first != second and second - first < @maxDeterminateLen
 
   # isWeakDeterminate is like isDeterminate, but it fails if second <= 2 *
   # first. In other words, it's the upper range of mensural determinacy.
@@ -521,7 +521,8 @@ exports.Points = class Points
   inSecondSound: ->
     @points.length == 3
 
-  # firstProjection describes the projective potential of the first sound.
+  # firstProjection describes the projective potential of the first inter-onset
+  # duration.
   firstProjection: (cur) ->
     pointCount = @points.length
     if pointCount == 0

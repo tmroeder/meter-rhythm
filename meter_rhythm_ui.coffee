@@ -38,12 +38,13 @@ exports.Draw = class Draw
     @drawSoundStart sound1Start
 
     # Draw the dynamic components of the first sound.
-    if cur? and points.inFirstSound()
+    if cur? and cur != sound1Start and points.inFirstSound()
       @drawDuration sound1Start, cur
 
     # TODO(tmroeder): figure out exactly where the projection should be drawn.
-    if points.firstProjection(cur) == Points.projectionOn
-      @drawProjection sound1Start, cur
+    status = points.firstProjection(cur)
+    if status == Points.projectionOn or status == Points.projectionCurrent
+      @drawProjection sound1Start, cur, false
 
     # Draw the end of the first sound.
     sound1End = points.points[Points.sound1Second]
@@ -61,7 +62,8 @@ exports.Draw = class Draw
     if cur? and points.inSecondSound()
       @drawDuration sound2Start, cur
 
-    if points.secondProjection(cur) == Points.projectionOn
+    status = points.secondProjection(cur)
+    if status == Points.projectionOn or status == Points.projectionCurrent
       @drawProjection sound2Start, cur, false
     else if points.secondProjection(cur) == Points.projectionWeak
       @drawProjection sound2Start, cur, true
@@ -138,13 +140,12 @@ exports.Input = class Input
   constructor: ->
     throw new UIError("The Input class cannot be constructed directly")
 
-  # registerMouseMove takes a function and registers it to receive notification
-  # when the mouse moves. The function will be called as fn(x, y) where x and y
-  # are the current x and y positions of the mouse after its motion.
-  registerMouseMove: (fn) -> return
+  # registerMove takes a function and registers it to receive notification
+  # when movement occurs. The function will be called as fn(x, y) where (x, y)
+  # is the current position.
+  registerMove: (fn) -> return
 
-  # registerMouseUp takes a function and registers it to receive notification
-  # when the mouse is done with a click. The function will be called as
-  # fn(x, y), where x and y are the current x and y positions of the mouse after
-  # its motion.
-  registerMouseUp: (fn) -> return
+  # registerClick takes a function and registers it to receive notification
+  # when a click occurs. The function will be called as fn(x, y), where (x, y)
+  # is the current position.
+  registerClick: (fn) -> return

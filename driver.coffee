@@ -22,23 +22,23 @@ exports.Driver = class Driver
     @states = states
     @points = new Points maxLen
 
-    input.registerMouseMove(@handleMouseMove)
-    input.registerMouseUp(@handleMouseUp)
+    input.registerMove(@handleMove)
+    input.registerClick(@handleClick)
 
     @ui = ui
     @ui.draw @points, @cur, @states
 
-  handleMouseMove: (x, y) =>
+  handleMove: (x, y) =>
     handler = @states[@cur].moveHandler
     if handler?
       @cur = handler @points, x
-      @ui.draw @points, @cur, @states
+      @ui.draw @points, @cur, @states, x
 
-  handleMouseUp: (x, y) =>
+  handleClick: (x, y) =>
     handler = @states[@cur].clickHandler
     if handler?
       @cur = handler @points, x
 
       # Click events always generate a new point.
       @points.pushPoint x
-      @ui.draw @points, @cur, @states
+      @ui.draw @points, @cur, @states, x

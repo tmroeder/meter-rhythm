@@ -41,3 +41,20 @@ describe "The Driver class", ->
 
     c = new Counts comment: 2, message: 2, start: 1
     mockDraw.counts.should.deep.equal(c)
+
+  it "should draw a first event and its projection in the common case", ->
+    mockDraw = new MockDraw()
+    mockInput = new MockInput()
+    d = new Driver maxLen, states, mockInput, mockDraw
+
+    # Build the first event and the first entry of the second event.
+    mockInput.click 0, 0
+    mockInput.move 4, 0
+    mockInput.click 4, 0
+    mockInput.move 8, 0
+    mockInput.click 8, 0
+
+    d.cur.should.equal("sound2Starts")
+    d.points.points.length.should.equal(3)
+    c = new Counts comment: 6, message: 6, start: 6, line: 5, end: 3, proj: 4
+    mockDraw.counts.should.deep.equal(c)

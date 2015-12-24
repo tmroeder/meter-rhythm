@@ -25,18 +25,18 @@ exports.MockInput = class MockInput extends Input
     @moveRegistry = []
     @clickRegistry = []
 
-  registerMouseMove: (fn) ->
+  registerMove: (fn) ->
     @moveRegistry.push fn
 
-  registerMouseUp: (fn) ->
+  registerClick: (fn) ->
     @clickRegistry.push fn
 
-  # move is a method used to mock mouse movement events to registered functions.
+  # move is a method used to mock movement events to registered functions.
   move: (x, y) ->
     for fn in @moveRegistry
       fn? x, y
 
-  # click is a method used to mock mouse click events to registered functions.
+  # click is a method used to mock click events to registered functions.
   click: (x, y) ->
     for fn in @clickRegistry
       fn? x, y
@@ -49,7 +49,7 @@ describe "The MockInput class", ->
       latestX = x
       latestY = y
     m = new MockInput()
-    m.registerMouseMove(fn)
+    m.registerMove(fn)
     m.move(1, 1)
     expect(latestX).to.equal(1)
     expect(latestY).to.equal(1)
@@ -61,7 +61,7 @@ describe "The MockInput class", ->
       latestX = x
       latestY = y
     m = new MockInput()
-    m.registerMouseUp(fn)
+    m.registerClick(fn)
     m.click(2, 2)
     expect(latestX).to.equal(2)
     expect(latestY).to.equal(2)
