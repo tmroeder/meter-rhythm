@@ -400,7 +400,7 @@ exports.states =
       pause2: true
       start: true
 
-  # The third sound starts earlier than expected.
+  # The third sound starts later than expected.
   sound3StartsSlightlyLate:
     comment: "The beginning of the third sound is slightly later than " +
              "projected. We hear a *deceleration* because we sense the " +

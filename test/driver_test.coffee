@@ -42,7 +42,7 @@ describe "The Driver class", ->
     c = new Counts comment: 2, message: 2, start: 1
     mockDraw.counts.should.deep.equal(c)
 
-  it "should draw a first event and its projection in the common case", ->
+  it "should draw a sound and a projection for three determinate clicks", ->
     mockDraw = new MockDraw()
     mockInput = new MockInput()
     d = new Driver maxLen, states, mockInput, mockDraw
@@ -58,3 +58,52 @@ describe "The Driver class", ->
     d.points.points.length.should.equal(3)
     c = new Counts comment: 6, message: 6, start: 6, line: 5, end: 3, proj: 4
     mockDraw.counts.should.deep.equal(c)
+
+  it "should draw two sounds and two projections for 4 determinate clicks " +
+     " and one determinate movement.", ->
+    return
+
+  it "should not draw a projection for an indeterminate first sound.", ->
+    return
+
+  it "should not accept clicks if the first pause is negative.", ->
+    return
+
+  it "should not draw a projection if the first inter-onset duration is too " +
+     "long.", ->
+    return
+
+  it "should draw a sound and a weak projection for 3 clicks and an " +
+     "move to a position that is late but not mensurally indeterminate.", ->
+    return
+
+  it "should not draw a second projection if the second sound continues too " +
+     "long.", ->
+    return
+
+  it "should not draw a second projection if the second sound ends late.", ->
+    return
+
+  it "should not accept clicks if the second pause is negative.", ->
+    return
+
+  it "should draw three sounds and two realized projections for 5 " +
+     "determinate clicks.", ->
+    return
+
+  it "should draw an accelerando if the third sound starts early.", ->
+    return
+
+  it "should draw an decelerando if the third sound starts slightly late.", ->
+    return
+
+  it "should draw a new projection if the third sound starts late enough.", ->
+    return
+
+  it "should draw three sounds, two projections, and a future projection for " +
+     "5 clicks with the last one exactly matching the projection of the " +
+     "first inter-onset duration.", ->
+    return
+
+  it "should draw a hiatus for an long pause before the third onset.", ->
+    return
