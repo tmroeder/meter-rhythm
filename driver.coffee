@@ -21,17 +21,20 @@ exports.Driver = class Driver
     @cur = "start"
     @states = states
     @points = new Points maxLen
+
     input.registerMouseMove(@handleMouseMove)
     input.registerMouseUp(@handleMouseUp)
-    @ui = ui
 
-  handleMouseMove: (x, y) ->
+    @ui = ui
+    @ui.draw @points, @cur, @states
+
+  handleMouseMove: (x, y) =>
     handler = @states[@cur].moveHandler
     if handler?
       @cur = handler @points, x
       @ui.draw @points, @cur, @states
 
-  handleMouseUp: (x, y) ->
+  handleMouseUp: (x, y) =>
     handler = @states[@cur].clickHandler
     if handler?
       @cur = handler @points, x

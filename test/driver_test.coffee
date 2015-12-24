@@ -22,3 +22,18 @@ describe "The Driver class", ->
     mockDraw = new MockDraw()
     mockInput = new MockInput()
     d = new Driver maxLen, states, mockInput, mockDraw
+    mockDraw.commentCount.should.equal(1)
+    mockDraw.messageCount.should.equal(1)
+
+  it "should move from start to sound1Starts on a click event", ->
+    mockDraw = new MockDraw()
+    mockInput = new MockInput()
+    d = new Driver maxLen, states, mockInput, mockDraw
+
+    mockInput.click 0, 0
+
+    d.cur.should.equal("sound1Starts")
+    d.points.points.length.should.equal(1)
+    mockDraw.commentCount.should.equal(2)
+    mockDraw.messageCount.should.equal(2)
+    mockDraw.soundStartCount.should.equal(1)
