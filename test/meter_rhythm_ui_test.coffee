@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-meter = require "../meter_rhythm.coffee"
-ui = require "../meter_rhythm_ui.coffee"
+{Points, states} = require "../meter_rhythm.coffee"
+{Draw, Input, TextDraw, UIError} = require "../meter_rhythm_ui.coffee"
 chai = require "chai"
 expect = chai.expect
 should = chai.should()
@@ -24,14 +24,14 @@ should = chai.should()
 
 describe "The TextDraw object", ->
   it "should succeed in its constructor", ->
-    expect(ui.TextDraw.bind(null)).to.not.throw(Error)
-    expect(ui.TextDraw.bind(null)).to.not.throw(undefined)
-    expect(ui.TextDraw.bind(null)).to.not.throw(null)
-    expect(ui.TextDraw.bind(null)).to.not.throw(ui.UIError)
+    expect(TextDraw.bind(null)).to.not.throw(Error)
+    expect(TextDraw.bind(null)).to.not.throw(undefined)
+    expect(TextDraw.bind(null)).to.not.throw(null)
+    expect(TextDraw.bind(null)).to.not.throw(UIError)
 
 # MockInput is an Input class that can be used to programmatically drive tests
 # over the input-dependent code.
-class MockInput extends ui.Input
+class MockInput extends Input
   constructor: () ->
     @moveRegistry = []
     @clickRegistry = []
@@ -78,7 +78,7 @@ describe "The MockInput class", ->
     expect(latestY).to.equal(2)
 
 # MockDraw tracks the draw events that have been sent to it.
-class MockDraw extends ui.Draw
+class MockDraw extends Draw
   constructor: ->
     @soundStartCount = 0
     @durationCount = 0
@@ -153,8 +153,7 @@ maxLen = 10
 describe "The Draw class", ->
   it "should make the right calls for a simple state", ->
     state = "sound2Continues"
-    states = meter.states
-    p = new meter.Points maxLen, 0, 4, 8
+    p = new Points maxLen, 0, 4, 8
     m = new MockDraw()
     m.draw(p, state, states, 9)
     m.soundStartCount.should.equal(2)

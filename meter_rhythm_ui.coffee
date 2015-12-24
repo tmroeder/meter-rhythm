@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-meter = require "./meter_rhythm.coffee"
-Points = meter.Points
+{Points} = require "./meter_rhythm.coffee"
 
 # UIError is thrown for error cases that happen in methods of the Draw
 # classes.
