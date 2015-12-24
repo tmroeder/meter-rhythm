@@ -13,14 +13,12 @@
 # limitations under the License.
 
 {Points, states} = require "../meter_rhythm.coffee"
-{Draw, Input, TextDraw, UIError} = require "../meter_rhythm_ui.coffee"
+{TextDraw, UIError} = require "../meter_rhythm_ui.coffee"
+{MockDraw} = require "./mock_ui.coffee"
+
 chai = require "chai"
 expect = chai.expect
 should = chai.should()
-
-##
-## Test the TextDraw object.
-##
 
 describe "The TextDraw object", ->
   it "should succeed in its constructor", ->
@@ -28,126 +26,6 @@ describe "The TextDraw object", ->
     expect(TextDraw.bind(null)).to.not.throw(undefined)
     expect(TextDraw.bind(null)).to.not.throw(null)
     expect(TextDraw.bind(null)).to.not.throw(UIError)
-
-# MockInput is an Input class that can be used to programmatically drive tests
-# over the input-dependent code.
-class MockInput extends Input
-  constructor: () ->
-    @moveRegistry = []
-    @clickRegistry = []
-
-  registerMouseMove: (fn) ->
-    @moveRegistry.push fn
-
-  registerMouseUp: (fn) ->
-    @clickRegistry.push fn
-
-  # move is a method used to mock mouse movement events to registered functions.
-  move: (x, y) ->
-    for fn in @moveRegistry
-      fn? x, y
-
-  # click is a method used to mock mouse click events to registered functions.
-  click: (x, y) ->
-    for fn in @clickRegistry
-      fn? x, y
-
-describe "The MockInput class", ->
-  it "should send movement events", ->
-    latestX = 0
-    latestY = 0
-    fn = (x, y) ->
-      latestX = x
-      latestY = y
-    m = new MockInput()
-    m.registerMouseMove(fn)
-    m.move(1, 1)
-    expect(latestX).to.equal(1)
-    expect(latestY).to.equal(1)
-
-  it "should send click events", ->
-    latestX = 0
-    latestY = 0
-    fn = (x, y) ->
-      latestX = x
-      latestY = y
-    m = new MockInput()
-    m.registerMouseUp(fn)
-    m.click(2, 2)
-    expect(latestX).to.equal(2)
-    expect(latestY).to.equal(2)
-
-# MockDraw tracks the draw events that have been sent to it.
-class MockDraw extends Draw
-  constructor: ->
-    @soundStartCount = 0
-    @durationCount = 0
-    @soundEndCount = 0
-    @projectionCount = 0
-    @weakProjectionCount = 0
-    @commentCount = 0
-    @messageCount = 0
-    @hiatusCount = 0
-
-  drawSoundStart: (x) -> @soundStartCount++
-
-  # drawDuration draws the length of a duration.
-  drawDuration: (start, end) -> @durationCount++
-
-  # drawSoundEnd draws the endpoint of a sound.
-  drawSoundEnd: (x) -> @soundEndCount++
-
-  # drawProjection draws a projection, potentially one that is not realized.
-  drawProjection: (start, end, weak) ->
-    if weak
-      @weakProjectionCount++
-    else
-      @projectionCount++
-
-  # writeComment outputs comment text.
-  writeComment: (text) -> @commentCount++
-
-  # writeMessage outputs message text.
-  writeMessage: (text) -> @messageCount++
-
-  # drawHiatus outputs something that represents a hiatus.
-  drawHiatus: (pos) -> @hiatusCount++
-
-
-describe "The MockDraw class", ->
-  md = new MockDraw()
-  it "should capture start events", ->
-    md.drawSoundStart(50)
-    md.soundStartCount.should.equal(1)
-
-  it "should capture duration events", ->
-    md.drawDuration(50, 100)
-    md.durationCount.should.equal(1)
-
-  it "should capture end events", ->
-    md.drawSoundEnd(50)
-    md.soundEndCount.should.equal(1)
-
-  it "should capture projection events", ->
-    md.drawProjection(50, 100, false)
-    md.projectionCount.should.equal(1)
-    md.weakProjectionCount.should.equal(0)
-
-    md.drawProjection(150, 200, true)
-    md.projectionCount.should.equal(1)
-    md.weakProjectionCount.should.equal(1)
-
-  it "should capture comment events", ->
-    md.writeComment("Test comment")
-    md.commentCount.should.equal(1)
-
-  it "should capture message events", ->
-    md.writeMessage("Test message")
-    md.messageCount.should.equal(1)
-
-  it "should capture hiatus events", ->
-    md.drawHiatus(50)
-    md.hiatusCount.should.equal(1)
 
 maxLen = 10
 describe "The Draw class", ->
