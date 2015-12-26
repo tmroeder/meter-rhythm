@@ -43,7 +43,12 @@ exports.Draw = class Draw
 
     # TODO(tmroeder): figure out exactly where the projection should be drawn.
     status = points.firstProjection(cur)
-    if status == Points.projectionOn or status == Points.projectionCurrent
+    if status == Points.projectionOn and points.points.length > 2
+      end = points.points[Points.sound2First]
+      difference = end - sound1Start
+      @drawProjection sound1Start, end, false
+      @drawExpectedProjection end, end + difference, false
+    else if status == Points.projectionCurrent
       @drawProjection sound1Start, cur, false
 
     # Draw the end of the first sound.
@@ -59,7 +64,7 @@ exports.Draw = class Draw
     @drawSoundStart sound2Start
 
     # Draw the dynamic components of the second sound
-    if cur? and points.inSecondSound()
+    if cur? and cur != sound2Start and points.inSecondSound()
       @drawDuration sound2Start, cur
 
     status = points.secondProjection(cur)
@@ -85,29 +90,32 @@ exports.Draw = class Draw
     drawSoundEnd sound3End
 
   # drawSoundStart draws the beginning of a sound.
-  drawSoundStart: (x) -> return
+  drawSoundStart: (x) -> throw new UIError('not implemented')
 
   # drawDuration draws the length of a duration.
-  drawDuration: (start, end) -> return
+  drawDuration: (start, end) -> throw new UIError('not implemented')
 
   # drawSoundEnd draws the endpoint of a sound.
-  drawSoundEnd: (x) -> return
+  drawSoundEnd: (x) -> throw new UIError('not implemented')
 
   # drawProjection draws a projection, potentially one that is not realized.
-  drawProjection: (start, end, weak) -> return
+  drawProjection: (start, end, weak) -> throw new UIError('not implemented')
+
+  # drawExpected draws a projection that is expected to be realized.
+  drawExpectedProjection: (start, end) -> throw new UIError('not implemented')
 
   # writeComment outputs comment text.
-  writeComment: (text) -> return
+  writeComment: (text) -> throw new UIError('not implemented')
 
   # writeMessage outputs message text.
-  writeMessage: (text) -> return
+  writeMessage: (text) -> throw new UIError('not implemented')
 
   # drawHiatus outputs something that represents a hiatus.
-  drawHiatus: (pos) -> return
+  drawHiatus: (pos) -> throw new UIError('not implemented')
 
 # TextDraw is a Draw class that is used to output elements of the simulation.
 exports.TextDraw = class TextDraw extends Draw
-  constructor: () -> return
+  constructor: -> return
 
   # drawSoundStart draws the beginning of a sound.
   drawSoundStart: (x) -> console.log "Sound started at position #{x}"
@@ -125,8 +133,12 @@ exports.TextDraw = class TextDraw extends Draw
     else
       console.log "Projection from #{start} to #{end}"
 
+  # drawExpectedProjection draws a projection that is expected to be realized.
+  drawExpectedProjection: (start, end) ->
+    console.log "Expected projection from #{start} to #{end}"
+
   # writeComment outputs comment text.
-  writeComment: (text) -> console.log "Comment: #{text}"
+  writeComment: (text) -> console.log "\nComment: #{text}"
 
   # writeMessage outputs message text.
   writeMessage: (text) -> console.log "Message: #{text}"

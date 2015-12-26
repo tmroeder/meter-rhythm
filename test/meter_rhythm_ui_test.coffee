@@ -35,5 +35,7 @@ describe "The Draw class", ->
     m = new MockDraw()
     m.draw(p, state, states, 9)
 
-    c = new Counts start: 2, line: 2, end: 1, proj: 2, message: 1, comment: 1
+    c = new Counts {
+      start: 2, line: 2, end: 1, proj: 2, message: 1, comment: 1, expectProj: 1
+    }
     m.counts.should.deep.equal(c)

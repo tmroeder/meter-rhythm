@@ -14,54 +14,75 @@
 
 {Driver} = require "../driver.coffee"
 {Points, states} = require "../meter_rhythm.coffee"
+{TextDraw} = require "../meter_rhythm_ui.coffee"
 {Counts, MockDraw, MockInput} = require "./mock_ui.coffee"
 
 chai = require "chai"
 expect = chai.expect
 should = chai.should()
 
+# setup creates and sets up mocks and a driver using those mocks.
+setup = (len, states) ->
+  draw = new MockDraw()
+  input = new MockInput()
+  driver = new Driver len, states, input, draw
+  {draw: draw, input: input, driver: driver}
+
+# sendInput performs a series of moves and clicks given by a list.
+sendInput = (input, ops...) ->
+  for op in ops
+    if "move" of op
+      input.move op.move, 0
+    else if "click" of op
+      input.click op.click, 0
+
 maxLen = 10
 describe "The Driver class", ->
   it "should construct an instance with mock UI", ->
-    mockDraw = new MockDraw()
-    mockInput = new MockInput()
-    d = new Driver maxLen, states, mockInput, mockDraw
+    {draw, input, driver} = setup maxLen, states
     c = new Counts comment: 1, message: 1
-    mockDraw.counts.should.deep.equal(c)
+    draw.counts.should.deep.equal(c)
 
   it "should move from start to sound1Starts on a click event", ->
-    mockDraw = new MockDraw()
-    mockInput = new MockInput()
-    d = new Driver maxLen, states, mockInput, mockDraw
+    {draw, input, driver} = setup maxLen, states
 
-    mockInput.click 0, 0
+    input.click 0, 0
 
-    d.cur.should.equal("sound1Starts")
-    d.points.points.length.should.equal(1)
+    driver.cur.should.equal("sound1Starts")
+    driver.points.points.length.should.equal(1)
 
     c = new Counts comment: 2, message: 2, start: 1
-    mockDraw.counts.should.deep.equal(c)
+    draw.counts.should.deep.equal(c)
 
   it "should draw a sound and a projection for three determinate clicks", ->
-    mockDraw = new MockDraw()
-    mockInput = new MockInput()
-    d = new Driver maxLen, states, mockInput, mockDraw
+    {draw, input, driver} = setup maxLen, states
 
     # Build the first event and the first entry of the second event.
-    mockInput.click 0, 0
-    mockInput.move 4, 0
-    mockInput.click 4, 0
-    mockInput.move 8, 0
-    mockInput.click 8, 0
+    sendInput input, {click: 0}, {move: 4}, {click: 4}, {move: 8}, {click: 8}
 
-    d.cur.should.equal("sound2Starts")
-    d.points.points.length.should.equal(3)
-    c = new Counts comment: 6, message: 6, start: 6, line: 5, end: 3, proj: 4
-    mockDraw.counts.should.deep.equal(c)
+    driver.cur.should.equal("sound2Starts")
+    driver.points.points.length.should.equal(3)
+    c = new Counts {
+      comment: 6, message: 6, start: 6, line: 4, end: 3, proj: 4, expectProj: 1
+    }
+    draw.counts.should.deep.equal(c)
 
-  it "should draw two sounds and two projections for 4 determinate clicks " +
-     " and one determinate movement.", ->
+  it "should not accept two clicks without intervening movement.", ->
     return
+
+  it "should draw two sounds and three projections for 4 determinate clicks " +
+     "and one determinate movement.", ->
+    {draw, input, driver} = setup maxLen, states
+    sendInput(input, {click: 0}, {move: 4}, {click: 4}, {move: 8}, {click: 8},
+              {move: 12}, {click: 12}, {move: 16})
+
+    driver.cur.should.equal("pause2")
+    driver.points.points.length.should.equal(4)
+    c = new Counts {
+      comment: 9, message: 9, start: 12, line: 10, end: 8, proj: 10,
+      expectProj: 4
+    }
+    draw.counts.should.deep.equal(c)
 
   it "should not draw a projection for an indeterminate first sound.", ->
     return

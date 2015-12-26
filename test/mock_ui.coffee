@@ -74,6 +74,7 @@ exports.Counts = class Counts
       @end = 0
       @proj = 0
       @weakProj = 0
+      @expectProj = 0
       @comment = 0
       @message = 0
       @hiatus = 0
@@ -99,6 +100,9 @@ exports.MockDraw = class MockDraw extends Draw
       @counts.weakProj++
     else
       @counts.proj++
+
+  # drawExpectedProjection draws a projection that is expected to be realized.
+  drawExpectedProjection: (start, end) -> @counts.expectProj++
 
   # writeComment outputs comment text.
   writeComment: (text) -> @counts.comment++

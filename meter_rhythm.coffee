@@ -535,7 +535,10 @@ exports.Points = class Points
         return Points.projectionOff
       return Points.projectionCurrent
 
-    return Points.projectionOn if pointCount > 2 and determinate
+    if pointCount > 2
+      third = @points[Points.sound2First]
+      return Points.projectionOn if @isDeterminate first, third
+
     Points.projectionOff
 
   # secondProjection describes the current projective potential of the second
