@@ -89,7 +89,11 @@ exports.states =
     message: "To begin the second sound, click the mouse."
     transitions:
       pause1: true
-    moveHandler: -> "pause1"
+      pause1Negative: true
+    moveHandler: (points, x) ->
+      if x < points.points[Points.sound1Second]
+        return "pause1Negative"
+      "pause1"
   
   # The first sound ends with a length that exceeds kMaxSoundLen.
   sound1EndsTooLong:
@@ -154,7 +158,13 @@ exports.states =
     message: "Perform the second sound by moving the mouse to the right."
     transitions:
       sound2Continues: true
-    moveHandler: -> "sound2Continues"
+    moveHandler: (points, x) ->
+      start = points.points[Points.sound2First]
+      if points.isWeakDeterminate(start, x)
+        return "sound2ContinuesWithoutProjection"
+      else if points.isDeterminate(start, x)
+        return "sound2Continues"
+      "sound2ContinuesTooLong"
 
   # The beginning of the second sound after too long of a pause.
   sound2StartsTooLong:
@@ -181,9 +191,12 @@ exports.states =
       sound2ContinuesWithoutProjection: true
       sound2Ends: true
     moveHandler: (points, x) ->
-      if points.isWeakDeterminate(points.points[Points.sound2First], x)
+      start = points.points[Points.sound2First]
+      if points.isWeakDeterminate(start, x)
         return "sound2ContinuesWithoutProjection"
-      "sound2Continues"
+      else if points.isDeterminate(start, x)
+        return "sound2Continues"
+      "sound2ContinuesTooLong"
     clickHandler: -> "sound2Ends"
 
   # The second sound continues too long to realize its projection.
@@ -219,8 +232,11 @@ exports.states =
       sound2ContinuesTooLong: true
       sound2EndsTooLong: true
     moveHandler: (points, x) ->
-      if points.isWeakDeterminate(points.points[Points.sound2First], x)
+      start = points.points[Points.sound2First]
+      if points.isWeakDeterminate(start, x)
         return "sound2ContinuesWithoutProjection"
+      else if points.isDeterminate(start, x)
+        return "sound2Continues"
       "sound2ContinuesTooLong"
     clickHandler: -> "sound2EndsTooLong"
 

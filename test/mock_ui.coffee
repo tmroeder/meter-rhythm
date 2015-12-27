@@ -82,8 +82,14 @@ exports.Counts = class Counts
 
 # MockDraw tracks the draw events that have been sent to it.
 exports.MockDraw = class MockDraw extends Draw
-  constructor: ->
+  constructor: (latest) ->
     @counts = new Counts()
+    @latest = latest ? false
+
+  # draw calls the parent Draw class but resets the Counts if @latest is set.
+  draw: (points, state, states, cur) ->
+    @counts = new Counts() if @latest
+    super(points, state, states, cur)
 
   # drawSoundStart draws the starting point of a sound.
   drawSoundStart: (x) -> @counts.start++

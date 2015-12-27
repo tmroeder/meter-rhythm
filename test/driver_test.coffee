@@ -22,8 +22,10 @@ expect = chai.expect
 should = chai.should()
 
 # setup creates and sets up mocks and a driver using those mocks.
-setup = (len, states) ->
-  draw = new MockDraw()
+# The latestCounts parameter causes the counts to only record the last draw()
+# operation instead of all draw() operations. This can make tests clearer.
+setup = (len, states, latestCounts=true) ->
+  draw = new MockDraw latestCounts
   input = new MockInput()
   driver = new Driver len, states, input, draw
   {draw: draw, input: input, driver: driver}
@@ -35,6 +37,10 @@ sendInput = (input, ops...) ->
       input.move op.move, 0
     else if "click" of op
       input.click op.click, 0
+    else if "moveClick" of op
+      input.move op.moveClick, 0
+      input.click op.moveClick, 0
+
 
 maxLen = 10
 describe "The Driver class", ->
@@ -46,57 +52,80 @@ describe "The Driver class", ->
   it "should move from start to sound1Starts on a click event", ->
     {draw, input, driver} = setup maxLen, states
 
-    input.click 0, 0
+    sendInput input, {click: 0}
 
     driver.cur.should.equal("sound1Starts")
     driver.points.points.length.should.equal(1)
 
-    c = new Counts comment: 2, message: 2, start: 1
+    c = new Counts comment: 1, message: 1, start: 1
     draw.counts.should.deep.equal(c)
 
   it "should draw a sound and a projection for three determinate clicks", ->
     {draw, input, driver} = setup maxLen, states
 
     # Build the first event and the first entry of the second event.
-    sendInput input, {click: 0}, {move: 4}, {click: 4}, {move: 8}, {click: 8}
+    sendInput input, {click: 0}, {moveClick: 4}, {moveClick: 8}
 
     driver.cur.should.equal("sound2Starts")
     driver.points.points.length.should.equal(3)
     c = new Counts {
-      comment: 6, message: 6, start: 6, line: 4, end: 3, proj: 4, expectProj: 1
+      comment: 1, message: 1, start: 2, line: 1, end: 1, proj: 1, expectProj: 1
     }
     draw.counts.should.deep.equal(c)
 
   it "should not accept two clicks without intervening movement.", ->
-    return
+    {draw, input, driver} = setup maxLen, states
+    sendInput input, {click: 0}, {click: 4}
+    driver.cur.should.equal("sound1Starts")
 
   it "should draw two sounds and three projections for 4 determinate clicks " +
      "and one determinate movement.", ->
     {draw, input, driver} = setup maxLen, states
-    sendInput(input, {click: 0}, {move: 4}, {click: 4}, {move: 8}, {click: 8},
-              {move: 12}, {click: 12}, {move: 16})
+    sendInput(input, {click: 0}, {moveClick: 4}, {moveClick: 8}, {moveClick: 12},
+              {move: 16})
 
     driver.cur.should.equal("pause2")
     driver.points.points.length.should.equal(4)
     c = new Counts {
-      comment: 9, message: 9, start: 12, line: 10, end: 8, proj: 10,
-      expectProj: 4
+      comment: 1, message: 1, start: 2, line: 2, end: 2, proj: 2, expectProj: 1
     }
     draw.counts.should.deep.equal(c)
 
   it "should not draw a projection for an indeterminate first sound.", ->
-    return
+    {draw, input, driver} = setup maxLen, states
+    sendInput input, {click: 0}, {move: 20}
+    draw.counts.proj.should.equal(0)
 
   it "should not accept clicks if the first pause is negative.", ->
-    return
+    {draw, input, driver} = setup maxLen, states
+    sendInput input, {click: 0}, {moveClick: 4}, {move: 3}
+    driver.cur.should.equal("pause1Negative")
+    sendInput input, {click: 3}
+    driver.cur.should.equal("pause1Negative")
+
+  it "should change any initial click to a click at x = 0", ->
+    {draw, input, driver} = setup maxLen, states
+    sendInput input, {click: 4}
+    driver.cur.should.equal("sound1Starts")
+    driver.points.points[Points.sound1First].should.equal(0)
 
   it "should not draw a projection if the first inter-onset duration is too " +
      "long.", ->
-    return
+    {draw, input, driver} = setup maxLen, states
+    sendInput input, {click: 0}, {moveClick: 4}, {move: 11}
+    driver.cur.should.equal("pause1")
+    draw.counts.proj.should.equal(0)
 
   it "should draw a sound and a weak projection for 3 clicks and an " +
      "move to a position that is late but not mensurally indeterminate.", ->
-    return
+    {draw, input, driver} = setup maxLen, states
+    sendInput input, {click: 0}, {moveClick: 4}, {moveClick: 8}, {move: 17}
+    driver.cur.should.equal("sound2ContinuesWithoutProjection")
+    c = new Counts {
+      comment: 1, message: 1, start: 2, line: 2, end: 1, proj: 1, weakProj: 1,
+      expectProj: 1
+    }
+    draw.counts.should.deep.equal(c)
 
   it "should not draw a second projection if the second sound continues too " +
      "long.", ->
