@@ -73,13 +73,13 @@ describe "The Driver class", ->
     }
     draw.counts.should.deep.equal(c)
 
-  it "should not accept two clicks without intervening movement.", ->
+  it "should not accept two clicks without intervening movement", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 0}, {click: 4}
     driver.cur.should.equal("sound1Starts")
 
   it "should draw two sounds and three projections for 4 determinate clicks " +
-     "and one determinate movement.", ->
+     "and one determinate movement", ->
     {draw, input, driver} = setup maxLen, states
     sendInput(input, {click: 0}, {moveClick: 4}, {moveClick: 8}, {moveClick: 12},
               {move: 16})
@@ -91,12 +91,12 @@ describe "The Driver class", ->
     }
     draw.counts.should.deep.equal(c)
 
-  it "should not draw a projection for an indeterminate first sound.", ->
+  it "should not draw a projection for an indeterminate first sound", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 0}, {move: 20}
     draw.counts.proj.should.equal(0)
 
-  it "should not accept clicks if the first pause is negative.", ->
+  it "should not accept clicks if the first pause is negative", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 0}, {moveClick: 4}, {move: 3}
     driver.cur.should.equal("pause1Negative")
@@ -110,14 +110,14 @@ describe "The Driver class", ->
     driver.points.points[Points.sound1First].should.equal(0)
 
   it "should not draw a projection if the first inter-onset duration is too " +
-     "long.", ->
+     "long", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 0}, {moveClick: 4}, {move: 11}
     driver.cur.should.equal("pause1")
     draw.counts.proj.should.equal(0)
 
   it "should draw a sound and a weak projection for 3 clicks and an " +
-     "move to a position that is late but not mensurally indeterminate.", ->
+     "move to a position that is late but not mensurally indeterminate", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 0}, {moveClick: 4}, {moveClick: 8}, {move: 17}
     driver.cur.should.equal("sound2ContinuesWithoutProjection")
@@ -128,7 +128,7 @@ describe "The Driver class", ->
     draw.counts.should.deep.equal(c)
 
   it "should not draw a second projection if the second sound continues too " +
-     "long.", ->
+     "long", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 0}, {moveClick: 4}, {moveClick: 8}, {move: 19}
     driver.cur.should.equal("sound2ContinuesTooLong")
@@ -137,7 +137,7 @@ describe "The Driver class", ->
     }
     draw.counts.should.deep.equal(c)
 
-  it "should not draw a second projection if the second sound ends late.", ->
+  it "should not draw a second projection if the second sound ends late", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 0}, {moveClick: 4}, {moveClick: 8}, {moveClick: 19}
     driver.cur.should.equal("sound2EndsTooLong")
@@ -146,26 +146,36 @@ describe "The Driver class", ->
     }
     draw.counts.should.deep.equal(c)
 
-  it "should not accept clicks if the second pause is negative.", ->
-    return
+  it "should not accept clicks if the second pause is negative", ->
+    {draw, input, driver} = setup maxLen, states
+    sendInput input, {click: 0}, {moveClick: 4}, {moveClick: 8}, {moveClick: 12}
+    driver.cur.should.equal("sound2Ends")
+    sendInput input, {move: 10}
+    driver.cur.should.equal("pause2Negative")
+    sendInput input, {click: 14}
+    driver.cur.should.equal("pause2Negative")
 
   it "should draw three sounds and two realized projections for 5 " +
-     "determinate clicks.", ->
+     "determinate clicks", ->
+    {draw, input, driver} = setup maxLen, states
+    sendInput(input, {click: 0}, {moveClick: 4}, {moveClick: 8},
+              {moveClick: 12}, {moveClick: 16})
+
+    driver.cur.should.equal("sound3StartsExactly")
+
+  it "should draw an accelerando if the third sound starts early", ->
     return
 
-  it "should draw an accelerando if the third sound starts early.", ->
+  it "should draw an decelerando if the third sound starts slightly late", ->
     return
 
-  it "should draw an decelerando if the third sound starts slightly late.", ->
-    return
-
-  it "should draw a new projection if the third sound starts late enough.", ->
+  it "should draw a new projection if the third sound starts late enough", ->
     return
 
   it "should draw three sounds, two projections, and a future projection for " +
      "5 clicks with the last one exactly matching the projection of the " +
-     "first inter-onset duration.", ->
+     "first inter-onset duration", ->
     return
 
-  it "should draw a hiatus for an long pause before the third onset.", ->
+  it "should draw a hiatus for an long pause before the third onset", ->
     return

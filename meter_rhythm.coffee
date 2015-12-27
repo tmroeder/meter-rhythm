@@ -249,7 +249,12 @@ exports.states =
     message: "Click the mouse to begin the third sound."
     transitions:
       pause2: true
-    moveHandler: -> "pause2"
+      pause2Negative: true
+    moveHandler: (points, x) ->
+      start = points.points[Points.sound2Second]
+      if x < start
+        return "pause2Negative"
+      "pause2"
 
   # The second sound ends without realizing its projection.
   sound2EndsWithoutProjection:
@@ -287,9 +292,9 @@ exports.states =
       pause2: true
       pause2Negative: true
       pause2TooLong: true
-      sound3StartsEarly: true
+      sound3StartsAccel: true
+      sound3StartsRealized: true
       sound3StartsExactly: true
-      sound3StartsNewProjection: true
       sound3StartsSlightlyLate: true
       sound3StartsSlightlyLateNewProjection: true
     moveHandler: (points, x) ->
@@ -300,13 +305,13 @@ exports.states =
         return "pause2TooLong"
       "pause2"
     clickHandler: (points, x) ->
-      start = points.points[Points.sound2Second]
-      if points.isEarly(start, x)
-        return "sound3StartsEarly"
+      start = points.points[Points.sound2First]
+      if points.isAccel(start, x)
+        return "sound3StartsAccel"
       if points.isExact(start, x)
         return "sound3StartsExactly"
-      if points.isNewProjection(start, x)
-        return "sound3StartsNewProjection"
+      if points.isRealized(start, x)
+        return "sound3StartsRealized"
       if points.isSlightlyLate(start, x)
         return "sound3StartsSlightlyLate"
       if points.isSlightlyLateNewProjection(start, x)
@@ -348,7 +353,7 @@ exports.states =
   ##
 
   # The third sound starts earlier than expected.
-  sound3StartsEarly:
+  sound3StartsAccel:
     comment: "The beginning of the third sound is earlier than projected. " +
              "The second interonset duration is shorter than, but at least " +
              "three-fourths of the first interonset duration. We feel an " +
@@ -392,8 +397,9 @@ exports.states =
       pause2: true
       start: true
 
-  # The third sound starts and suggests a new projection.
-  sound3StartsNewProjection:
+  # The third sound starts, realizing the first projection and suggesting a new
+  # projection.
+  sound3StartsRealized:
     comment: "The projection of the first interonset duration is realized. " +
              "Another projection (the rightmost arrow and dashed arc) can be " +
              "completed within the promised duration, so may enhance its " +
@@ -497,6 +503,10 @@ exports.Points = class Points
   @projectionOff: "Projection Off"
   @projectionCurrent: "Projection Current"
   @projectionWeak: "Projection Weak"
+
+  @projectionEarly: 1.75
+  @projectionExact: 2
+  @projectionSlightlyLate: 2.5
   
   constructor: (maxDeterminateLen, points...) ->
     if points.length > Points.maxPointCount
@@ -507,7 +517,7 @@ exports.Points = class Points
 
   # pushPoint puts a new point at the end of the points.
   pushPoint: (pos) ->
-    if @points.length > Points.maxPointCount - 1
+    if @points.length >= Points.maxPointCount
       throw new PointError("all points already defined")
     pos = 0 if @points.length == 0
     @points.push(pos)
@@ -526,12 +536,39 @@ exports.Points = class Points
   # isWeakDeterminate is like isDeterminate, but it fails if second <= 2 *
   # first. In other words, it's the upper range of mensural determinacy.
   isWeakDeterminate: (first, second) ->
-    return false if second <= 2 * first
-    @isDeterminate first, second
+    @isDeterminate(first, second) and second > 2 * first
+
+  # isAccel checks to see if the third onset is earlier than projected.
+  isAccel: (start, end) ->
+    @isDeterminate(start, end) and end < 2 * start and end > 1.75 * start
+
+  # TODO(tmroeder): there's some confusion in the original source about the
+  # details of these possibilities. Check them and correct them.
+  # isRealized checks to see if the third onset is close to the projected
+  # duration.
+  isRealized: (start, end) ->
+    @isDeterminate(start, end) and end > 1.75 * start and end < 2 * start
+
+  # isExact checks to see if the third onset is exactly as projected.
+  isExact: (start, end) ->
+    @isDeterminate(start, end) and end == 2 * start
+
+  # isSlightlyLate checks to see if a determinate start and end has its end
+  # point within (2 * start, 2.5 * start).
+  isSlightlyLate: (start, end) ->
+    @isDeterminate(start, end) and end > 2 * start and end < 2.5 * start
+
+  # isSlightlyLateNewProjection checks to see if a determinate start and end has
+  # its end greater than 2.5 * start
+  isSlightlyLateNewProjection: (start, end) ->
+    @isDeterminate(start, end) and end >= 2.5 * start
+
+  # isTooLate checks to see if the third onset occurs in a mensurally
+  # indeterminate position after the second sound.
+  isTooLate: (start, end) -> not @isDeterminate start, end
 
   # Whether or not this set of points is in the first sound.
-  inFirstSound: ->
-    @points.length == 1
+  inFirstSound: -> @points.length == 1
 
   # Whether or not this set of points is in the second sound.
   inSecondSound: ->
