@@ -129,10 +129,22 @@ describe "The Driver class", ->
 
   it "should not draw a second projection if the second sound continues too " +
      "long.", ->
-    return
+    {draw, input, driver} = setup maxLen, states
+    sendInput input, {click: 0}, {moveClick: 4}, {moveClick: 8}, {move: 19}
+    driver.cur.should.equal("sound2ContinuesTooLong")
+    c = new Counts {
+      comment: 1, message: 1, start: 2, line: 2, end: 1, proj: 1, expectProj: 1
+    }
+    draw.counts.should.deep.equal(c)
 
   it "should not draw a second projection if the second sound ends late.", ->
-    return
+    {draw, input, driver} = setup maxLen, states
+    sendInput input, {click: 0}, {moveClick: 4}, {moveClick: 8}, {moveClick: 19}
+    driver.cur.should.equal("sound2EndsTooLong")
+    c = new Counts {
+      comment: 1, message: 1, start: 2, line: 2, end: 2, proj: 1, expectProj: 1
+    }
+    draw.counts.should.deep.equal(c)
 
   it "should not accept clicks if the second pause is negative.", ->
     return

@@ -85,9 +85,9 @@ exports.Draw = class Draw
     sound3Start = points.points[Points.sound3First]
     sound3End = points.points[Points.sound3Second]
     return unless sound3Start? and sound3End?
-    drawSoundStart sound3Start
-    drawDuration sound3Start, sound3End
-    drawSoundEnd sound3End
+    @drawSoundStart sound3Start
+    @drawDuration sound3Start, sound3End
+    @drawSoundEnd sound3End
 
   # drawSoundStart draws the beginning of a sound.
   drawSoundStart: (x) -> throw new UIError('not implemented')

@@ -573,13 +573,13 @@ exports.Points = class Points
         return Points.projectionOn
       return Points.projectionOff
 
-    # Projection occurs if there"s no current point or it's between the first
+    # Projection occurs if there's no current point or it's between the first
     # and second points.
     second = @points[Points.sound2Second]
-    return Points.projectionOn if not cur? or cur <= second
+    return Points.projectionOff if not @isDeterminate first, second
+    return Points.projectionOn if not cur? or cur < second
 
     # Projection also occurs if cur is a mensurally determinate distance past
-    # the second sound.
-    return Points.projectionOn if @isDeterminate(second, cur)
-
+    # the first sound.
+    return Points.projectionOn if @isDeterminate(first, cur)
     Points.projectionOff
