@@ -99,9 +99,9 @@ exports.Draw = class Draw
     @drawDuration sound3Start, sound3End
     @drawSoundEnd sound3End
 
-    if points.isAccel sound2Start, sound2End, sound3Start
+    if accel
       @drawAccel sound3Start
-    else if points.isRealized sound2Start, sound2End, sound3Start
+    else if realized
       if state == "sound3StartsRealized"
         @drawDashedProjection sound3Start, sound3End
         @drawParens sound3Start

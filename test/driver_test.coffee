@@ -173,9 +173,23 @@ describe "The Driver class", ->
               {moveClick: 12}, {moveClick: 13})
     driver.cur.should.equal("sound3StartsAccel")
 
+    c = new Counts {
+      comment: 1, message: 1, start: 3, line: 3, end: 3, proj: 1, expectProj: 1,
+      accel: 1
+    }
+    draw.counts.should.deep.equal(c)
 
   it "should draw an decelerando if the third sound starts slightly late", ->
-    return
+    {draw, input, driver} = setup maxLen, states
+    sendInput(input, {click: 0}, {moveClick: 4}, {moveClick: 8},
+              {moveClick: 12}, {moveClick: 17})
+    driver.cur.should.equal("sound3StartsSlightlyLate")
+
+    c = new Counts {
+      comment: 1, message: 1, start: 3, line: 3, end: 3, proj: 1, expectProj: 1,
+      short: 1, decel: 1
+    }
+    draw.counts.should.deep.equal(c)
 
   it "should draw a new projection if the third sound starts late enough", ->
     return
