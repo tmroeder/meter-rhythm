@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-{Points} = require "./meter_rhythm.coffee"
+{Points} = require "./state_machine.coffee"
 
 # UIError is thrown for error cases that happen in methods of the Draw
 # classes.

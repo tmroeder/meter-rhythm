@@ -13,7 +13,7 @@
 # limitations under the License.
    
 {PointError, Points, states, writeGraph, visit} =
-  require "../meter_rhythm.coffee"
+  require "../state_machine.coffee"
 chai = require "chai"
 expect = chai.expect
 should = chai.should()
@@ -22,10 +22,6 @@ projectionOff = Points.projectionOff
 projectionOn = Points.projectionOn
 projectionCurrent = Points.projectionCurrent
 projectionWeak = Points.projectionWeak
-
-##
-## Test the states object
-##
 
 describe "The states object", ->
   states = states
@@ -40,10 +36,6 @@ describe "The states object", ->
     visited = visit(states)
     unvisited = (src for src, val of visited when !val)
     expect(unvisited).to.be.empty
-
-##
-## Test the graph-writing function.
-##
 
 # A regular expression that describes a valid GraphViz edge for the states.
 edgeRegex = /^\s*\w+ -> \w+$/
@@ -73,10 +65,6 @@ describe "The writeGraph function", ->
     expect(lines).to.not.be.empty
     expect(line).to.match(edgeRegex) for line in lines
 
-##
-## Test the Points class and its push/pop methods.
-##
-
 maxLen = 100
 describe "The Points class", ->
   it "should allow points to be added", ->
@@ -101,10 +89,6 @@ describe "The Points class", ->
     expect(x).to.exist
     expect(p.pushPoint.bind(p, 20)).to.not.throw(Error)
 
-##
-## Test the projection calculations for the first sound.
-##
-
 maxLen = 10
 describe "The first sound", ->
   it "should project if an in-progress sound is determinate", ->
@@ -126,10 +110,6 @@ describe "The first sound", ->
   it "should not project if the sum of a sound and pause is indeterminate", ->
     p = new Points maxLen, 0, 5
     p.firstProjection(11).should.equal(projectionOff)
-
-##
-## Test the projection calculations for the second sound.
-##
 
 describe "The second sound", ->
   it "should not project outside the second sound and subsequent pause", ->

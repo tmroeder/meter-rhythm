@@ -13,8 +13,8 @@
 # limitations under the License.
 
 {Driver} = require "../driver.coffee"
-{Points, states} = require "../meter_rhythm.coffee"
-{TextDraw} = require "../meter_rhythm_ui.coffee"
+{Points, states} = require "../state_machine.coffee"
+{TextDraw} = require "../ui.coffee"
 {Counts, MockDraw, MockInput} = require "./mock_ui.coffee"
 
 chai = require "chai"

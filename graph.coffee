@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-meter = require "./meter_rhythm.coffee"
+meter = require "./state_machine.coffee"
 
 console.log("strict digraph Meter {")
 console.log(meter.writeGraph meter.states)

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-{Points} = require "./meter_rhythm.coffee"
+{Points} = require "./state_machine.coffee"
 
 # The Driver class executes the state machine, taking input, running
 # transitions, keeping state, and writing to the UI.
