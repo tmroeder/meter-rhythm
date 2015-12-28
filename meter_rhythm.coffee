@@ -482,8 +482,7 @@ visitHelper = (states, state, visited, fn) ->
 # class.
 exports.PointError = class PointError extends Error
   name: "PointError"
-  constructor: (message) ->
-    @message = message
+  constructor: (@message) ->
 
 # Points keeps track of the current point positions and the properties of these
 # positions with respect to each other and with respect to determinacy.
@@ -508,12 +507,11 @@ exports.Points = class Points
   @projectionExact: 2
   @projectionSlightlyLate: 2.5
   
-  constructor: (maxDeterminateLen, points...) ->
+  constructor: (@maxDeterminateLen, points...) ->
     if points.length > Points.maxPointCount
       throw new PointError("too many points")
     @points = points
     @points[0] = 0 if points.length > 0
-    @maxDeterminateLen = maxDeterminateLen
 
   # pushPoint puts a new point at the end of the points.
   pushPoint: (pos) ->

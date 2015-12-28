@@ -18,8 +18,7 @@
 # classes.
 exports.UIError = class UIError extends Error
   name: "UIError"
-  constructor: (message) ->
-    @message = message
+  constructor: (@message) ->
 
 # Draw gives the interface for Draw classes that can be used by the state
 # machine states to draw themselves.
