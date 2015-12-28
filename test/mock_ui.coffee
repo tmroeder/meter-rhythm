@@ -82,6 +82,7 @@ exports.Counts = class Counts
       @decel = 0
       @parens = 0
       @accent = 0
+      @short = 0
     } = (counts ? {})
 
 # MockDraw tracks the draw events that have been sent to it.
@@ -135,6 +136,13 @@ exports.MockDraw = class MockDraw extends Draw
 
   # drawAccent outputs an accent mark at the given point.
   drawAccent: (pos) -> @counts.accent++
+
+  # shortSoundLength returns the length that should be used for a short sound,
+  # like for some of the cases in the third sound (the ones that are past the
+  # projected duration). Since it doesn't matter for a Mock UI, this returns 20.
+  shortSoundLength: ->
+    @counts.short++
+    20
 
 describe "The MockDraw class", ->
   it "should capture start events", ->

@@ -82,8 +82,19 @@ exports.Draw = class Draw
     # There are no dynamic components to the third sound, and its ending point
     # is defined simultaneously with its starting point.
     sound3Start = points.points[Points.sound3First]
+    return unless sound3Start?
+
+    accel = points.isAccel sound2Start, sound2End, sound3Start
+    realized = points.isRealized sound2Start, sound2End, sound3Start
+
     sound3End = points.points[Points.sound3Second]
-    return unless sound3Start? and sound3End?
+    if not sound3End?
+      if accel or realized
+        points.pushPoint 2 * sound2Start
+      else
+        points.pushPoint sound3Start + @shortSoundLength()
+      sound3End = points.points[Points.sound3Second]
+
     @drawSoundStart sound3Start
     @drawDuration sound3Start, sound3End
     @drawSoundEnd sound3End
@@ -143,6 +154,11 @@ exports.Draw = class Draw
   # drawAccent outputs an accent mark at the given point.
   drawAccent: (pos) -> throw new UIError("drawAccent not implemented")
 
+  # shortSoundLength returns the length that should be used for a short sound,
+  # like for some of the cases in the third sound (the ones that are past the
+  # projected duration).
+  shortSoundLength: -> throw new UIError("shortSoundLength not implemented")
+
 # TextDraw is a Draw class that is used to output elements of the simulation.
 exports.TextDraw = class TextDraw extends Draw
   constructor: -> return
@@ -188,6 +204,13 @@ exports.TextDraw = class TextDraw extends Draw
 
   # drawAccent outputs an accent mark at the given point.
   drawAccent: (pos) -> console.log("Accent occurs at #{pos}")
+
+  # shortSoundLength returns the length that should be used for a short sound,
+  # like for some of the cases in the third sound (the ones that are past the
+  # projected duration).
+  shortSoundLength: ->
+    console.log("Short-sound length requested. Returning 20")
+    20
 
 # The Input class is an interface for registering input handlers. Subclasses
 # need to provide a connection to a source of input events.

@@ -155,19 +155,24 @@ describe "The Driver class", ->
     sendInput input, {click: 14}
     driver.cur.should.equal("pause2Negative")
 
-  it "should draw three sounds and two realized projections for 5 " +
-     "determinate clicks", ->
+  it "should draw three sounds and two projections for 5 determinate clicks", ->
     {draw, input, driver} = setup maxLen, states
     sendInput(input, {click: 0}, {moveClick: 4}, {moveClick: 8},
               {moveClick: 12}, {moveClick: 16})
 
     driver.cur.should.equal("sound3StartsExactly")
+    c = new Counts {
+      comment: 1, message: 1, start: 3, line: 3, end: 3, proj: 1, expectProj: 1,
+      short: 1
+    }
+    draw.counts.should.deep.equal(c)
 
   it "should draw an accelerando if the third sound starts early", ->
     {draw, input, driver} = setup maxLen, states
     sendInput(input, {click: 0}, {moveClick: 4}, {moveClick: 8},
               {moveClick: 12}, {moveClick: 13})
     driver.cur.should.equal("sound3StartsAccel")
+
 
   it "should draw an decelerando if the third sound starts slightly late", ->
     return
