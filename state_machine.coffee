@@ -409,6 +409,7 @@ exports.states =
     message: "Click anywhere to see an alternate interpretation."
     transitions:
       sound3StartsAltInterpretation: true
+    skipPointCreation: true  # Don't create a new point on click
     clickHandler: -> "sound3StartsAltInterpretation"
 
   # A second interpretation of sound3StartsNewProjection.

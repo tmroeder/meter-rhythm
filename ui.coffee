@@ -88,6 +88,21 @@ exports.Draw = class Draw
     @drawDuration sound3Start, sound3End
     @drawSoundEnd sound3End
 
+    if points.isAccel sound2Start, sound2End, sound3Start
+      @drawAccel sound3Start
+    else if points.isRealized sound2Start, sound2End, sound3Start
+      if state == "sound3StartsRealized"
+        @drawDashedProjection sound3Start, sound3End
+        @drawParens sound3Start
+      else if state == "sound3StartsAltInterpretation"
+        @drawAccent sound3Start
+        sound3Length = sound3End - sound3Start
+        @drawProjection sound3Start, sound3Length + 2 * sound3Length
+    else if points.isSlightlyLate sound2Start, sound3Start
+      @drawDecel sound3Start
+    else if points.isSlightlyLateNewProjection sound2Start, sound3Start
+      @drawProjection sound3Start, sound3End
+
   # drawSoundStart draws the beginning of a sound.
   drawSoundStart: (x) -> throw new UIError("drawSoundStart not implemented")
 
@@ -99,7 +114,7 @@ exports.Draw = class Draw
   drawSoundEnd: (x) -> throw new UIError("drawSoundEnd not implemented")
 
   # drawProjection draws a projection, potentially one that is not realized.
-  drawProjection: (start, end, weak) ->
+  drawProjection: (start, end, dashed) ->
     throw new UIError("drawProjection not implemented")
 
   # drawExpected draws a projection that is expected to be realized.
@@ -125,6 +140,9 @@ exports.Draw = class Draw
   # to end.
   drawParens: (start, end) -> throw new UIError("drawParens not implemented")
 
+  # drawAccent outputs an accent mark at the given point.
+  drawAccent: (pos) -> throw new UIError("drawAccent not implemented")
+
 # TextDraw is a Draw class that is used to output elements of the simulation.
 exports.TextDraw = class TextDraw extends Draw
   constructor: -> return
@@ -139,9 +157,9 @@ exports.TextDraw = class TextDraw extends Draw
   drawSoundEnd: (x) -> console.log "Sound ended at position #{x}"
 
   # drawProjection draws a projection, potentially one that is not realized.
-  drawProjection: (start, end, weak) ->
-    if weak
-      console.log "Weak projection from #{start} to #{end}"
+  drawProjection: (start, end, dashed) ->
+    if dashed
+      console.log "Dashed projection from #{start} to #{end}"
     else
       console.log "Projection from #{start} to #{end}"
 
@@ -167,6 +185,9 @@ exports.TextDraw = class TextDraw extends Draw
   # drawParens outpus a representation of parentheses bracketing the range start
   # to end.
   drawParens: (start, end) -> console.log("Parens from #{start} to #{end}")
+
+  # drawAccent outputs an accent mark at the given point.
+  drawAccent: (pos) -> console.log("Accent occurs at #{pos}")
 
 # The Input class is an interface for registering input handlers. Subclasses
 # need to provide a connection to a source of input events.

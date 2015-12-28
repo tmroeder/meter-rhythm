@@ -73,7 +73,7 @@ exports.Counts = class Counts
       @line = 0
       @end = 0
       @proj = 0
-      @weakProj = 0
+      @dashedProj = 0
       @expectProj = 0
       @comment = 0
       @message = 0
@@ -81,6 +81,7 @@ exports.Counts = class Counts
       @accel = 0
       @decel = 0
       @parens = 0
+      @accent = 0
     } = (counts ? {})
 
 # MockDraw tracks the draw events that have been sent to it.
@@ -104,9 +105,9 @@ exports.MockDraw = class MockDraw extends Draw
   drawSoundEnd: (x) -> @counts.end++
 
   # drawProjection draws a projection, potentially one that is not realized.
-  drawProjection: (start, end, weak) ->
-    if weak
-      @counts.weakProj++
+  drawProjection: (start, end, dashed) ->
+    if dashed
+      @counts.dashedProj++
     else
       @counts.proj++
 
@@ -132,6 +133,9 @@ exports.MockDraw = class MockDraw extends Draw
   # to end.
   drawParens: (pos) -> @counts.parens++
 
+  # drawAccent outputs an accent mark at the given point.
+  drawAccent: (pos) -> @counts.accent++
+
 describe "The MockDraw class", ->
   it "should capture start events", ->
     md = new MockDraw()
@@ -155,7 +159,7 @@ describe "The MockDraw class", ->
     md.counts.should.deep.equal(c)
 
     md.drawProjection(150, 200, true)
-    c.weakProj = 1
+    c.dashedProj = 1
     md.counts.should.deep.equal(c)
 
   it "should capture comment events", ->

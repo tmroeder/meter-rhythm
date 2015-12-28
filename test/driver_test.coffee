@@ -122,8 +122,8 @@ describe "The Driver class", ->
     sendInput input, {click: 0}, {moveClick: 4}, {moveClick: 8}, {move: 17}
     driver.cur.should.equal("sound2ContinuesWithoutProjection")
     c = new Counts {
-      comment: 1, message: 1, start: 2, line: 2, end: 1, proj: 1, weakProj: 1,
-      expectProj: 1
+      comment: 1, message: 1, start: 2, line: 2, end: 1, proj: 1,
+      dashedProj: 1, expectProj: 1
     }
     draw.counts.should.deep.equal(c)
 

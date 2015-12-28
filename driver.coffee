@@ -37,8 +37,10 @@ exports.Driver = class Driver
   handleClick: (x, y) =>
     handler = @states[@cur].clickHandler
     if handler?
+      skipPointCreation = @states[@cur].skipPointCreation
+      skipPoint = skipPointCreation? and skipPointCreation
       @cur = handler @points, x
 
-      # Click events always generate a new point.
-      @points.pushPoint x
+      if not skipPoint
+        @points.pushPoint x
       @ui.draw @points, @cur, @states, x
