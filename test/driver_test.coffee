@@ -164,7 +164,10 @@ describe "The Driver class", ->
     driver.cur.should.equal("sound3StartsExactly")
 
   it "should draw an accelerando if the third sound starts early", ->
-    return
+    {draw, input, driver} = setup maxLen, states
+    sendInput(input, {click: 0}, {moveClick: 4}, {moveClick: 8},
+              {moveClick: 12}, {moveClick: 13})
+    driver.cur.should.equal("sound3StartsAccel")
 
   it "should draw an decelerando if the third sound starts slightly late", ->
     return

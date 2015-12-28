@@ -89,28 +89,41 @@ exports.Draw = class Draw
     @drawSoundEnd sound3End
 
   # drawSoundStart draws the beginning of a sound.
-  drawSoundStart: (x) -> throw new UIError('not implemented')
+  drawSoundStart: (x) -> throw new UIError("drawSoundStart not implemented")
 
   # drawDuration draws the length of a duration.
-  drawDuration: (start, end) -> throw new UIError('not implemented')
+  drawDuration: (start, end) ->
+    throw new UIError("drawDuration not implemented")
 
   # drawSoundEnd draws the endpoint of a sound.
-  drawSoundEnd: (x) -> throw new UIError('not implemented')
+  drawSoundEnd: (x) -> throw new UIError("drawSoundEnd not implemented")
 
   # drawProjection draws a projection, potentially one that is not realized.
-  drawProjection: (start, end, weak) -> throw new UIError('not implemented')
+  drawProjection: (start, end, weak) ->
+    throw new UIError("drawProjection not implemented")
 
   # drawExpected draws a projection that is expected to be realized.
-  drawExpectedProjection: (start, end) -> throw new UIError('not implemented')
+  drawExpectedProjection: (start, end) ->
+    throw new UIError("drawExpectedProjection not implemented")
 
   # writeComment outputs comment text.
-  writeComment: (text) -> throw new UIError('not implemented')
+  writeComment: (text) -> throw new UIError("writeComment not implemented")
 
   # writeMessage outputs message text.
-  writeMessage: (text) -> throw new UIError('not implemented')
+  writeMessage: (text) -> throw new UIError("writeMessage not implemented")
 
   # drawHiatus outputs something that represents a hiatus.
-  drawHiatus: (pos) -> throw new UIError('not implemented')
+  drawHiatus: (pos) -> throw new UIError("drawHiatus not implemented")
+
+  # drawAccel outputs a representation of an accelerando at the given position.
+  drawAccel: (pos) -> throw new UIError("drawAccel not implemented")
+
+  # drawDecel outputs a representation of an decelerando at the given position.
+  drawDecel: (pos) -> throw new UIError("drawDecl not implemented")
+
+  # drawParens outpus a representation of parentheses bracketing the range start
+  # to end.
+  drawParens: (start, end) -> throw new UIError("drawParens not implemented")
 
 # TextDraw is a Draw class that is used to output elements of the simulation.
 exports.TextDraw = class TextDraw extends Draw
@@ -144,6 +157,16 @@ exports.TextDraw = class TextDraw extends Draw
 
   # drawHiatus outputs something that represents a hiatus.
   drawHiatus: (pos) -> console.log "Hiatus occurs at #{pos}"
+
+  # drawAccel outputs a representation of an accelerando at the given position.
+  drawAccel: (pos) -> console.log "Accelerando occurs at #{pos}"
+
+  # drawDecel outputs a representation of an decelerando at the given position.
+  drawDecel: (pos) -> console.log "Decelerando occurs at #{pos}"
+
+  # drawParens outpus a representation of parentheses bracketing the range start
+  # to end.
+  drawParens: (start, end) -> console.log("Parens from #{start} to #{end}")
 
 # The Input class is an interface for registering input handlers. Subclasses
 # need to provide a connection to a source of input events.

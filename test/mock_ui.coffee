@@ -78,6 +78,9 @@ exports.Counts = class Counts
       @comment = 0
       @message = 0
       @hiatus = 0
+      @accel = 0
+      @decel = 0
+      @parens = 0
     } = (counts ? {})
 
 # MockDraw tracks the draw events that have been sent to it.
@@ -119,6 +122,16 @@ exports.MockDraw = class MockDraw extends Draw
   # drawHiatus outputs something that represents a hiatus.
   drawHiatus: (pos) -> @counts.hiatus++
 
+  # drawAccel outputs a representation of an accelerando at the given position.
+  drawAccel: (pos) -> @counts.accel++
+
+  # drawDecel outputs a representation of an decelerando at the given position.
+  drawDecel: (pos) -> @counts.decel++
+
+  # drawParens outpus a representation of parentheses bracketing the range start
+  # to end.
+  drawParens: (pos) -> @counts.parens++
+
 describe "The MockDraw class", ->
   it "should capture start events", ->
     md = new MockDraw()
@@ -159,3 +172,18 @@ describe "The MockDraw class", ->
     md = new MockDraw()
     md.drawHiatus(50)
     md.counts.hiatus.should.equal(1)
+
+  it "should capture accel events", ->
+    md = new MockDraw()
+    md.drawAccel(50)
+    md.counts.accel.should.equal(1)
+
+  it "should capture decel events", ->
+    md = new MockDraw()
+    md.drawDecel(50)
+    md.counts.decel.should.equal(1)
+
+  it "should capture parens events", ->
+    md = new MockDraw()
+    md.drawParens(50, 100)
+    md.counts.parens.should.equal(1)

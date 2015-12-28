@@ -305,16 +305,17 @@ exports.states =
         return "pause2TooLong"
       "pause2"
     clickHandler: (points, x) ->
-      start = points.points[Points.sound2First]
-      if points.isAccel(start, x)
+      first = points.points[Points.sound2First]
+      second = points.points[Points.sound2Second]
+      if points.isAccel(first, second, x)
         return "sound3StartsAccel"
-      if points.isExact(start, x)
+      if points.isExact(first, x)
         return "sound3StartsExactly"
-      if points.isRealized(start, x)
+      if points.isRealized(first, x)
         return "sound3StartsRealized"
-      if points.isSlightlyLate(start, x)
+      if points.isSlightlyLate(first, x)
         return "sound3StartsSlightlyLate"
-      if points.isSlightlyLateNewProjection(start, x)
+      if points.isSlightlyLateNewProjection(first, x)
         return "sound3StartsSlightlyLateNewProjection"
       # It shouldn't be possible to reach this point, but if it happens, then
       # ignore the click and remain in pause2.
@@ -537,8 +538,8 @@ exports.Points = class Points
     @isDeterminate(first, second) and second > 2 * first
 
   # isAccel checks to see if the third onset is earlier than projected.
-  isAccel: (start, end) ->
-    @isDeterminate(start, end) and end < 2 * start and end > 1.75 * start
+  isAccel: (first, second, end) ->
+    @isDeterminate(first, end) and end > second and end < 1.75 * first
 
   # TODO(tmroeder): there's some confusion in the original source about the
   # details of these possibilities. Check them and correct them.
