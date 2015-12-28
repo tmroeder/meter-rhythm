@@ -99,6 +99,8 @@ exports.Draw = class Draw
     @drawDuration sound3Start, sound3End
     @drawSoundEnd sound3End
 
+    sound3Length = sound3End - sound3Start
+
     if accel
       @drawAccel sound3Start
     else if realized
@@ -107,12 +109,14 @@ exports.Draw = class Draw
         @drawParens sound3Start
       else if state == "sound3StartsAltInterpretation"
         @drawAccent sound3Start
-        sound3Length = sound3End - sound3Start
-        @drawProjection sound3Start, sound3Length + 2 * sound3Length
+        @drawProjection sound3Start, sound3End + sound3Length
     else if points.isSlightlyLate sound2Start, sound3Start
       @drawDecel sound3Start
     else if points.isSlightlyLateNewProjection sound2Start, sound3Start
       @drawProjection sound3Start, sound3End
+    else if not points.isDeterminate sound2Start, sound3Start
+      @drawHiatus sound3Start
+      @drawProjection sound3Start, sound3End + sound3Length
 
   # drawSoundStart draws the beginning of a sound.
   drawSoundStart: (x) -> throw new UIError("drawSoundStart not implemented")

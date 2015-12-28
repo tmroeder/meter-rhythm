@@ -317,8 +317,8 @@ exports.states =
         return "sound3StartsSlightlyLate"
       if points.isSlightlyLateNewProjection(first, x)
         return "sound3StartsSlightlyLateNewProjection"
-      # It shouldn't be possible to reach this point, but if it happens, then
-      # ignore the click and remain in pause2.
+      # This should not be possible to reach, but if it somehow does, then
+      # ignore the click and stay in pause2.
       "pause2"
 
   # The second pause is negative.

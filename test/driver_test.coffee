@@ -192,12 +192,25 @@ describe "The Driver class", ->
     draw.counts.should.deep.equal(c)
 
   it "should draw a new projection if the third sound starts late enough", ->
-    return
+    {draw, input, driver} = setup maxLen, states
+    sendInput(input, {click: 0}, {moveClick: 4}, {moveClick: 6},
+              {moveClick: 10}, {moveClick: 15.5})
+    driver.cur.should.equal("sound3StartsSlightlyLateNewProjection")
 
-  it "should draw three sounds, two projections, and a future projection for " +
-     "5 clicks with the last one exactly matching the projection of the " +
-     "first inter-onset duration", ->
-    return
+    c = new Counts {
+      comment: 1, message: 1, start: 3, line: 3, end: 3, proj: 2, expectProj: 1,
+      short: 1
+    }
+    draw.counts.should.deep.equal(c)
 
-  it "should draw a hiatus for an long pause before the third onset", ->
-    return
+  it "should draw a hiatus for a long pause before the third onset", ->
+    {draw, input, driver} = setup maxLen, states
+    sendInput(input, {click: 0}, {moveClick: 2}, {moveClick: 4},
+              {moveClick: 6}, {move: 7}, {moveClick: 20})
+    driver.cur.should.equal("sound3StartsTooLate")
+
+    c = new Counts {
+      comment: 1, message: 1, start: 3, line: 3, end: 3, proj: 2, expectProj: 1,
+      short: 1, hiatus: 1
+    }
+    draw.counts.should.deep.equal(c)
