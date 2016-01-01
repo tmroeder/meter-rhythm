@@ -1,0 +1,32 @@
+{
+  "name": "meter-rhythm",
+  "version": "0.2.0",
+  "description": "An interactive simulation of the concepts in Christopher Hasty's book Meter as Rhythm.",
+  "keywords": ["meter", "rhythm", "music theory", "simulation"],
+  "bugs": {
+    "url": "https://github.com/tmroeder/meter-rhythm/issues",
+    "email": "tmroeder+meter-rhythm@gmail.com"
+  },
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Tom Roeder",
+    "email": "tmroeder@gmail.com",
+    "url": "https://1.37e2.net"
+  },
+  "files": ["driver.coffee", "graph.coffee", "state_machine.coffee", "ui.coffee"],
+  "main": "driver.coffee",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tmroeder/meter-rhythm"
+  },
+  "devDependencies": {
+    "coffee-script": ">=1.10",
+    "mocha": ">=2.3.4",
+    "chai": ">=3.4.1"
+  },
+  "scripts": {
+    "test": "mocha --compilers mocha --compilers coffee:coffee-script/register",
+    "graph": "coffee graph.coffee | dot -Tpdf -o state_machine.pdf",
+    "prepublish": "coffee -c *.coffee"
+  }
+}
