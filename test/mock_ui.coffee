@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-{Draw, Input} = require "../ui.coffee"
+{Draw, Input} = require "../src/ui.coffee"
 
 chai = require "chai"
 expect = chai.expect

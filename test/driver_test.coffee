@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-{Driver} = require "../driver.coffee"
-{Points, states} = require "../state_machine.coffee"
-{TextDraw} = require "../ui.coffee"
+{Driver} = require "../src/driver.coffee"
+{Points, states} = require "../src/state_machine.coffee"
+{TextDraw} = require "../src/ui.coffee"
 {Counts, MockDraw, MockInput} = require "./mock_ui.coffee"
 
 chai = require "chai"

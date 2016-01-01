@@ -13,8 +13,9 @@
     "email": "tmroeder@gmail.com",
     "url": "https://1.37e2.net"
   },
-  "files": ["driver.coffee", "graph.coffee", "state_machine.coffee", "ui.coffee"],
-  "main": "driver.coffee",
+  "files": ["src/driver.coffee", "src/graph.coffee", "src/state_machine.coffee",
+            "src/ui.coffee"],
+  "main": "src/driver.coffee",
   "repository": {
     "type": "git",
     "url": "https://github.com/tmroeder/meter-rhythm"
@@ -26,7 +27,8 @@
   },
   "scripts": {
     "test": "mocha --compilers mocha --compilers coffee:coffee-script/register",
-    "graph": "coffee graph.coffee | dot -Tpdf -o state_machine.pdf",
-    "prepublish": "coffee -c *.coffee"
+    "graph": "coffee src/graph.coffee | dot -Tpdf -o state_machine.pdf",
+    "build": "coffee -o lib -c src/*.coffee",
+    "prepublish": "coffee -o lib -c src/*.coffee"
   }
 }

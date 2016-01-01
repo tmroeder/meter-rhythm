@@ -13,7 +13,7 @@
 # limitations under the License.
    
 {PointError, Points, states, writeGraph, visit} =
-  require "../state_machine.coffee"
+  require "../src/state_machine.coffee"
 chai = require "chai"
 expect = chai.expect
 should = chai.should()

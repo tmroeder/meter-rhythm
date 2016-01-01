@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-{Points, states} = require "../state_machine.coffee"
-{TextDraw, UIError} = require "../ui.coffee"
+{Points, states} = require "../src/state_machine.coffee"
+{TextDraw, UIError} = require "../src/ui.coffee"
 {Counts, MockDraw} = require "./mock_ui.coffee"
 
 chai = require "chai"
