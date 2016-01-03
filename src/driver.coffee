@@ -21,6 +21,7 @@ exports.Driver = class Driver
     @cur = "start"
     @states = states
     @points = new Points maxLen
+    @maxLen = maxLen
 
     input.registerMove(@handleMove)
     input.registerClick(@handleClick)
@@ -44,3 +45,7 @@ exports.Driver = class Driver
       if not skipPoint
         @points.pushPoint x
       @ui.draw @points, @cur, @states, x
+
+  reset: ->
+    @cur = "start"
+    @points = new Points @maxLen
