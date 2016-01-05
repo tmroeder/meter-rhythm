@@ -18,8 +18,8 @@
 {MockInput} = require "./mock_ui.coffee"
 
 # simulationSetup creates and sets up mocks and a driver using those mocks.
-exports.simulationSetup = (len) ->
-  draw = new TextDraw()
-  input = new MockInput()
-  driver = new Driver len, states, input, draw
-  {draw: draw, input: input, driver: driver}
+exports.TextSimulator = class TextSimulator
+  constructor: (@maxLen) ->
+    @draw = new TextDraw()
+    @input = new MockInput()
+    @driver = new Driver @maxLen, states, @input, @draw

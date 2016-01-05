@@ -188,16 +188,32 @@ exports.states =
     message: "Click the mouse to end the second sound."
     transitions:
       sound2Continues: true
+      sound2ContinuesNegative: true
       sound2ContinuesWithoutProjection: true
       sound2Ends: true
     moveHandler: (points, x) ->
       start = points.points[Points.sound2First]
-      if points.isWeakDeterminate(start, x)
+      if start > x
+        return "sound2ContinuesNegative"
+      else if points.isWeakDeterminate(start, x)
         return "sound2ContinuesWithoutProjection"
       else if points.isDeterminate(start, x)
         return "sound2Continues"
       "sound2ContinuesTooLong"
     clickHandler: -> "sound2Ends"
+
+  # The second sound has a negative duration.
+  sound2ContinuesNegative:
+    comment: ""
+    message: "Move the mouse to the right to perform the second sound."
+    transitions:
+      sound2ContinuesNegative: true
+      sound2Continues: true
+    moveHandler: (points, x) ->
+      start = points.points[Points.sound2First]
+      if start <= x
+        return "sound2Continues"
+      "sound2ContinuesNegative"
 
   # The second sound continues too long to realize its projection.
   sound2ContinuesWithoutProjection:
@@ -531,7 +547,7 @@ exports.Points = class Points
   # isDeterminate checks to make sure that the difference between the first and
   # second points is less than the amount needed to be mensurally determinate.
   isDeterminate: (first, second) ->
-    first != second and second - first < @maxDeterminateLen
+    first < second and second - first <= @maxDeterminateLen
 
   # isWeakDeterminate is like isDeterminate, but it fails if second <= 2 *
   # first. In other words, it's the upper range of mensural determinacy.

@@ -63,7 +63,7 @@ exports.Draw = class Draw
     @drawSoundStart sound2Start
 
     # Draw the dynamic components of the second sound
-    if cur? and cur != sound2Start and points.inSecondSound()
+    if cur? and cur > sound2Start and points.inSecondSound()
       @drawDuration sound2Start, cur
 
     status = points.secondProjection(cur)

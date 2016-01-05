@@ -73,6 +73,13 @@ describe "The Driver class", ->
     }
     draw.counts.should.deep.equal(c)
 
+  it "should produce a projection for a sound with exactly the max length", ->
+    {draw, input, driver} = setup maxLen, states
+
+    sendInput input, {click: 0}, {moveClick: maxLen}
+    driver.cur.should.equal("sound1Ends")
+    draw.counts.proj.should.equal(1)
+
   it "should not accept two clicks without intervening movement", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 0}, {click: 4}
@@ -145,6 +152,14 @@ describe "The Driver class", ->
       comment: 1, message: 1, start: 2, line: 2, end: 2, proj: 1, expectProj: 1
     }
     draw.counts.should.deep.equal(c)
+
+  it "should not draw a projection or duration for a negative duration", ->
+    {draw, input, driver} = setup maxLen, states
+    sendInput(input, {click: 0}, {moveClick: 5}, {moveClick: 10}, {move: 11},
+              {move: 9})
+    driver.cur.should.equal("sound2ContinuesNegative")
+    draw.counts.line.should.equal(1)
+    draw.counts.proj.should.equal(1)
 
   it "should not accept clicks if the second pause is negative", ->
     {draw, input, driver} = setup maxLen, states
