@@ -15,7 +15,7 @@
 {Driver} = require "../src/driver.coffee"
 {Points, states} = require "../src/state_machine.coffee"
 {TextDraw} = require "../src/ui.coffee"
-{Counts, MockDraw, MockInput} = require "./mock_ui.coffee"
+{Counts, Drawn, MockDraw, MockInput} = require "./mock_ui.coffee"
 
 chai = require "chai"
 expect = chai.expect
@@ -103,9 +103,11 @@ describe "The Driver class", ->
     sendInput input, {click: 0}, {move: 20}
     draw.counts.proj.should.equal(0)
 
-  it "should not draw a current projection ", ->
+  it "should not draw a projection shorter than an existing first sound", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 0}, {moveClick: 4}, {move: 3}
+    draw.drawn.projs.length.should.equal(1)
+    draw.drawn.projs[0].should.deep.equal({start: 0, end: 4})
 
   it "should not accept clicks if the first pause is negative", ->
     {draw, input, driver} = setup maxLen, states

@@ -40,6 +40,8 @@ exports.Draw = class Draw
     if cur? and cur != sound1Start and points.inFirstSound()
       @drawDuration sound1Start, cur
 
+    sound1End = points.points[Points.sound1Second]
+
     # TODO(tmroeder): figure out exactly where the projection should be drawn.
     status = points.firstProjection(cur)
     if status == Points.projectionOn and points.points.length > 2
@@ -48,12 +50,14 @@ exports.Draw = class Draw
       @drawProjection sound1Start, end, false
       @drawExpectedProjection end, end + difference, false
     else if status == Points.projectionCurrent
-      @drawProjection sound1Start, cur, false
+      # Don't draw a projection that is shorter than an existing first sound.
+      if sound1End? and cur < sound1End
+        @drawProjection sound1Start, sound1End, false
+      else
+        @drawProjection sound1Start, cur, false
 
     # Draw the end of the first sound.
-    sound1End = points.points[Points.sound1Second]
     return unless sound1End?
-
     @drawDuration sound1Start, sound1End
     @drawSoundEnd sound1End
 
