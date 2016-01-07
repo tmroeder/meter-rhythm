@@ -17,9 +17,17 @@
 {TextDraw} = require "../src/ui.coffee"
 {MockInput} = require "./mock_ui.coffee"
 
-# simulationSetup creates and sets up mocks and a driver using those mocks.
+# TextSimulator creates and sets up mocks and a driver using those mocks.
 exports.TextSimulator = class TextSimulator
   constructor: (@maxLen) ->
     @draw = new TextDraw()
     @input = new MockInput()
     @driver = new Driver @maxLen, states, @input, @draw
+  # c clicks on a given point.
+  c: (x) -> @input.click x, 0
+
+  # m moves to a given point.
+  m: (x) -> @input.move x, 0
+
+  # r resets the simulator.
+  r: -> @driver.reset()

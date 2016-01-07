@@ -56,57 +56,101 @@ exports.Counts = class Counts
       @short = 0
     } = (counts ? {})
 
+exports.Drawn = class Drawn
+  constructor: (drawn) ->
+    {
+      @starts = []
+      @lines = []
+      @ends = []
+      @projs = []
+      @dashedProjs = []
+      @expectProjs = []
+      @comments = []
+      @messages = []
+      @hiatuses = []
+      @accels = []
+      @decels = []
+      @parens = []
+      @accents = []
+    } = (drawn ? {})
+
 # MockDraw tracks the draw events that have been sent to it.
 exports.MockDraw = class MockDraw extends Draw
   constructor: (latest) ->
     @counts = new Counts()
+    @drawn = new Drawn()
     @latest = latest ? false
 
   # draw calls the parent Draw class but resets the Counts if @latest is set.
   draw: (points, state, states, cur) ->
     @counts = new Counts() if @latest
+    @drawn = new Drawn() if @latest
     super(points, state, states, cur)
 
   # drawSoundStart draws the starting point of a sound.
-  drawSoundStart: (x) -> @counts.start++
+  drawSoundStart: (x) ->
+    @counts.start++
+    @drawn.starts.push x
 
   # drawDuration draws the length of a duration.
-  drawDuration: (start, end) -> @counts.line++
+  drawDuration: (start, end) ->
+    @counts.line++
+    @drawn.lines.push {start: start, end: end}
 
   # drawSoundEnd draws the endpoint of a sound.
-  drawSoundEnd: (x) -> @counts.end++
+  drawSoundEnd: (x) ->
+    @counts.end++
+    @drawn.ends.push x
 
   # drawProjection draws a projection, potentially one that is not realized.
   drawProjection: (start, end, dashed) ->
     if dashed
       @counts.dashedProj++
+      @drawn.dashedProjs.push {start: start, end: end}
     else
       @counts.proj++
+      @drawn.projs.push  {start: start, end: end}
 
   # drawExpectedProjection draws a projection that is expected to be realized.
-  drawExpectedProjection: (start, end) -> @counts.expectProj++
+  drawExpectedProjection: (start, end) ->
+    @counts.expectProj++
+    @drawn.expectProjs.push {start: start, end: end}
 
   # writeComment outputs comment text.
-  writeComment: (text) -> @counts.comment++
+  writeComment: (text) ->
+    @counts.comment++
+    @drawn.comments.push text
 
   # writeMessage outputs message text.
-  writeMessage: (text) -> @counts.message++
+  writeMessage: (text) ->
+    @counts.message++
+    @drawn.messages.push text
 
   # drawHiatus outputs something that represents a hiatus.
-  drawHiatus: (pos) -> @counts.hiatus++
+  drawHiatus: (pos) ->
+    @counts.hiatus++
+    @drawn.hiatuses.push pos
 
   # drawAccel outputs a representation of an accelerando at the given position.
-  drawAccel: (pos) -> @counts.accel++
+  drawAccel: (pos) ->
+    @counts.accel++
+    @drawn.accels.push pos
 
   # drawDecel outputs a representation of an decelerando at the given position.
-  drawDecel: (pos) -> @counts.decel++
+  drawDecel: (pos) ->
+    @counts.decel++
+    @drawn.decels.push pos
 
   # drawParens outpus a representation of parentheses bracketing the range start
   # to end.
-  drawParens: (pos) -> @counts.parens++
+  drawParens: (pos) ->
+    @counts.parens++
+    @drawn.parens.push pos
 
   # drawAccent outputs an accent mark at the given point.
-  drawAccent: (pos) -> @counts.accent++
+  drawAccent: (pos) ->
+    @counts.accent++
+    @drawn.accents.push pos
 
   # shortSoundLength returns the length that should be used for a short sound,
   # like for some of the cases in the third sound (the ones that are past the

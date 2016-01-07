@@ -103,6 +103,10 @@ describe "The Driver class", ->
     sendInput input, {click: 0}, {move: 20}
     draw.counts.proj.should.equal(0)
 
+  it "should not draw a current projection ", ->
+    {draw, input, driver} = setup maxLen, states
+    sendInput input, {click: 0}, {moveClick: 4}, {move: 3}
+
   it "should not accept clicks if the first pause is negative", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 0}, {moveClick: 4}, {move: 3}

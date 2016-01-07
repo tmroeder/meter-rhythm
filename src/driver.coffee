@@ -49,3 +49,4 @@ exports.Driver = class Driver
   reset: ->
     @cur = "start"
     @points = new Points @maxLen
+    @ui.draw @points, @cur, @states
