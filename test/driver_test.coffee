@@ -116,6 +116,13 @@ describe "The Driver class", ->
     sendInput input, {click: 3}
     driver.cur.should.equal("pause1Negative")
 
+  it "should enter sound2StartsTooLong if sound too starts too late", ->
+    {draw, input, driver} = setup maxLen, states
+    sendInput input, {click: 0}, {moveClick: 6}, {move: 8}, {move: 12}
+    driver.cur.should.equal("pause1")
+    sendInput input, {click: 12}
+    driver.cur.should.equal("sound2StartsTooLong")
+
   it "should change any initial click to a click at x = 0", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 4}

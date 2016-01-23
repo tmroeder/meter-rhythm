@@ -229,9 +229,9 @@ exports.Input = class Input
   # registerMove takes a function and registers it to receive notification
   # when movement occurs. The function will be called as fn(x, y) where (x, y)
   # is the current position.
-  registerMove: (fn) -> return
+  registerMove: (fn) -> throw new UIError("registerMove is not implemented")
 
   # registerClick takes a function and registers it to receive notification
   # when a click occurs. The function will be called as fn(x, y), where (x, y)
   # is the current position.
-  registerClick: (fn) -> return
+  registerClick: (fn) -> throw new UIError("registerClick is not implemented")

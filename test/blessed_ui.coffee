@@ -25,6 +25,7 @@ exports.BlessedInput = class BlessedInput extends Input
     @screen.key clickKeys, (data) =>
       @screen.debug("hit the space bar at " + @pos)
       for fn in @clickRegistry
+        @screen.debug "Called a click function"
         fn? @pos, 0
 
   setUpMoveHandlers: (leftKeys, rightKeys) ->
@@ -33,6 +34,7 @@ exports.BlessedInput = class BlessedInput extends Input
         @pos -= @moveIncrement
         @screen.debug("move left to " + @pos)
         for fn in @moveRegistry
+          @screen.debug "Called a left function"
           fn? @pos, 0
       else
         @screen.debug "can't move below 0"
@@ -42,7 +44,7 @@ exports.BlessedInput = class BlessedInput extends Input
         @pos += @moveIncrement
         @screen.debug("moving right to " + @pos)
         for fn in @moveRegistry
-          @screen.debug "Called a function"
+          @screen.debug "Called a right function"
           fn? @pos, 0
       else
         @screen.debug("can't move beyond " + @screen.width)
@@ -84,10 +86,10 @@ exports.BlessedDraw = class BlessedDraw extends Draw
     @screenWidth = @screen.width
 
     @commentBox = @createBox "top", "left"
-    @screen.append @commentBox
+    @screen.prepend @commentBox
 
     @messageBox = @createBox @commentBox.position.height, "left"
-    @screen.append @messageBox
+    @screen.prepend @messageBox
 
     # Quit on Escape, q, or Control-C.
     @screen.key ["escape", "q", "C-c"], (ch, key) =>
@@ -118,7 +120,6 @@ exports.BlessedDraw = class BlessedDraw extends Draw
     )
 
     # Lines always need to be in the back so they don't cover points.
-    line.setBack()
     return line
 
   createText: (ch, top, left) ->
@@ -136,14 +137,13 @@ exports.BlessedDraw = class BlessedDraw extends Draw
       top: top
       left: left
     )
-    point.setFront()
     return point
 
   clearScreen: ->
     for child in @screen.children
       @screen.remove child?
-    @screen.append @commentBox
-    @screen.append @messageBox
+    @screen.prepend @commentBox
+    @screen.prepend @messageBox
 
   # draw calls the parent Draw class but clears the screen first and renders it
   # after the call completes.
@@ -154,30 +154,38 @@ exports.BlessedDraw = class BlessedDraw extends Draw
 
   # drawSoundStart draws the beginning of a sound.
   drawSoundStart: (x) ->
+    @screen.debug "Called drawSoundStart with " + x
     p = @createPoint @durationHeight, x
+    p.setFront()
     @screen.append p
 
   # drawDuration draws the length of a duration.
   drawDuration: (start, end) ->
     @screen.debug "Called drawDuration with " + start + ", " + end
     d = @createLine start, end, @durationHeight
-    @screen.append d
+    d.setBack()
+    @screen.prepend d
 
   # drawSoundEnd draws the endpoint of a sound.
   drawSoundEnd: (x) ->
+    @screen.debug "Called drawSoundEnd with " + x
     p = @createPoint @durationHeight, x
+    p.setFront()
     @screen.append p
 
   # drawProjection draws a projection, potentially one that is not realized.
   drawProjection: (start, end, dashed) ->
     # TODO(tmroeder): this implementation ignores the "dashed" argument.
+    @screen.debug "Called drawProjection with " + start + ", " + end
     proj = @createLine start, end, @projHeight
-    @screen.append proj
+    proj.setBack()
+    @screen.prepend proj
 
   # drawExpected draws a projection that is expected to be realized.
   drawExpectedProjection: (start, end) ->
     exp = @createLine start, end, @expectHeight
-    @screen.append exp
+    exp.setBack()
+    @screen.prepend exp
 
   # writeComment outputs comment text.
   writeComment: (text) ->
@@ -189,38 +197,41 @@ exports.BlessedDraw = class BlessedDraw extends Draw
 
   # drawHiatus outputs something that represents a hiatus.
   drawHiatus: (pos) ->
-    t = createText "h", @symbolHeight, pos
-    @screen.append t
+    t = @createText "h", @symbolHeight, pos
+    @screen.prepend t
 
   # drawAccel outputs a representation of an accelerando at the given position.
   drawAccel: (pos) ->
-    t = createText "accel", @symbolHeight, pos
-    @screen.append t
+    t = @createText "accel", @symbolHeight, pos
+    @screen.prepend t
 
   # drawDecel outputs a representation of an decelerando at the given position.
   drawDecel: (pos) ->
-    t = createText "decel", @symbolHeight, pos
-    @screen.append t
+    t = @createText "decel", @symbolHeight, pos
+    @screen.prepend t
 
   # drawParens outputs a representation of parentheses bracketing the range start
   # to end.
   drawParens: (start, end) ->
-    t = createText "p", @symbolHeight, pos
-    @screen.append t
+    t = @createText "p", @symbolHeight, pos
+    @screen.prepend t
 
   # drawAccent outputs an accent mark at the given point.
   drawAccent: (pos) ->
     t = createText "a", @symbolHeight, pos
-    @screen.append t
+    @screen.prepend t
 
   # shortSoundLength returns the length that should be used for a short sound,
   # like for some of the cases in the third sound (the ones that are past the
   # projected duration).
   shortSoundLength: -> 5
 
-maxLen = 10
-draw = new BlessedDraw()
-input = new BlessedInput draw.screen, 1, "space", "left", "right"
-driver = new Driver maxLen, states, input, draw
+exports.StartUI = ->
+  maxLen = 10
+  draw = new BlessedDraw()
+  input = new BlessedInput draw.screen, 2, "space", "left", "right"
+  driver = new Driver maxLen, states, input, draw
+  draw.screen.key "c", (data) =>
+    draw.screen.debug "Current driver state is " + driver.cur
 
-draw.screen.render()
+  draw.screen.render()

@@ -48,7 +48,7 @@ exports.states =
       sound1Continues: true
     moveHandler: -> "sound1Continues"
 
-  # The first sound continues and isn"t too long.
+  # The first sound continues and isn't too long.
   sound1Continues:
     comment: "The first sound is becoming. Time 0 becomes its beginning. " +
              "'Projective potential'--the potential of a duration to be " +
@@ -126,7 +126,7 @@ exports.states =
         return "pause1Negative"
       "pause1"
     clickHandler: (points, x) ->
-      if not points.isDeterminate(points.points[Points.sound1Second], x)
+      if not points.isDeterminate(points.points[Points.sound1First], x)
         return "sound2StartsTooLong"
       "sound2Starts"
 
@@ -166,7 +166,8 @@ exports.states =
         return "sound2Continues"
       "sound2ContinuesTooLong"
 
-  # The beginning of the second sound after too long of a pause.
+  # The beginning of the second sound after too long a duration since the first
+  # sound started.
   sound2StartsTooLong:
     comment: "The second sound begins. It is so long since the beginning of " +
              "the first event that the interonset duration is mensurally " +
