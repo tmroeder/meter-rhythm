@@ -26,7 +26,7 @@ exports.states =
   start:
     comment: "This demonstrates the concepts in Chapter 7 of Christopher " +
              "Hasty's 'Meter as Rhythm'. Imagine time 0 as an instant that " +
-             " is a potential beginning of a sound, yet prior to and " +
+             "is a potential beginning of a sound, yet prior to and " +
              "independent of it."
     message: "You may perform graphically up to three successive sounds by " +
              "clicking and moving the mouse. First, click the mouse at time " +

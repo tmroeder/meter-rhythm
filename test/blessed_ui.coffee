@@ -9,6 +9,11 @@ blessed = require "blessed"
 exports.BlessedInput = class BlessedInput extends Input
   constructor: (@screen, @moveIncrement, clickKeys, leftKeys, rightKeys) ->
     @pos = 0
+
+    # BlessedInput avoids knowing much about the underlying driver, but it
+    # does need to know that no movement is possible without an initial click.
+    # This member variable tracks that information.
+    @allowMovement = false
     @moveRegistry = []
     @clickRegistry = []
 
@@ -23,6 +28,9 @@ exports.BlessedInput = class BlessedInput extends Input
 
   setUpClickHandlers: (clickKeys) ->
     @screen.key clickKeys, (data) =>
+      @allowMovement = true
+      if not @allowMovement
+        return
       @screen.debug("hit the space bar at " + @pos)
       for fn in @clickRegistry
         @screen.debug "Called a click function"
@@ -30,6 +38,8 @@ exports.BlessedInput = class BlessedInput extends Input
 
   setUpMoveHandlers: (leftKeys, rightKeys) ->
     @screen.key leftKeys, (ch, key) =>
+      if not @allowMovement
+        return
       if @pos >= @moveIncrement
         @pos -= @moveIncrement
         @screen.debug("move left to " + @pos)
@@ -40,6 +50,8 @@ exports.BlessedInput = class BlessedInput extends Input
         @screen.debug "can't move below 0"
 
     @screen.key rightKeys, (ch, key) =>
+      if not @allowMovement
+        return
       if @pos <= @screen.width - @moveIncrement
         @pos += @moveIncrement
         @screen.debug("moving right to " + @pos)
