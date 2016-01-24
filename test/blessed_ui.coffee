@@ -151,6 +151,11 @@ exports.BlessedDraw = class BlessedDraw extends Draw
     )
     return point
 
+  # TODO(tmroeder): have three lines, 2 projections, an expected projection, a
+  # weak projection, a text box, and three points, and render them according to
+  # the incoming information. Maybe this would be easiest if the UI interface
+  # were changed to explicitly say which duration/projection/point it was
+  # drawing.
   clearScreen: ->
     for child in @screen.children
       @screen.remove child?
