@@ -60,7 +60,8 @@ exports.states =
       sound1ContinuesTooLong: true
       sound1Ends: true
     moveHandler: (points, x) ->
-      if not points.isDeterminate(points.points[Points.sound1First], x)
+      startPoint = points.points[Points.sound1First]
+      if startPoint < x and not points.isDeterminate(startPoint, x)
         return "sound1ContinuesTooLong"
       "sound1Continues"
     clickHandler: -> "sound1Ends"

@@ -60,6 +60,13 @@ describe "The Driver class", ->
     c = new Counts comment: 1, message: 1, start: 1
     draw.counts.should.deep.equal(c)
 
+  it "should stay in sound1Continues if the duration goes back to 0", ->
+    {draw, input, driver} = setup maxLen, states
+
+    sendInput input, {click: 0}, {move: 1}, {move: 0}
+
+    driver.cur.should.equal("sound1Continues")
+
   it "should draw a sound and a projection for three determinate clicks", ->
     {draw, input, driver} = setup maxLen, states
 

@@ -23,8 +23,7 @@ projectionOn = Points.projectionOn
 projectionCurrent = Points.projectionCurrent
 projectionWeak = Points.projectionWeak
 
-describe "The states object", ->
-  states = states
+describe "The state machine", ->
   it "should have a start state", ->
     states.should.have.property "start"
 
