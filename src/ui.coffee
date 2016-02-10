@@ -20,25 +20,55 @@ exports.UIError = class UIError extends Error
   name: "UIError"
   constructor: (@message) ->
 
+exports.State = class State
+  constructor: (state) ->
+    {
+      @points = {}
+      @lines = {}
+      @projs = {}
+      @text = []
+      @hiatus = 0
+      @accel = 0
+      @decel = 0
+      @parens = 0
+      @accent = 0
+      @short = 0
+    } = (state ? {})
+
+
 # Draw gives the interface for Draw classes that can be used by the state
 # machine states to draw themselves.
 exports.Draw = class Draw
-  constructor: ->
-    throw new UIError("Draw cannot be constructed directly")
+  # These values represent types of events that can occur.
+  @first = "first"
+  @second = "second"
+  @third = "third"
+
+  @start = "start"
+  @end = "end"
+  
+  @proj = "normal"
+  @weak = "weak"
+  @exp = "expected"
+
+  @comment = "comment"
+  @message = "message"
+
+  constructor: (@state) ->
 
   # The default drawing function.
   draw: (points, state, states, cur) ->
-    @writeComment states[state].comment
-    @writeMessage states[state].message
+    @write states[state].comment, Draw.comment
+    @write states[state].message, Draw.message
 
     # Draw the start of the first sound.
     sound1Start = points.points[Points.sound1First]
     return unless sound1Start?
-    @drawSoundStart sound1Start
+    @drawPoint sound1Start, Draw.first, Draw.start
 
     # Draw the dynamic components of the first sound.
     if cur? and cur != sound1Start and points.inFirstSound()
-      @drawDuration sound1Start, cur
+      @drawDuration sound1Start, cur, Draw.first
 
     sound1End = points.points[Points.sound1Second]
 
@@ -47,41 +77,41 @@ exports.Draw = class Draw
     if status == Points.projectionOn and points.points.length > 2
       end = points.points[Points.sound2First]
       difference = end - sound1Start
-      @drawProjection sound1Start, end, false
-      @drawExpectedProjection end, end + difference, false
+      @drawProjection sound1Start, end, Draw.first, Draw.proj
+      @drawProjection end, end + difference, Draw.first, Draw.exp
     else if status == Points.projectionCurrent
       # Don't draw a projection that is shorter than an existing first sound.
       if sound1End? and cur < sound1End
-        @drawProjection sound1Start, sound1End, false
+        @drawProjection sound1Start, sound1End, Draw.first, Draw.proj
       else
-        @drawProjection sound1Start, cur, false
+        @drawProjection sound1Start, cur, Draw.first, Draw.proj
 
     # Draw the end of the first sound.
     return unless sound1End?
-    @drawDuration sound1Start, sound1End
-    @drawSoundEnd sound1End
+    @drawDuration sound1Start, sound1End, Draw.first
+    @drawPoint sound1End, Draw.first, Draw.end
 
     # Draw the beginning of the second sound.
     sound2Start = points.points[Points.sound2First]
     return unless sound2Start?
-    @drawSoundStart sound2Start
+    @drawPoint sound2Start, Draw.second, Draw.start
 
     # Draw the dynamic components of the second sound
     if cur? and cur > sound2Start and points.inSecondSound()
-      @drawDuration sound2Start, cur
+      @drawDuration sound2Start, cur, Draw.second
 
     status = points.secondProjection(cur)
     if status == Points.projectionOn or status == Points.projectionCurrent
-      @drawProjection sound2Start, cur, false
+      @drawProjection sound2Start, cur, Draw.second, Draw.proj
     else if points.secondProjection(cur) == Points.projectionWeak
-      @drawProjection sound2Start, cur, true
+      @drawProjection sound2Start, cur, Draw.second, Draw.weak
 
     # Draw the end of the second sound.
     sound2End = points.points[Points.sound2Second]
     return unless sound2End?
 
-    @drawDuration sound2Start, sound2End
-    @drawSoundEnd sound2End
+    @drawDuration sound2Start, sound2End, Draw.second
+    @drawPoint sound2End, Draw.second, Draw.end
 
     # There are no dynamic components to the third sound, and its ending point
     # is defined simultaneously with its starting point.
@@ -99,9 +129,9 @@ exports.Draw = class Draw
         points.pushPoint sound3Start + @shortSoundLength()
       sound3End = points.points[Points.sound3Second]
 
-    @drawSoundStart sound3Start
-    @drawDuration sound3Start, sound3End
-    @drawSoundEnd sound3End
+    @drawPoint sound3Start, Draw.third, Draw.start
+    @drawDuration sound3Start, sound3End, Draw.third
+    @drawPoint sound3End, Draw.third, Draw.end
 
     sound3Length = sound3End - sound3Start
 
@@ -109,116 +139,81 @@ exports.Draw = class Draw
       @drawAccel sound3Start
     else if realized
       if state == "sound3StartsRealized"
-        @drawDashedProjection sound3Start, sound3End
+        @drawProjection sound3Start, sound3End, Draw.third, Draw.dashed
         @drawParens sound3Start
       else if state == "sound3StartsAltInterpretation"
         @drawAccent sound3Start
-        @drawProjection sound3Start, sound3End + sound3Length
+        @drawProjection sound3Start, sound3End + sound3Length, Draw.third,
+                        Draw.proj
     else if points.isSlightlyLate sound2Start, sound3Start
       @drawDecel sound3Start
     else if points.isSlightlyLateNewProjection sound2Start, sound3Start
-      @drawProjection sound3Start, sound3End
+      @drawProjection sound3Start, sound3End, Draw.third, Draw.proj
     else if not points.isDeterminate sound2Start, sound3Start
       @drawHiatus sound3Start
-      @drawProjection sound3Start, sound3End + sound3Length
+      @drawProjection sound3Start, sound3End + sound3Length, Draw.third,
+                      Draw.proj
 
-  # drawSoundStart draws the beginning of a sound.
-  drawSoundStart: (x) -> throw new UIError("drawSoundStart not implemented")
+  # drawPoint draws the beginning or end of a sound.
+  drawPoint: (pos, soundName, soundType) ->
+    if soundName not in @state.points
+      @state.points[soundName] = {}
+    @state.points[soundName][soundType] = pos
 
   # drawDuration draws the length of a duration.
-  drawDuration: (start, end) ->
-    throw new UIError("drawDuration not implemented")
-
-  # drawSoundEnd draws the endpoint of a sound.
-  drawSoundEnd: (x) -> throw new UIError("drawSoundEnd not implemented")
+  drawDuration: (start, end, soundName) ->
+    if soundName not in @state.lines
+      @state.lines[soundName] = {}
+    @state.lines[soundName][Draw.start] = start
+    @state.lines[soundName][Draw.end] = end
 
   # drawProjection draws a projection, potentially one that is not realized.
-  drawProjection: (start, end, dashed) ->
-    throw new UIError("drawProjection not implemented")
+  drawProjection: (start, end, soundName, projType) ->
+    if soundName not in @state.proj
+      @state.proj[soundName] = {}
+    sound = @state.proj[soundName]
+    if projType not in sound
+      sound[projType] = {}
+    sound[projType][Draw.start] = start
+    sound[projType][Draw.end] = end
 
-  # drawExpected draws a projection that is expected to be realized.
-  drawExpectedProjection: (start, end) ->
-    throw new UIError("drawExpectedProjection not implemented")
-
-  # writeComment outputs comment text.
-  writeComment: (text) -> throw new UIError("writeComment not implemented")
-
-  # writeMessage outputs message text.
-  writeMessage: (text) -> throw new UIError("writeMessage not implemented")
+  # write outputs text. The valid text types are Draw.comment and Draw.message.
+  write: (text, textType) -> @state[textType] = text
 
   # drawHiatus outputs something that represents a hiatus.
-  drawHiatus: (pos) -> throw new UIError("drawHiatus not implemented")
+  drawHiatus: (pos) -> @state.hiatus = pos
 
   # drawAccel outputs a representation of an accelerando at the given position.
-  drawAccel: (pos) -> throw new UIError("drawAccel not implemented")
+  drawAccel: (pos) -> @state.accel = pos
 
   # drawDecel outputs a representation of an decelerando at the given position.
-  drawDecel: (pos) -> throw new UIError("drawDecl not implemented")
+  drawDecel: (pos) -> @state.decel = pos
 
   # drawParens outpus a representation of parentheses bracketing the range start
   # to end.
-  drawParens: (start, end) -> throw new UIError("drawParens not implemented")
+  drawParens: (pos) -> @state.parens = pos
 
   # drawAccent outputs an accent mark at the given point.
-  drawAccent: (pos) -> throw new UIError("drawAccent not implemented")
+  drawAccent: (pos) -> @state.accent = pos
 
   # shortSoundLength returns the length that should be used for a short sound,
   # like for some of the cases in the third sound (the ones that are past the
-  # projected duration).
+  # projected duration). There's no reasonable default, so this has to be
+  # handled by subclasses.
   shortSoundLength: -> throw new UIError("shortSoundLength not implemented")
 
 # TextDraw is a Draw class that is used to output elements of the simulation.
 exports.TextDraw = class TextDraw extends Draw
   constructor: -> return
 
-  # drawSoundStart draws the beginning of a sound.
-  drawSoundStart: (x) -> console.log "Sound started at position #{x}"
-
-  # drawDuration draws the length of a duration.
-  drawDuration: (start, end) -> console.log "Duration from #{start} to #{end}"
-
-  # drawSoundEnd draws the endpoint of a sound.
-  drawSoundEnd: (x) -> console.log "Sound ended at position #{x}"
-
-  # drawProjection draws a projection, potentially one that is not realized.
-  drawProjection: (start, end, dashed) ->
-    if dashed
-      console.log "Dashed projection from #{start} to #{end}"
-    else
-      console.log "Projection from #{start} to #{end}"
-
-  # drawExpectedProjection draws a projection that is expected to be realized.
-  drawExpectedProjection: (start, end) ->
-    console.log "Expected projection from #{start} to #{end}"
-
-  # writeComment outputs comment text.
-  writeComment: (text) -> console.log "\nComment: #{text}"
-
-  # writeMessage outputs message text.
-  writeMessage: (text) -> console.log "Message: #{text}"
-
-  # drawHiatus outputs something that represents a hiatus.
-  drawHiatus: (pos) -> console.log "Hiatus occurs at #{pos}"
-
-  # drawAccel outputs a representation of an accelerando at the given position.
-  drawAccel: (pos) -> console.log "Accelerando occurs at #{pos}"
-
-  # drawDecel outputs a representation of an decelerando at the given position.
-  drawDecel: (pos) -> console.log "Decelerando occurs at #{pos}"
-
-  # drawParens outpus a representation of parentheses bracketing the range start
-  # to end.
-  drawParens: (start, end) -> console.log("Parens from #{start} to #{end}")
-
-  # drawAccent outputs an accent mark at the given point.
-  drawAccent: (pos) -> console.log("Accent occurs at #{pos}")
+  draw: (points, state, states, cur) ->
+    super(points, state, states, cur)
+    console.log @state
 
   # shortSoundLength returns the length that should be used for a short sound,
   # like for some of the cases in the third sound (the ones that are past the
   # projected duration).
-  shortSoundLength: ->
-    console.log("Short-sound length requested. Returning 20")
-    20
+  shortSoundLength: -> 20
 
 # The Input class is an interface for registering input handlers. Subclasses
 # need to provide a connection to a source of input events.

@@ -15,7 +15,7 @@
 {Driver} = require "../src/driver.coffee"
 {Points, states} = require "../src/state_machine.coffee"
 {TextDraw} = require "../src/ui.coffee"
-{Counts, Drawn, MockDraw, MockInput} = require "./mock_ui.coffee"
+{Counts, Drawn, StateDraw, MockInput} = require "./mock_ui.coffee"
 
 chai = require "chai"
 expect = chai.expect
@@ -25,7 +25,7 @@ should = chai.should()
 # The latestCounts parameter causes the counts to only record the last draw()
 # operation instead of all draw() operations. This can make tests clearer.
 setup = (len, states, latestCounts=true) ->
-  draw = new MockDraw latestCounts
+  draw = new StateDraw latestCounts
   input = new MockInput()
   driver = new Driver len, states, input, draw
   {draw: draw, input: input, driver: driver}
