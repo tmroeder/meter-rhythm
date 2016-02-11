@@ -26,7 +26,7 @@ exports.State = class State
       @points = {}
       @lines = {}
       @projs = {}
-      @text = []
+      @text = {}
       @hiatus = 0
       @accel = 0
       @decel = 0
@@ -54,10 +54,11 @@ exports.Draw = class Draw
   @comment = "comment"
   @message = "message"
 
-  constructor: (@state) ->
+  constructor: (state) -> @state = new State(state)
 
   # The default drawing function.
   draw: (points, state, states, cur) ->
+    console.log state
     @write states[state].comment, Draw.comment
     @write states[state].message, Draw.message
 
@@ -178,7 +179,7 @@ exports.Draw = class Draw
     sound[projType][Draw.end] = end
 
   # write outputs text. The valid text types are Draw.comment and Draw.message.
-  write: (text, textType) -> @state[textType] = text
+  write: (text, textType) -> @state.text[textType] = text
 
   # drawHiatus outputs something that represents a hiatus.
   drawHiatus: (pos) -> @state.hiatus = pos
@@ -204,7 +205,8 @@ exports.Draw = class Draw
 
 # TextDraw is a Draw class that is used to output elements of the simulation.
 exports.TextDraw = class TextDraw extends Draw
-  constructor: -> return
+  constructor: ->
+    super()
 
   draw: (points, state, states, cur) ->
     super(points, state, states, cur)

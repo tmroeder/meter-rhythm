@@ -14,7 +14,7 @@
 
 {Driver} = require "../src/driver.coffee"
 {Points, states} = require "../src/state_machine.coffee"
-{TextDraw} = require "../src/ui.coffee"
+{Draw, TextDraw} = require "../src/ui.coffee"
 {Counts, Drawn, StateDraw, MockInput} = require "./mock_ui.coffee"
 
 chai = require "chai"
@@ -25,7 +25,7 @@ should = chai.should()
 # The latestCounts parameter causes the counts to only record the last draw()
 # operation instead of all draw() operations. This can make tests clearer.
 setup = (len, states, latestCounts=true) ->
-  draw = new StateDraw latestCounts
+  draw = new StateDraw 20
   input = new MockInput()
   driver = new Driver len, states, input, draw
   {draw: draw, input: input, driver: driver}
@@ -46,8 +46,9 @@ maxLen = 10
 describe "The Driver class", ->
   it "should construct an instance with mock UI", ->
     {draw, input, driver} = setup maxLen, states
-    c = new Counts comment: 1, message: 1
-    draw.counts.should.deep.equal(c)
+    draw.state.text.should.have.property(Draw.comment)
+    draw.state.text.should.have.property(Draw.message)
+    draw.state.text.should.not.have.property("this is not a property")
 
   it "should move from start to sound1Starts on a click event", ->
     {draw, input, driver} = setup maxLen, states
@@ -56,9 +57,8 @@ describe "The Driver class", ->
 
     driver.cur.should.equal("sound1Starts")
     driver.points.points.length.should.equal(1)
-
-    c = new Counts comment: 1, message: 1, start: 1
-    draw.counts.should.deep.equal(c)
+    p = first: start: 0
+    draw.state.points.should.deep.equal(p)
 
   it "should stay in sound1Continues if the duration goes back to 0", ->
     {draw, input, driver} = setup maxLen, states

@@ -40,5 +40,6 @@ exports.MockInput = class MockInput extends Input
 # StateDraw tracks the draw events that have been sent to it.
 exports.StateDraw = class StateDraw extends Draw
   constructor: (@shortLength) ->
+    super()
 
   shortSoundLength: -> @shortLength
