@@ -23,7 +23,6 @@ exports.UIError = class UIError extends Error
 exports.State = class State
   constructor: (state) ->
     {
-      @points = {}
       @lines = {}
       @projs = {}
       @text = {}
@@ -37,7 +36,8 @@ exports.State = class State
 
 
 # Draw gives the interface for Draw classes that can be used by the state
-# machine states to draw themselves.
+# machine states to draw themselves. It writes the current drawing state to a
+# variable that can be accessed by subclasses to render themselves.
 exports.Draw = class Draw
   # These values represent types of events that can occur.
   @first = "first"
@@ -54,11 +54,17 @@ exports.Draw = class Draw
   @comment = "comment"
   @message = "message"
 
-  constructor: (state) -> @state = new State(state)
+  constructor: (shortSoundLen, state) ->
+    @shortSoundLen = shortSoundLen
+    @state = new State(state)
 
   # The default drawing function.
   draw: (points, state, states, cur) ->
-    console.log state
+    # The state object represents the current state of the UI objects, and
+    # operations that don't happen can't clear old state. So, clear the state
+    # before each draw operation.
+    @state = new State()
+
     @write states[state].comment, Draw.comment
     @write states[state].message, Draw.message
 
@@ -127,7 +133,7 @@ exports.Draw = class Draw
       if accel or realized
         points.pushPoint 2 * sound2Start
       else
-        points.pushPoint sound3Start + @shortSoundLength()
+        points.pushPoint sound3Start + @shortSoundLen
       sound3End = points.points[Points.sound3Second]
 
     @drawPoint sound3Start, Draw.third, Draw.start
@@ -140,7 +146,7 @@ exports.Draw = class Draw
       @drawAccel sound3Start
     else if realized
       if state == "sound3StartsRealized"
-        @drawProjection sound3Start, sound3End, Draw.third, Draw.dashed
+        @drawProjection sound3Start, sound3End, Draw.third, Draw.exp
         @drawParens sound3Start
       else if state == "sound3StartsAltInterpretation"
         @drawAccent sound3Start
@@ -155,25 +161,27 @@ exports.Draw = class Draw
       @drawProjection sound3Start, sound3End + sound3Length, Draw.third,
                       Draw.proj
 
-  # drawPoint draws the beginning or end of a sound.
+  # drawPoint draws the beginning or end of a sound. It draws to the lines
+  # object, but unlike drawDuration, it can draw a single start/end element
+  # without the other.
   drawPoint: (pos, soundName, soundType) ->
-    if soundName not in @state.points
-      @state.points[soundName] = {}
-    @state.points[soundName][soundType] = pos
+    if soundName not of @state.lines
+      @state.lines[soundName] = {}
+    @state.lines[soundName][soundType] = pos
 
   # drawDuration draws the length of a duration.
   drawDuration: (start, end, soundName) ->
-    if soundName not in @state.lines
+    if soundName not of @state.lines
       @state.lines[soundName] = {}
     @state.lines[soundName][Draw.start] = start
     @state.lines[soundName][Draw.end] = end
 
   # drawProjection draws a projection, potentially one that is not realized.
   drawProjection: (start, end, soundName, projType) ->
-    if soundName not in @state.proj
-      @state.proj[soundName] = {}
-    sound = @state.proj[soundName]
-    if projType not in sound
+    if soundName not of @state.projs
+      @state.projs[soundName] = {}
+    sound = @state.projs[soundName]
+    if projType not of sound
       sound[projType] = {}
     sound[projType][Draw.start] = start
     sound[projType][Draw.end] = end
@@ -197,25 +205,15 @@ exports.Draw = class Draw
   # drawAccent outputs an accent mark at the given point.
   drawAccent: (pos) -> @state.accent = pos
 
-  # shortSoundLength returns the length that should be used for a short sound,
-  # like for some of the cases in the third sound (the ones that are past the
-  # projected duration). There's no reasonable default, so this has to be
-  # handled by subclasses.
-  shortSoundLength: -> throw new UIError("shortSoundLength not implemented")
-
-# TextDraw is a Draw class that is used to output elements of the simulation.
+# TextDraw is a Draw class that is used to output the current drawing state
+# object.
 exports.TextDraw = class TextDraw extends Draw
-  constructor: ->
-    super()
+  constructor: (shortSoundLen) ->
+    super(shortSoundLen)
 
   draw: (points, state, states, cur) ->
     super(points, state, states, cur)
     console.log @state
-
-  # shortSoundLength returns the length that should be used for a short sound,
-  # like for some of the cases in the third sound (the ones that are past the
-  # projected duration).
-  shortSoundLength: -> 20
 
 # The Input class is an interface for registering input handlers. Subclasses
 # need to provide a connection to a source of input events.

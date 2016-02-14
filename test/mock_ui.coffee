@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-{Draw, Input} = require "../src/ui.coffee"
+{Input} = require "../src/ui.coffee"
 
 # MockInput is an Input class that can be used to programmatically drive tests
 # over the input-dependent code.
@@ -36,10 +36,3 @@ exports.MockInput = class MockInput extends Input
   click: (x, y) ->
     for fn in @clickRegistry
       fn? x, y
-
-# StateDraw tracks the draw events that have been sent to it.
-exports.StateDraw = class StateDraw extends Draw
-  constructor: (@shortLength) ->
-    super()
-
-  shortSoundLength: -> @shortLength
