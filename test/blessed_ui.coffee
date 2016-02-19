@@ -64,6 +64,7 @@ exports.BlessedInput = class BlessedInput extends Input
 # The Blessed UI for Meter as Rhythm runs in an 80x25 terminal.
 standardTerminalWidth = 80
 standardTerminalHeight = 25
+shortSoundLen = 5
     
 # BlessedDraw uses the Blessed UI to draw to the terminal.
 exports.BlessedDraw = class BlessedDraw extends Draw
@@ -71,16 +72,19 @@ exports.BlessedDraw = class BlessedDraw extends Draw
   # The BlessedDraw class takes a structure that gives the parameters of the
   # screen and the heights and positions of the elements.
   constructor: (screenParams) ->
+    super(shortSoundLen)
+
     {
-      @durationHeight = 11
-      @expectHeight = 7
-      @projHeight = 9
-      @symbolHeight = 13
+      @durationHeight = 17
+      @expectHeight = 13
+      @projHeight = 15
+      @symbolHeight = 19
       @leftStart = 0
       @title = "Meter as Rhythm"
       @logName = "meter.log"
-      @boxHeight = 4
+      @boxHeight = 6
     } = (screenParams ? {})
+
 
     # Insist on a screen of size 80x25.
     @screen = blessed.Screen(
@@ -94,14 +98,37 @@ exports.BlessedDraw = class BlessedDraw extends Draw
       height: standardTerminalHeight
     )
 
-    @pointHeight = 1
     @screenWidth = @screen.width
 
     @commentBox = @createBox "top", "left"
-    @screen.prepend @commentBox
-
     @messageBox = @createBox @commentBox.position.height, "left"
-    @screen.prepend @messageBox
+    @screen.append @messageBox
+    @screen.append @commentBox
+
+    @firstLine = @createLine 0, 0, @durationHeight
+    @secondLine = @createLine 0, 0, @durationHeight
+    @thirdLine = @createLine 0, 0, @durationHeight
+    @screen.append @firstLine
+    @screen.append @secondLine
+    @screen.append @thirdLine
+
+    @firstProj = @createLine 0, 0, @projHeight, "red"
+    @secondProj = @createLine 0, 0, @projHeight, "yellow"
+    @expectedProj = @createLine 0, 0, @expectHeight, "green"
+    @screen.append @firstProj
+    @screen.append @secondProj
+    @screen.append @expectedProj
+
+    @hiatus = @createText "h", @symbolHeight, 0
+    @accel = @createText "accel", @symbolHeight, 0
+    @decel = @createText "decel", @symbolHeight, 0
+    @parens = @createText "p", @symbolHeight, 0
+    @accent = @createText "a", @symbolHeight, 0
+    @screen.append @hiatus
+    @screen.append @accel
+    @screen.append @decel
+    @screen.append @parens
+    @screen.append @accent
 
     # Quit on Escape, q, or Control-C.
     @screen.key ["escape", "q", "C-c"], (ch, key) =>
@@ -123,16 +150,16 @@ exports.BlessedDraw = class BlessedDraw extends Draw
           fg: "white"
     )
 
-  createLine: (start, end, pos) ->
-    line = blessed.Line(
+  createLine: (start, end, pos, color) ->
+    return blessed.Line(
       orientation: "horizontal"
       width: end - start
       top: pos
       left: start
+      style:
+        fg: color ? "blue"
+        invisible: true
     )
-
-    # Lines always need to be in the back so they don't cover points.
-    return line
 
   createText: (ch, top, left) ->
     text = blessed.Text(
@@ -140,108 +167,51 @@ exports.BlessedDraw = class BlessedDraw extends Draw
       left: left
     )
     text.setContent(ch)
+    text.style.invisible = true
     return text
 
-  createPoint: (top, left) ->
-    point = blessed.Line(
-      orientation: "vertical"
-      height: @pointHeight
-      top: top
-      left: left
-    )
-    return point
-
-  # TODO(tmroeder): have three lines, 2 projections, an expected projection, a
-  # weak projection, a text box, and three points, and render them according to
-  # the incoming information. Maybe this would be easiest if the UI interface
-  # were changed to explicitly say which duration/projection/point it was
-  # drawing.
-  clearScreen: ->
-    for child in @screen.children
-      @screen.remove child?
-    @screen.prepend @commentBox
-    @screen.prepend @messageBox
-
-  # draw calls the parent Draw class but clears the screen first and renders it
-  # after the call completes.
+  # draw calls the parent Draw class and follows it by rendering the screen.
   draw: (points, state, states, cur) ->
-    @clearScreen()
     super(points, state, states, cur)
+    @updateElements()
     @screen.render()
 
-  # drawSoundStart draws the beginning of a sound.
-  drawSoundStart: (x) ->
-    @screen.debug "Called drawSoundStart with " + x
-    p = @createPoint @durationHeight, x
-    p.setFront()
-    @screen.append p
+  updateDuration: (lineName, line) ->
+    start = @state.lines[lineName]?[Draw.start] ? 0
+    end = @state.lines[lineName]?[Draw.end] ? 0
+    line.left = start
+    line.width = end - start
+    line.style.invisible = start == 0 and end == 0
 
-  # drawDuration draws the length of a duration.
-  drawDuration: (start, end) ->
-    @screen.debug "Called drawDuration with " + start + ", " + end
-    d = @createLine start, end, @durationHeight
-    d.setBack()
-    @screen.prepend d
+  updateProjection: (lineName, projType, proj) ->
+    start = @state.projs[lineName]?[projType]?[Draw.start] ? 0
+    end = @state.projs[lineName]?[projType]?[Draw.end] ? 0
+    proj.left = start
+    proj.width = end - start
+    proj.style.invisible = start == 0 and end == 0
 
-  # drawSoundEnd draws the endpoint of a sound.
-  drawSoundEnd: (x) ->
-    @screen.debug "Called drawSoundEnd with " + x
-    p = @createPoint @durationHeight, x
-    p.setFront()
-    @screen.append p
+  updateElements: ->
+    @commentBox.setContent(@state.text[Draw.comment] ? "")
+    @messageBox.setContent(@state.text[Draw.message] ? "")
 
-  # drawProjection draws a projection, potentially one that is not realized.
-  drawProjection: (start, end, dashed) ->
-    # TODO(tmroeder): this implementation ignores the "dashed" argument.
-    @screen.debug "Called drawProjection with " + start + ", " + end
-    proj = @createLine start, end, @projHeight
-    proj.setBack()
-    @screen.prepend proj
+    @updateDuration Draw.first, @firstLine
+    @updateDuration Draw.second, @secondLine
+    @updateDuration Draw.third, @thirdLine
 
-  # drawExpected draws a projection that is expected to be realized.
-  drawExpectedProjection: (start, end) ->
-    exp = @createLine start, end, @expectHeight
-    exp.setBack()
-    @screen.prepend exp
+    @updateProjection Draw.first, Draw.proj, @firstProj
+    @updateProjection Draw.first, Draw.exp, @expectedProj
+    @updateProjection Draw.second, Draw.proj, @secondProj
 
-  # writeComment outputs comment text.
-  writeComment: (text) ->
-    @commentBox.setContent text
-
-  # writeMessage outputs message text.
-  writeMessage: (text) ->
-    @messageBox.setContent text
-
-  # drawHiatus outputs something that represents a hiatus.
-  drawHiatus: (pos) ->
-    t = @createText "h", @symbolHeight, pos
-    @screen.prepend t
-
-  # drawAccel outputs a representation of an accelerando at the given position.
-  drawAccel: (pos) ->
-    t = @createText "accel", @symbolHeight, pos
-    @screen.prepend t
-
-  # drawDecel outputs a representation of an decelerando at the given position.
-  drawDecel: (pos) ->
-    t = @createText "decel", @symbolHeight, pos
-    @screen.prepend t
-
-  # drawParens outputs a representation of parentheses bracketing the range start
-  # to end.
-  drawParens: (start, end) ->
-    t = @createText "p", @symbolHeight, pos
-    @screen.prepend t
-
-  # drawAccent outputs an accent mark at the given point.
-  drawAccent: (pos) ->
-    t = createText "a", @symbolHeight, pos
-    @screen.prepend t
-
-  # shortSoundLength returns the length that should be used for a short sound,
-  # like for some of the cases in the third sound (the ones that are past the
-  # projected duration).
-  shortSoundLength: -> 5
+    @hiatus.left = @state.hiatus
+    @hiatus.style.invisible = @hiatus.left == 0
+    @accel.left = @state.accel
+    @accel.style.invisible = @accel.left == 0
+    @decel.left = @state.decel
+    @decel.style.invisible = @decel.left == 0
+    @parens.left = @state.parens
+    @parens.style.invisible = @parens.left == 0
+    @accent.left = @state.hiatus
+    @accent.style.invisible = @hiatus.left == 0
 
 exports.StartUI = ->
   maxLen = 10
