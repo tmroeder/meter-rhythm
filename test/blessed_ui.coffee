@@ -139,7 +139,7 @@ exports.BlessedDraw = class BlessedDraw extends Draw
     return blessed.Box(
       top: top
       left: left
-      width: @screen.width
+      width: standardTerminalWidth
       height: @boxHeight
       content: ""
       border:
@@ -165,9 +165,9 @@ exports.BlessedDraw = class BlessedDraw extends Draw
     text = blessed.Text(
       top: top
       left: left
+      invisible: true
     )
     text.setContent(ch)
-    text.style.invisible = true
     return text
 
   # draw calls the parent Draw class and follows it by rendering the screen.
@@ -210,8 +210,8 @@ exports.BlessedDraw = class BlessedDraw extends Draw
     @decel.style.invisible = @decel.left == 0
     @parens.left = @state.parens
     @parens.style.invisible = @parens.left == 0
-    @accent.left = @state.hiatus
-    @accent.style.invisible = @hiatus.left == 0
+    @accent.left = @state.accent
+    @accent.style.invisible = @accent.left == 0
 
 exports.StartUI = ->
   maxLen = 10
