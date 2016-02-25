@@ -31,9 +31,8 @@ exports.BlessedInput = class BlessedInput extends Input
       @allowMovement = true
       if not @allowMovement
         return
-      @screen.debug("hit the space bar at " + @pos)
+      @screen.debug("{click: " + @pos + "}")
       for fn in @clickRegistry
-        @screen.debug "Called a click function"
         fn? @pos, 0
 
   setUpMoveHandlers: (leftKeys, rightKeys) ->
@@ -42,9 +41,8 @@ exports.BlessedInput = class BlessedInput extends Input
         return
       if @pos >= @moveIncrement
         @pos -= @moveIncrement
-        @screen.debug("move left to " + @pos)
+        @screen.debug("{move: " + @pos + "}")
         for fn in @moveRegistry
-          @screen.debug "Called a left function"
           fn? @pos, 0
       else
         @screen.debug "can't move below 0"
@@ -54,17 +52,18 @@ exports.BlessedInput = class BlessedInput extends Input
         return
       if @pos <= @screen.width - @moveIncrement
         @pos += @moveIncrement
-        @screen.debug("moving right to " + @pos)
+        @screen.debug("{move: " + @pos + "}")
         for fn in @moveRegistry
-          @screen.debug "Called a right function"
           fn? @pos, 0
       else
         @screen.debug("can't move beyond " + @screen.width)
 
 # The Blessed UI for Meter as Rhythm runs in an 80x25 terminal.
-standardTerminalWidth = 80
-standardTerminalHeight = 25
+standardTerminalWidth = 120
+standardTerminalHeight = 60
 shortSoundLen = 5
+
+# These are the properties to be exposed in JSON.stringify
     
 # BlessedDraw uses the Blessed UI to draw to the terminal.
 exports.BlessedDraw = class BlessedDraw extends Draw
@@ -75,18 +74,12 @@ exports.BlessedDraw = class BlessedDraw extends Draw
     super(shortSoundLen)
 
     {
-      @durationHeight = 17
-      @expectHeight = 13
-      @projHeight = 15
-      @symbolHeight = 19
-      @leftStart = 0
       @title = "Meter as Rhythm"
       @logName = "meter.log"
       @boxHeight = 6
+      @pos = 0
     } = (screenParams ? {})
 
-
-    # Insist on a screen of size 80x25.
     @screen = blessed.Screen(
       smartCSR: true
       autoPadding: true
@@ -100,47 +93,20 @@ exports.BlessedDraw = class BlessedDraw extends Draw
 
     @screenWidth = @screen.width
 
-    @commentBox = @createBox "top", "left"
-    @messageBox = @createBox @commentBox.position.height, "left"
-    @screen.append @messageBox
-    @screen.append @commentBox
-
-    @firstLine = @createLine 0, 0, @durationHeight
-    @secondLine = @createLine 0, 0, @durationHeight
-    @thirdLine = @createLine 0, 0, @durationHeight
-    @screen.append @firstLine
-    @screen.append @secondLine
-    @screen.append @thirdLine
-
-    @firstProj = @createLine 0, 0, @projHeight, "red"
-    @secondProj = @createLine 0, 0, @projHeight, "yellow"
-    @expectedProj = @createLine 0, 0, @expectHeight, "green"
-    @screen.append @firstProj
-    @screen.append @secondProj
-    @screen.append @expectedProj
-
-    @hiatus = @createText "h", @symbolHeight, 0
-    @accel = @createText "accel", @symbolHeight, 0
-    @decel = @createText "decel", @symbolHeight, 0
-    @parens = @createText "p", @symbolHeight, 0
-    @accent = @createText "a", @symbolHeight, 0
-    @screen.append @hiatus
-    @screen.append @accel
-    @screen.append @decel
-    @screen.append @parens
-    @screen.append @accent
+    @stateBox = @createBox "top", "left", standardTerminalHeight
+    @screen.append @stateBox
 
     # Quit on Escape, q, or Control-C.
     @screen.key ["escape", "q", "C-c"], (ch, key) =>
       @screen.debug "exiting"
       process.exit 0
 
-  createBox: (top, left) ->
+  createBox: (top, left, height) ->
     return blessed.Box(
       top: top
       left: left
       width: standardTerminalWidth
-      height: @boxHeight
+      height: height ? @boxHeight
       content: ""
       border:
         type: "line"
@@ -150,25 +116,8 @@ exports.BlessedDraw = class BlessedDraw extends Draw
           fg: "white"
     )
 
-  createLine: (start, end, pos, color) ->
-    return blessed.Line(
-      orientation: "horizontal"
-      width: end - start
-      top: pos
-      left: start
-      style:
-        fg: color ? "blue"
-        invisible: true
-    )
-
-  createText: (ch, top, left) ->
-    text = blessed.Text(
-      top: top
-      left: left
-      invisible: true
-    )
-    text.setContent(ch)
-    return text
+  moveHandler: (x, y) =>
+    @pos = x
 
   # draw calls the parent Draw class and follows it by rendering the screen.
   draw: (points, state, states, cur) ->
@@ -176,49 +125,15 @@ exports.BlessedDraw = class BlessedDraw extends Draw
     @updateElements()
     @screen.render()
 
-  updateDuration: (lineName, line) ->
-    start = @state.lines[lineName]?[Draw.start] ? 0
-    end = @state.lines[lineName]?[Draw.end] ? 0
-    line.left = start
-    line.width = end - start
-    line.style.invisible = start == 0 and end == 0
-
-  updateProjection: (lineName, projType, proj) ->
-    start = @state.projs[lineName]?[projType]?[Draw.start] ? 0
-    end = @state.projs[lineName]?[projType]?[Draw.end] ? 0
-    proj.left = start
-    proj.width = end - start
-    proj.style.invisible = start == 0 and end == 0
-
   updateElements: ->
-    @commentBox.setContent(@state.text[Draw.comment] ? "")
-    @messageBox.setContent(@state.text[Draw.message] ? "")
-
-    @updateDuration Draw.first, @firstLine
-    @updateDuration Draw.second, @secondLine
-    @updateDuration Draw.third, @thirdLine
-
-    @updateProjection Draw.first, Draw.proj, @firstProj
-    @updateProjection Draw.first, Draw.exp, @expectedProj
-    @updateProjection Draw.second, Draw.proj, @secondProj
-
-    @hiatus.left = @state.hiatus
-    @hiatus.style.invisible = @hiatus.left == 0
-    @accel.left = @state.accel
-    @accel.style.invisible = @accel.left == 0
-    @decel.left = @state.decel
-    @decel.style.invisible = @decel.left == 0
-    @parens.left = @state.parens
-    @parens.style.invisible = @parens.left == 0
-    @accent.left = @state.accent
-    @accent.style.invisible = @accent.left == 0
+    @stateBox.setContent("pos: " + @pos + "\n" +
+        JSON.stringify(@state, null, 2))
 
 exports.StartUI = ->
   maxLen = 10
   draw = new BlessedDraw()
   input = new BlessedInput draw.screen, 2, "space", "left", "right"
+  input.registerMove draw.moveHandler
   driver = new Driver maxLen, states, input, draw
-  draw.screen.key "c", (data) =>
-    draw.screen.debug "Current driver state is " + driver.cur
 
   draw.screen.render()
