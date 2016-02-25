@@ -1,0 +1,6 @@
+#!/bin/bash
+
+readonly DIR=$(dirname $(readlink -e "$0"))
+
+"${DIR}/../node_modules/coffee-script/bin/coffee" -r ${DIR}/blessed_ui.coffee \
+  -e "blessed_ui.StartUI()"

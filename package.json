@@ -27,9 +27,8 @@
     "mocha": ">=2.3.4"
   },
   "scripts": {
-    "test": "mocha --compilers mocha --compilers coffee:coffee-script/register",
-    "graph": "coffee src/graph.coffee | dot -Tpdf -o state_machine.pdf",
-    "build": "coffee -o lib -c src/*.coffee",
-    "prepublish": "coffee -o lib -c src/*.coffee"
+    "build": "node_modules/coffee-script/bin/coffee -o lib -c src/*.coffee",
+    "prepublish": "node_modules/coffee-script/bin/coffee -o lib -c src/*.coffee",
+    "test": "node_modules/mocha/bin/mocha --compilers mocha --compilers coffee:coffee-script/register",
   }
 }
