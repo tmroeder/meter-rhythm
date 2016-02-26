@@ -148,7 +148,7 @@ describe "The Driver class", ->
     driver.cur.should.equal("pause1")
     draw.state.projs.should.be.empty
 
-  it "should draw a sound and a weak projection for 3 clicks and an " +
+  it "should draw a sound and a weak projection for 3 clicks and a " +
      "move to a position that is late but not mensurally indeterminate", ->
     {draw, input, driver} = setup maxLen, states
     sendInput input, {click: 0}, {moveClick: 4}, {moveClick: 8}, {move: 17}

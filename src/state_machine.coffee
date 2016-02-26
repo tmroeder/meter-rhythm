@@ -29,8 +29,8 @@ exports.states =
              "is a potential beginning of a sound, yet prior to and " +
              "independent of it."
     message: "You may perform graphically up to three successive sounds by " +
-             "clicking and moving the mouse. First, click the mouse at time " +
-             "0, the leftmost point, but don't move it."
+             "clicking and moving. The first click sets the beginning of the " +
+             "sound at time 0. Click but don't move."
     transitions:
       sound1Starts: true
     clickHandler: -> "sound1Starts"
@@ -43,7 +43,7 @@ exports.states =
   sound1Starts:
     comment: "The first sound begins, but time 0 will not be a beginning " +
              "until it is past."
-    message: "Perform the first sound by moving the mouse to the right."
+    message: "Perform the first sound by moving to the right."
     transitions:
       sound1Continues: true
     moveHandler: -> "sound1Continues"
@@ -53,8 +53,8 @@ exports.states =
     comment: "The first sound is becoming. Time 0 becomes its beginning. " +
              "'Projective potential'--the potential of a duration to be " +
              "reproduced by a successive duration--accumulates, as indicated " +
-             "by the solid arc."
-    message: "End the first sound by clicking the mouse."
+             "by the secondary line."
+    message: "End the first sound by clicking."
     transitions:
       sound1Continues: true
       sound1ContinuesTooLong: true
@@ -71,7 +71,7 @@ exports.states =
     comment: "The first sound's duration is so long that it is 'mensurally " +
              "indeterminate'--it has lost its projective potential to be " +
              "reproduced."
-    message: "To make the first sound's duration determinate, move the mouse " +
+    message: "To make the first sound's duration determinate, move " +
              "back to the left. Or click to end the sound."
     transitions:
       sound1Continues: true
@@ -87,7 +87,7 @@ exports.states =
   sound1Ends:
     comment: "The first sound ends. Its duration is 'mensurally determinate' " +
              "because it has the potential for being precisely reproduced."
-    message: "To begin the second sound, click the mouse."
+    message: "To begin the second sound, click."
     transitions:
       pause1: true
       pause1Negative: true
@@ -100,7 +100,7 @@ exports.states =
   sound1EndsTooLong:
     comment: "The first sound ends; it is too long to have projective " +
              "potential."
-    message: "Click on the Restart button to try again."
+    message: "Restart to try again."
     transitions:
       start: true
 
@@ -112,10 +112,10 @@ exports.states =
   pause1:
     comment: "There is a pause between the first two sounds. Its duration is " +
              "relatively indeterminate, if our attention is focused on the " +
-             "beginning of sounds. The growing arc indicates that the " +
+             "beginning of sounds. The growing line indicates that the " +
              "duration of the first sound *plus* the following silence " +
              "itself has the 'projective potential' to be reproduced."
-    message: "Click the mouse to begin the second sound."
+    message: "Click to begin the second sound."
     transitions:
       pause1: true
       pause1Negative: true
@@ -135,7 +135,7 @@ exports.states =
   pause1Negative:
     # The comment does not change from pause1.
     comment: ""
-    message: "Click the mouse at the end of the first sound or later."
+    message: "Click at the end of the first sound or later."
     transitions:
       pause1: true
       pause1Negative: true
@@ -152,11 +152,11 @@ exports.states =
   sound2Starts:
     comment: "This beginning of the second sound 'realizes' the projective " +
              "potential of the duration begun by the first event's attack. " +
-             "The solid arrow represents this projective potential. The " +
+             "The new line represents this projective potential. The " +
              "event now beginning has the potential to reproduce this past " +
-             "duration. The dotted arc, extending for this duration into the " +
-             "future, symbolizes this 'projected potential'."
-    message: "Perform the second sound by moving the mouse to the right."
+             "duration. The new projection, extending for this duration into " +
+             "the future, symbolizes this 'projected potential'."
+    message: "Perform the second sound by moving to the right."
     transitions:
       sound2Continues: true
     moveHandler: (points, x) ->
@@ -174,8 +174,7 @@ exports.states =
              "the first event that the interonset duration is mensurally " +
              "indeterminate--it has no potential to be reproduced--so there " +
              "is no projection."
-    message: "Click on the 'Back one step' button to select an earlier " +
-             "beginning for the second sound, or click 'Restart'."
+    message: "Restart to try again."
     transitions:
       pause1: true
       start: true
@@ -183,11 +182,11 @@ exports.states =
   # The second sound continues and is not too long.
   sound2Continues:
     comment: "The accumulating duration of the second sound is realizing the " +
-             "projected potential (symbolized by the dashed arc) of the " +
-             "first interonset duration. Simultaneously the present event " +
-             "accumulates its own projective potential (represented by the " +
-             "growing solid arc) to be reproduced by a successive, third event."
-    message: "Click the mouse to end the second sound."
+             "expected projected potential of the first interonset duration. " +
+             "Simultaneously the present event accumulates its own " +
+             "projective potential (represented by the growing projection) " +
+             "to be reproduced by a successive, third event."
+    message: "Click to end the second sound."
     transitions:
       sound2Continues: true
       sound2ContinuesNegative: true
@@ -207,7 +206,7 @@ exports.states =
   # The second sound has a negative duration.
   sound2ContinuesNegative:
     comment: ""
-    message: "Move the mouse to the right to perform the second sound."
+    message: "Move to the right to perform the second sound."
     transitions:
       sound2ContinuesNegative: true
       sound2Continues: true
@@ -220,10 +219,9 @@ exports.states =
   # The second sound continues too long to realize its projection.
   sound2ContinuesWithoutProjection:
     comment: "The second sound exceeds the duration projected at its onset; " +
-             "the projection is not clearly realized, as indicated by the X " +
-             "through the dashed arc."
-    message: "Move the mouse to the left to shorten the second sound, or " +
-             "click the mouse to end it."
+             "the projection is not clearly realized, as indicated by the " +
+             "change in the projection."
+    message: "Move to the left to shorten the second sound, or click to end it."
     transitions:
       sound2Continues: true
       sound2ContinuesWithoutProjection: true
@@ -243,8 +241,7 @@ exports.states =
     comment: "The second sound is so long that it is mensurally " +
              "indeterminate. (The projection of the first interonset " +
              "duration is not realized.)"
-    message: "Move the mouse to the left to shorten the second sound, or " +
-             "click the mouse to end it."
+    message: "Move to the left to shorten the second sound, or click to end it."
     transitions:
       sound2ContinuesWithoutProjection: true
       sound2ContinuesTooLong: true
@@ -262,9 +259,9 @@ exports.states =
   sound2Ends:
     comment: "The second sound ends. Its duration is 'mensurally " +
              "determinate' because it has the potential for being precisely " +
-             "reproduced. But it does not affect the projection of the first " +
-             "interonset duration, shown by the arrow and dashed arc"
-    message: "Click the mouse to begin the third sound."
+             "reproduced. But it does not affect the projection and expected " +
+             "projection of the first interonset duration, as shown."
+    message: "Click to begin the third sound."
     transitions:
       pause2: true
       pause2Negative: true
@@ -277,10 +274,9 @@ exports.states =
   # The second sound ends without realizing its projection.
   sound2EndsWithoutProjection:
     comment: "The second sound exceeds the duration projected at its onset.  " +
-             "The projection is not clearly realized, as indicated by the X " +
-             "through the dashed arc."
-    message: "Click on the 'Back one step' button to select an earlier " +
-             "beginning for the second sound, or click 'Restart'."
+             "The projection is not clearly realized, as indicated by the " +
+             "changed projection."
+    message: "Restart to try again."
     transitions:
       start: true
 
@@ -289,8 +285,7 @@ exports.states =
     comment: "The second sound is so long that it is mensurally " +
              "indeterminate.  Since the projected potential of the first " +
              "interonset duration is denied there is no projection at all."
-    message: "Click on the 'Back one step' button to select an earlier " +
-             "beginning for the second sound, or click 'Restart'."
+    message: "Restart to try again."
     transitions:
       start: true
 
@@ -302,10 +297,10 @@ exports.states =
   pause2:
     comment: "The silence between the second and third sounds is relatively " +
              "indeterminate if our attention is focused on the sounds' " +
-             "beginnings. The growing arc indicates that the duration from " +
-             "the beginning of the second sound up to now, including the " +
-             "silence, has 'projective potential' to be reproduced."
-    message: "Click the mouse to begin the third sound."
+             "beginnings. The growing projection indicates that the duration " +
+             "from the beginning of the second sound up to now, including " +
+             "the silence, has 'projective potential' to be reproduced."
+    message: "Click to begin the third sound."
     transitions:
       pause2: true
       pause2Negative: true
@@ -316,8 +311,9 @@ exports.states =
       sound3StartsSlightlyLate: true
       sound3StartsSlightlyLateNewProjection: true
     moveHandler: (points, x) ->
-      start = points.points[Points.sound2Second]
-      if x < start
+      start = points.points[Points.sound2First]
+      end = points.points[Points.sound2Second]
+      if x < end
         return "pause2Negative"
       if not points.isDeterminate(start, x)
         return "pause2TooLong"
@@ -342,7 +338,7 @@ exports.states =
   # The second pause is negative.
   pause2Negative:
     comment: ""
-    message: "Click the mouse at the end of the second sound or later."
+    message: "Click at the end of the second sound or later."
     transitions:
       pause2: true
       pause2Negative: true
@@ -355,8 +351,8 @@ exports.states =
   pause2TooLong:
     comment: "The time since the beginning of the second sound is mensurally " +
              "indeterminate, having no projective potential to be reproduced."
-    message: "Click the mouse button to begin the third sound (earlier if " +
-             "you want a projection)."
+    message: "Click to begin the third sound (earlier if you want a " +
+             "projection)."
     transitions:
       pause2: true
       pause2TooLong: true
@@ -376,11 +372,10 @@ exports.states =
     comment: "The beginning of the third sound is earlier than projected. " +
              "The second interonset duration is shorter than, but at least " +
              "three-fourths of the first interonset duration. We feel an " +
-             "*acceleration* because we sense the realization of the first " +
+             "acceleration because we sense the realization of the first " +
              "projected duration even as we also perceive the difference " +
              "between the two durations."
-    message: "Click on 'Back one step' to define a different third sound or " +
-             "'Restart' to begin again."
+    message: "Restart to try again."
     transitions:
       pause2: true
       start: true
@@ -388,30 +383,26 @@ exports.states =
   # The third sound starts exactly when expected.
   sound3StartsExactly:
     comment: "Since the third sound begins exactly at the end of the " +
-             "projected duration (the upper dashed arc), the projected " +
-             "duration is 'realized'. A new projection is created, " +
-             "conditioned by the first, in which the second interonset " +
-             "duration has the projective potential (the lower arrow) to be " +
-             "reproduced."
-    message: "Click on 'Back one step' to define a different third sound or " +
-             "'Restart' to begin again."
+             "projected duration, the projected duration is 'realized'. A " +
+             "new projection is created, conditioned by the first, in which " +
+             "the second interonset duration has the projective potential " +
+             "(the lower arrow) to be reproduced."
+    message: "Restart to try again."
     transitions:
       pause2: true
       start: true
 
   # The third sound starts too late to be mensurally determinate.
   sound3StartsTooLate:
-    comment: "The projective potential of the first interonset duration (the " +
-             "dashed arc) is realized, but the projective potential of the " +
-             "second interonset duration is not, since it is mensurally " +
+    comment: "The projective potential of the first interonset duration is " +
+             "realized, but the projective potential of the second " +
+             "interonset duration is not, since it is mensurally " +
              "indeterminate. Because the third sound begins much later than " +
-             "projected, we may come to feel 'hiatus' (symbolized by the " +
-             "double bar)--a break between the realization of projected " +
-             "potential and a new beginning. A new and relatively " +
-             "unconditioned potential emerges from the beginning of the " +
-             "third sound."
-    message: "Click on 'Back one step' to define a different third sound or " +
-             "'Restart' to begin again."
+             "projected, we may come to feel 'hiatus'--a break between the " +
+             "realization of projected potential and a new beginning. A new " +
+             "and relatively unconditioned potential emerges from the " +
+             "beginning of the third sound."
+    message: "Restart to try again."
     transitions:
       pause2: true
       start: true
@@ -420,10 +411,10 @@ exports.states =
   # projection.
   sound3StartsRealized:
     comment: "The projection of the first interonset duration is realized. " +
-             "Another projection (the rightmost arrow and dashed arc) can be " +
-             "completed within the promised duration, so may enhance its " +
-             "mensural determinacy. The emergence of a new beginning, shown " +
-             "in parentheses, would clarify this."
+             "As shown, another projection can be completed within the " +
+             "promised duration, so may enhance its mensural determinacy. " +
+             "The emergence of a new beginning, shown in parentheses, would " +
+             "clarify this."
     message: "Click anywhere to see an alternate interpretation."
     transitions:
       sound3StartsAltInterpretation: true
@@ -436,8 +427,7 @@ exports.states =
              "second beginning that denies the projection of the first " +
              "interonset duration in order to realize a larger projective " +
              "potential, symbolized by the large arrow."
-    message: "Click on 'Back one step' to define a different third sound or " +
-             "'Restart' to begin again."
+    message: "Restart to try again."
     transitions:
       pause2: true
       start: true
@@ -445,11 +435,10 @@ exports.states =
   # The third sound starts later than expected.
   sound3StartsSlightlyLate:
     comment: "The beginning of the third sound is slightly later than " +
-             "projected. We hear a *deceleration* because we sense the " +
+             "projected. We hear a deceleration because we sense the " +
              "realization of the first projected duration even as we also " +
              "perceive the difference between the two durations."
-    message: "Click on 'Back one step' to define a different third sound or " +
-             "'Restart' to begin again."
+    message: "Restart to try again."
     transitions:
       pause2: true
       start: true
@@ -457,15 +446,14 @@ exports.states =
   # The third sound starts slightly late and suggests a new projection.
   sound3StartsSlightlyLateNewProjection:
     comment: "The third sound begins somewhat later than projected. A new " +
-             "projection, indicated by the lowest arrow and dashed arc, " +
-             "emerges, breaking off from the emerging first projection. We " +
-             "reject the relevance of the first projection to the mensural " +
-             "determinacy of the second interonset duration."
-    message: "Click on 'Back one step' to define a different third sound or " +
-             "'Restart' to begin again."
+             "projection emerges, breaking off from the emerging first " +
+             "projection. We reject the relevance of the first projection " +
+             "to the mensural determinacy of the second interonset duration."
+    message: "Restart to try again."
     transitions:
       pause2: true
       start: true
+
 
 # writeGraph outputs a GraphViz diagram to check the state machine.
 # Generate the graph with dot -Tpdf -o meter.pdf. The output must be wrapped in

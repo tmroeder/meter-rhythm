@@ -29,6 +29,6 @@
   "scripts": {
     "build": "node_modules/coffee-script/bin/coffee -o lib -c src/*.coffee",
     "prepublish": "node_modules/coffee-script/bin/coffee -o lib -c src/*.coffee",
-    "test": "node_modules/mocha/bin/mocha --compilers mocha --compilers coffee:coffee-script/register",
+    "test": "node_modules/mocha/bin/mocha --compilers mocha --compilers coffee:coffee-script/register"
   }
 }
