@@ -505,6 +505,8 @@ exports.states = {
   }
 };
 
+// writeGraph outputs a GraphViz diagram to check the state machine.
+// Generate the graph with the test/graph script.
 exports.writeGraph = (states) => {
   let graph = "";
   for (let name of states) {
@@ -518,19 +520,8 @@ exports.writeGraph = (states) => {
   return graph;
 };
 
-// writeGraph outputs a GraphViz diagram to check the state machine.
-// Generate the graph with the test/graph script.
-exports.visit = (states, fn) => {
-  let visited = {};
-  for (let name of states) {
-    visited[name] = false;
-  }
-  visitHelper(states, "start", visited, fn);
-  return visited;
-};
-
 // visitHelper keeps track of visited states as it traverses a graph.
-visitHelper = (states, state, visited, fn) => {
+let visitHelper = (states, state, visited, fn) => {
   if (visited[state]) {
     return;
   }
@@ -543,6 +534,15 @@ visitHelper = (states, state, visited, fn) => {
     results.push(visitHelper(states, neighbor, visited, fn));
   }
   return results;
+};
+
+exports.visit = (states, fn) => {
+  let visited = {};
+  for (let name of states) {
+    visited[name] = false;
+  }
+  visitHelper(states, "start", visited, fn);
+  return visited;
 };
 
 // PointError is thrown for error cases that happen in methods of the Points
@@ -558,7 +558,7 @@ exports.PointError = PointError;
 // These constants name positions in the point array, give identifiers for
 // different kinds of projections, and give bounds on different types of
 // realization of projections.
-PointConstants = {
+let PointConstants = {
   sound1First: 0,
   sound1Second: 1,
   sound2First: 2,
