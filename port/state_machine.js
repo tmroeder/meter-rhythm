@@ -509,8 +509,8 @@ exports.states = {
 // Generate the graph with the test/graph script.
 exports.writeGraph = (states) => {
   let graph = "";
-  for (let name of states) {
-    for (let dest of states[name].transitions) {
+  for (let name in states) {
+    for (let dest in states[name].transitions) {
       if (graph !== "") {
         graph += "\n";
       }
@@ -530,7 +530,7 @@ let visitHelper = (states, state, visited, fn) => {
     fn(state);
   }
   let results = [];
-  for (let neighbor of states[state].transitions) {
+  for (let neighbor in states[state].transitions) {
     results.push(visitHelper(states, neighbor, visited, fn));
   }
   return results;
@@ -538,7 +538,7 @@ let visitHelper = (states, state, visited, fn) => {
 
 exports.visit = (states, fn) => {
   let visited = {};
-  for (let name of states) {
+  for (let name in states) {
     visited[name] = false;
   }
   visitHelper(states, "start", visited, fn);

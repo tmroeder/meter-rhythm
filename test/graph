@@ -2,5 +2,4 @@
 
 readonly DIR=$(dirname $(readlink -e "$0"))
 
-"${DIR}/../node_modules/coffee-script/bin/coffee" "${DIR}/../src/graph.coffee" \
-  | dot -Tpdf -o state_machine.pdf
+node --es_staging "${DIR}/../port/graph.js" | dot -Tpdf -o state_machine.pdf
