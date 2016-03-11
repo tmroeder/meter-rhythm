@@ -558,7 +558,7 @@ exports.PointError = PointError;
 // These constants name positions in the point array, give identifiers for
 // different kinds of projections, and give bounds on different types of
 // realization of projections.
-let PointConstants = {
+const PointConstants = {
   sound1First: 0,
   sound1Second: 1,
   sound2First: 2,
