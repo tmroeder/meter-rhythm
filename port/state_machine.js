@@ -20,36 +20,43 @@
 // suggests actions to take in the current state.
 // TODO(tmroeder): Add the comments back from the CoffeeScript version.
 exports.states = {
+  // The starting state of the program.
   start: {
     comment: "This demonstrates the concepts in Chapter 7 of Christopher " +
       "Hasty's 'Meter as Rhythm'. Imagine time 0 as an instant that " +
       "is a potential beginning of a sound, yet prior to and " +
       "independent of it.",
     message: "You may perform graphically up to three successive sounds by " +
-      "clicking and moving the mouse. First, click the mouse at time " +
-      "0, the leftmost point, but don't move it.",
+      "clicking and moving. The first click sets the beginning of the sound " +
+      "at time 0. Click but don't move.",
     transitions: {
       sound1Starts: true
     },
     clickHandler: () => "sound1Starts"
   },
 
+  //
+  // Sound 1
+  //
+
+  // The beginning of the first sound.
   sound1Starts: {
     comment: "The first sound begins, but time 0 will not be a beginning " +
       "until it is past.",
-    message: "Perform the first sound by moving the mouse to the right.",
+    message: "Perform the first sound by moving to the right.",
     transitions: {
       sound1Continues: true
     },
     moveHandler: () => "sound1Continues"
   },
 
+  // The first sound continues and isn't too long.
   sound1Continues: {
     comment: "The first sound is becoming. Time 0 becomes its beginning. " +
       "'Projective potential'--the potential of a duration to be " +
       "reproduced by a successive duration--accumulates, as indicated " +
       "by the solid arc.",
-    message: "End the first sound by clicking the mouse.",
+    message: "End the first sound by clicking.",
     transitions: {
       sound1Continues: true,
       sound1ContinuesTooLong: true,
@@ -65,12 +72,13 @@ exports.states = {
     clickHandler: () => "sound1Ends"
   },
 
+  // The first sound is too long.
   sound1ContinuesTooLong: {
     comment: "The first sound's duration is so long that it is 'mensurally " +
       "indeterminate'--it has lost its projective potential to be " +
       "reproduced.",
-    message: "To make the first sound's duration determinate, move the mouse " +
-      "back to the left. Or click to end the sound.",
+    message: "To make the first sound's duration determinate, move back to " +
+      "the left. Or click to end the sound.",
     transitions: {
       sound1Continues: true,
       sound1ContinuesTooLong: true,
@@ -85,10 +93,11 @@ exports.states = {
     clickHandler: () => "sound1EndsTooLong"
   },
 
+  // The first sound ends with a length that isn't too long.
   sound1Ends: {
     comment: "The first sound ends. Its duration is 'mensurally determinate' " +
       "because it has the potential for being precisely reproduced.",
-    message: "To begin the second sound, click the mouse.",
+    message: "To begin the second sound, click.",
     transitions: {
       pause1: true,
       pause1Negative: true
@@ -101,22 +110,28 @@ exports.states = {
     }
   },
 
+  // The first sound ends with a length that exceeds kMaxSoundLen.
   sound1EndsTooLong: {
     comment: "The first sound ends; it is too long to have projective " +
       "potential.",
-    message: "Click on the Restart button to try again.",
+    message: "Restart to try again.",
     transitions: {
       start: true
     }
   },
 
+  //
+  // Pause 1
+  //
+
+  // There is a pause between the first and second sounds.
   pause1: {
     comment: "There is a pause between the first two sounds. Its duration is " +
       "relatively indeterminate, if our attention is focused on the " +
-      "beginning of sounds. The growing arc indicates that the " +
+      "beginning of sounds. The growing line indicates that the " +
       "duration of the first sound *plus* the following silence " +
       "itself has the 'projective potential' to be reproduced.",
-    message: "Click the mouse to begin the second sound.",
+    message: "Click to begin the second sound.",
     transitions: {
       pause1: true,
       pause1Negative: true,
@@ -137,9 +152,10 @@ exports.states = {
     }
   },
 
+  // The pause between sounds can't be negative.
   pause1Negative: {
     comment: "",
-    message: "Click the mouse at the end of the first sound or later.",
+    message: "Click at the end of the first sound or later.",
     transitions: {
       pause1: true,
       pause1Negative: true
@@ -152,14 +168,19 @@ exports.states = {
     }
   },
 
+  //
+  // Sound 2
+  //
+
+  // The beginning of the second sound.
   sound2Starts: {
     comment: "This beginning of the second sound 'realizes' the projective " +
       "potential of the duration begun by the first event's attack. " +
-      "The solid arrow represents this projective potential. The " +
+      "The new line represents this projective potential. The " +
       "event now beginning has the potential to reproduce this past " +
-      "duration. The dotted arc, extending for this duration into the " +
+      "duration. The new projection, extending for this duration into the " +
       "future, symbolizes this 'projected potential'.",
-    message: "Perform the second sound by moving the mouse to the right.",
+    message: "Perform the second sound by moving to the right.",
     transitions: {
       sound2Continues: true
     },
@@ -174,26 +195,28 @@ exports.states = {
     }
   },
 
+  // the beginning of the second sound after too long a duration since the first
+  // sound started.
   sound2StartsTooLong: {
     comment: "The second sound begins. It is so long since the beginning of " +
       "the first event that the interonset duration is mensurally " +
       "indeterminate--it has no potential to be reproduced--so there " +
       "is no projection.",
-    message: "Click on the 'Back one step' button to select an earlier " +
-      "beginning for the second sound, or click 'Restart'.",
+    message: "Restart to try again.",
     transitions: {
       pause1: true,
       start: true
     }
   },
 
+  // the second sound continues and is not too long.
   sound2Continues: {
     comment: "The accumulating duration of the second sound is realizing the " +
-      "projected potential (symbolized by the dashed arc) of the " +
-      "first interonset duration. Simultaneously the present event " +
-      "accumulates its own projective potential (represented by the " +
-      "growing solid arc) to be reproduced by a successive, third event.",
-    message: "Click the mouse to end the second sound.",
+      "expected projected potential of the first interonset duration. " +
+      "Simultaneously the present event accumulates its own projective " +
+      "potential (represented by the growing projection) to be reproduced by " +
+      "a successive, third event.",
+    message: "Click to end the second sound.",
     transitions: {
       sound2Continues: true,
       sound2ContinuesNegative: true,
@@ -214,9 +237,10 @@ exports.states = {
     clickHandler: () => "sound2Ends"
   },
 
+  // The second sound has a negative duration.
   sound2ContinuesNegative: {
     comment: "",
-    message: "Move the mouse to the right to perform the second sound.",
+    message: "Move to the right to perform the second sound.",
     transitions: {
       sound2ContinuesNegative: true,
       sound2Continues: true
@@ -230,12 +254,13 @@ exports.states = {
     }
   },
 
+  // The second sound continues too long to realize its projection.
   sound2ContinuesWithoutProjection: {
     comment: "The second sound exceeds the duration projected at its onset; " +
-      "the projection is not clearly realized, as indicated by the X " +
-      "through the dashed arc.",
-    message: "Move the mouse to the left to shorten the second sound, or " +
-      "click the mouse to end it.",
+      "the projection is not clearly realized, as indicated by the change in " +
+      "the projection.",
+    message: "Move to the left to shorten the second sound, or " +
+      "click to end it.",
     transitions: {
       sound2Continues: true,
       sound2ContinuesWithoutProjection: true,
@@ -254,12 +279,13 @@ exports.states = {
     clickHandler: () => "sound2EndsWithoutProjection"
   },
 
+  // the second sound continues too long to be mensurally determinate.
   sound2ContinuesTooLong: {
     comment: "The second sound is so long that it is mensurally " +
       "indeterminate. (The projection of the first interonset " +
       "duration is not realized.)",
-    message: "Move the mouse to the left to shorten the second sound, or " +
-      "click the mouse to end it.",
+    message: "Move to the left to shorten the second sound, or " +
+      "click to end it.",
     transitions: {
       sound2ContinuesWithoutProjection: true,
       sound2ContinuesTooLong: true,
@@ -277,12 +303,14 @@ exports.states = {
     clickHandler: () => "sound2EndsTooLong"
   },
 
+  // The second sound ends, realizing its projection.
+  // IAH: Finish transcribing.
   sound2Ends: {
     comment: "The second sound ends. Its duration is 'mensurally " +
       "determinate' because it has the potential for being precisely " +
       "reproduced. But it does not affect the projection of the first " +
       "interonset duration, shown by the arrow and dashed arc",
-    message: "Click the mouse to begin the third sound.",
+    message: "Click to begin the third sound.",
     transitions: {
       pause2: true,
       pause2Negative: true
@@ -324,7 +352,7 @@ exports.states = {
       "beginnings. The growing arc indicates that the duration from " +
       "the beginning of the second sound up to now, including the " +
       "silence, has 'projective potential' to be reproduced.",
-    message: "Click the mouse to begin the third sound.",
+    message: "Click to begin the third sound.",
     transitions: {
       pause2: true,
       pause2Negative: true,
@@ -369,7 +397,7 @@ exports.states = {
 
   pause2Negative: {
     comment: "",
-    message: "Click the mouse at the end of the second sound or later.",
+    message: "Click at the end of the second sound or later.",
     transitions: {
       pause2: true,
       pause2Negative: true
@@ -385,7 +413,7 @@ exports.states = {
   pause2TooLong: {
     comment: "The time since the beginning of the second sound is mensurally " +
       "indeterminate, having no projective potential to be reproduced.",
-    message: "Click the mouse button to begin the third sound (earlier if " +
+    message: "Click button to begin the third sound (earlier if " +
       "you want a projection).",
     transitions: {
       pause2: true,
