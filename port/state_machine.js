@@ -537,7 +537,7 @@ exports.states = {
       "emerges, breaking off from the emerging first projection. We " +
       "reject the relevance of the first projection to the mensural " +
       "determinacy of the second interonset duration.",
-    message: "Restart to try again."
+    message: "Restart to try again.",
     transitions: {
       pause2: true,
       start: true

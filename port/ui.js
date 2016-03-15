@@ -14,7 +14,7 @@
 
 "use strict";
 
-const {PointConstants} = require("./state_machine.js");
+const PointConstants = require("./state_machine.js").PointConstants;
 
 // UIError is thrown for error cases that happen in methods of the Draw
 // classes.
@@ -27,17 +27,16 @@ class UIError extends Error {
 exports.UIError = UIError;
 
 class State {
-  constructor({lines = {}, projs = {}, text = {}, hiatus = 0, accel = 0,
-               decel = 0, parens = 0, accent = 0, short = 0} = {}) {
-    this.lines = lines;
-    this.projs = projs;
-    this.text = text;
-    this.hiatus = hiatus;
-    this.accel = accel;
-    this.decel = decel;
-    this.parens = parens;
-    this.accent = accent;
-    this.short = short;
+  constructor(state) {
+    this.lines = (state.lines === undefined) ? {} : state.lines;
+    this.projs = (state.projs === undefined) ? {} : state.projs;
+    this.text = (state.text === undefined) ? {} : state.text;
+    this.hiatus = (state.hiatus === undefined) ? 0 : state.hiatus;
+    this.accel = (state.accel === undefined) ? 0 : state.accel;
+    this.decel = (state.decel === undefined) ? 0 : state.decel;
+    this.parens = (state.parens === undefined) ? 0 : state.parens;
+    this.accent = (state.accent === undefined) ? 0 : state.accent;
+    this.short = (state.short === undefined) ? 0 : state.short;
   }
 }
 exports.State = State;
@@ -284,7 +283,7 @@ class TextDraw extends Draw {
   }
 
   draw(points, state, states, cur) {
-    super(points, state, states, cur);
+    super.draw(points, state, states, cur);
     console.log(this.state);
   }
 }

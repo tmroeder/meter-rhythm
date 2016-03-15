@@ -14,7 +14,7 @@
 
 "use strict";
 
-const {Points} = require("./state_machine.js");
+const Points = require("./state_machine.js").Points;
 
 class Driver {
   constructor(maxLen, states, input, ui) {
