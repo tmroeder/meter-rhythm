@@ -20,6 +20,7 @@ const states = sm.states;
 
 let ui = require("../lib/ui.js");
 const Draw = ui.Draw;
+const DrawConstants = ui.DrawConstants;
 const TextDraw = ui.TextDraw;
 const UIError = ui.UIError;
 
@@ -29,10 +30,9 @@ const should = chai.should();
 
 describe("The TextDraw object", () => {
   it("should succeed in its constructor", () => {
-    expect(TextDraw.bind(null)).to.not.throw(Error);
-    expect(TextDraw.bind(null)).to.not.throw(void 0);
-    expect(TextDraw.bind(null)).to.not.throw(null);
-    expect(TextDraw.bind(null)).to.not.throw(UIError);
+    let instantiate = () => { let t = new TextDraw(); };
+    expect(instantiate).to.not.throw(Error);
+    expect(instantiate).to.not.throw(UIError);
   });
 });
 
@@ -42,7 +42,7 @@ const shortSoundLen = 20;
 describe("The Draw class", () => {
   it("should capture start events", () => {
     let d = new Draw(shortSoundLen);
-    d.drawPoint(50, Draw.first, Draw.start);
+    d.drawPoint(50, DrawConstants.first, DrawConstants.start);
 
     let lines = {
       first: {
@@ -54,7 +54,7 @@ describe("The Draw class", () => {
 
   it("should capture duration events", () => {
     let d = new Draw(shortSoundLen);
-    d.drawDuration(50, 100, Draw.first);
+    d.drawDuration(50, 100, DrawConstants.first);
 
     let lines = {
       first: {
@@ -67,7 +67,7 @@ describe("The Draw class", () => {
 
   it("should capture end events", () => {
     let d = new Draw(shortSoundLen);
-    d.drawPoint(50, Draw.first, Draw.end);
+    d.drawPoint(50, DrawConstants.first, DrawConstants.end);
 
     let lines = {
       first: {
@@ -79,7 +79,7 @@ describe("The Draw class", () => {
 
   it("should capture projection events", () => {
     let d = new Draw(shortSoundLen);
-    d.drawProjection(50, 100, Draw.first, Draw.proj);
+    d.drawProjection(50, 100, DrawConstants.first, DrawConstants.proj);
 
     let projs = {
       first: {
@@ -94,7 +94,7 @@ describe("The Draw class", () => {
 
   it("should capture weak projection events", () => {
     let d = new Draw(shortSoundLen);
-    d.drawProjection(50, 100, Draw.second, Draw.weak);
+    d.drawProjection(50, 100, DrawConstants.second, DrawConstants.weak);
 
     let projs = {
       second: {
@@ -109,7 +109,7 @@ describe("The Draw class", () => {
 
   it("should capture expected projection events", () => {
     let d = new Draw(shortSoundLen);
-    d.drawProjection(50, 100, Draw.third, Draw.exp);
+    d.drawProjection(50, 100, DrawConstants.third, DrawConstants.exp);
 
     let projs = {
       third: {
@@ -124,7 +124,7 @@ describe("The Draw class", () => {
 
   it("should capture comment events", () => {
     let d = new Draw(shortSoundLen);
-    d.write("Test comment", Draw.comment);
+    d.write("Test comment", DrawConstants.comment);
     d.state.text.should.deep.equal({
       comment: "Test comment"
     });
@@ -132,7 +132,7 @@ describe("The Draw class", () => {
 
   it("should capture message events", () => {
     let d = new Draw(shortSoundLen);
-    d.write("Test message", Draw.message);
+    d.write("Test message", DrawConstants.message);
     d.state.text.should.deep.equal({
       message: "Test message"
     });
