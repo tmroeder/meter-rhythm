@@ -49,3 +49,4 @@ class MockInput extends Input {
     }
   }
 }
+exports.MockInput = MockInput;

@@ -15,7 +15,7 @@
 {Driver} = require "../src/driver.coffee"
 {states} = require "../src/state_machine.coffee"
 {TextDraw} = require "../src/ui.coffee"
-{MockInput} = require "./mock_ui.coffee"
+{MockInput} = require "./mock_ui.js"
 
 # TextSimulator creates and sets up mocks and a driver using those mocks.
 exports.TextSimulator = class TextSimulator

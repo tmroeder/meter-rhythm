@@ -15,7 +15,7 @@
 {Driver} = require "../src/driver.coffee"
 {Points, states} = require "../src/state_machine.coffee"
 {Draw, TextDraw} = require "../src/ui.coffee"
-{Counts, Drawn, StateDraw, MockInput} = require "./mock_ui.coffee"
+{Counts, Drawn, StateDraw, MockInput} = require "./mock_ui.js"
 
 chai = require "chai"
 expect = chai.expect
