@@ -14,12 +14,12 @@
 
 "use strict";
 
-let Driver = require("../lib/driver.js").Driver;
-let states = require("../lib/state_machine.js").states;
-let TextDraw = require("../lib/ui.js").TextDraw;
-let MockInput = require("./mock_ui.js").MockInput;
+import { Driver } from "../lib/driver.js";
+import { states } from "../lib/state_machine.js";
+import { TextDraw } from "../lib/ui.js";
+import { MockInput } from "./mock_ui.js";
 
-class TextSimulator {
+export class TextSimulator {
   constructor(maxLen) {
     this.maxLen = maxLen;
     this.draw = new TextDraw();

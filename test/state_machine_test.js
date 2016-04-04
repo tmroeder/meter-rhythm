@@ -14,20 +14,16 @@
 
 "use strict";
 
-let sm = require("../lib/state_machine.js");
-let PointError = sm.PointError;
-let Points = sm.Points;
-let states = sm.states;
-let writeGraph = sm.writeGraph;
-let visit = sm.visit;
+import { PointError, Points, PointConstants, states, writeGraph, visit } from "../lib/state_machine.js";
 
-let chai = require("chai");
+let projectionOff = PointConstants.projectionOff;
+let projectionOn = PointConstants.projectionOn;
+let projectionCurrent = PointConstants.projectionCurrent;
+let projectionWeak = PointConstants.projectionWeak;
+
+import * as chai from "chai";
 let expect = chai.expect;
 let should = chai.should();
-let projectionOff = Points.projectionOff;
-let projectionOn = Points.projectionOn;
-let projectionCurrent = Points.projectionCurrent;
-let projectionWeak = Points.projectionWeak;
 
 describe("The state machine", () => {
   it("should have a start state", () => {
@@ -89,12 +85,9 @@ describe("The writeGraph function", () => {
 
   it("should return a valid GraphViz graph", () => {
     let graph = writeGraph(states);
-    console.log(graph);
     let lines = graph.split("\n");
-    console.log(lines);
     expect(lines).to.not.be.empty;
     for (let i = 0; i < lines.length; i++) {
-      console.log(lines[i]);
       expect(lines[i]).to.match(edgeRegex);
     }
   });
@@ -109,23 +102,23 @@ describe("The Points class", () => {
 
   it("should throw in the constructor if given too many points", () => {
     let construct = () => new Points(maxLen, 0, 1, 2, 3, 4, 5, 6, 7);
-    expect(construct).to["throw"](PointError, "too many points");
+    expect(construct).to.throw(/too many points/);
   });
 
   it("should throw a PointError if more than 6 points are added", () => {
     let add = () => {
-      let p = Points(maxLen, 13, 14, 15, 16, 17, 18);
+      let p = new Points(maxLen, 13, 14, 15, 16, 17, 18);
       p.pushPoint(20);
     };
-    expect(add).to["throw"](PointError, "all points already defined");
+    expect(add).to.throw(/all points already defined/);
   });
 
   it("should fail popPoint when no points are present", () => {
     let pop = () => {
-      let p = Points(maxLen);
+      let p = new Points(maxLen);
       p.popPoint();
     };
-    expect(pop).to["throw"](PointError, "no points to remove");
+    expect(pop).to.throw(/no points to remove/);
   });
 
   it("should pop a point when popPoint is called", () => {
@@ -135,7 +128,7 @@ describe("The Points class", () => {
       x = p.popPoint();
     };
 
-    expect(pop).to.not["throw"](Error);
+    expect(pop).to.not.throw(Error);
     expect(x).to.exist;
   });
 });

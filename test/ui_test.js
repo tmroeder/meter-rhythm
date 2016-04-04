@@ -14,19 +14,11 @@
 
 "use strict";
 
-let sm = require("../lib/state_machine.js");
-const Points = sm.Points;
-const states = sm.states;
-
-let ui = require("../lib/ui.js");
-const Draw = ui.Draw;
-const DrawConstants = ui.DrawConstants;
-const TextDraw = ui.TextDraw;
-const UIError = ui.UIError;
-
-const chai = require("chai");
-const expect = chai.expect;
-const should = chai.should();
+import { Points, states } from "../lib/state_machine.js";
+import { Draw, DrawConstants, TextDraw, UIError } from "../lib/ui.js";
+import * as chai from "chai";
+let expect = chai.expect;
+let should = chai.should();
 
 describe("The TextDraw object", () => {
   it("should succeed in its constructor", () => {

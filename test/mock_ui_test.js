@@ -14,11 +14,10 @@
 
 "use strict";
 
-const mu = require("./mock_ui.js");
-const MockInput = mu.MockInput;
-const chai = require("chai");
-const expect = chai.expect;
-const should = chai.should();
+import { MockInput } from "./mock_ui.js";
+import * as chai from "chai";
+let expect = chai.expect;
+let should = chai.should();
 
 describe("The MockInput class", () => {
   it("should send movement events", () => {

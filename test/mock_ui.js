@@ -14,9 +14,9 @@
 
 "use strict";
 
-let Input = require("../lib/ui.js").Input;
+import { Input } from "../lib/ui.js";
 
-class MockInput extends Input {
+export class MockInput extends Input {
   constructor() {
     super();
     this.moveRegistry = [];
@@ -49,4 +49,3 @@ class MockInput extends Input {
     }
   }
 }
-exports.MockInput = MockInput;
