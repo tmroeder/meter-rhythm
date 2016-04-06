@@ -19,12 +19,11 @@
     "url": "https://1.37e2.net"
   },
   "files": [
-    "src/driver.coffee",
-    "src/graph.coffee",
-    "src/state_machine.coffee",
-    "src/ui.coffee"
+    "src/driver.js",
+    "src/graph.js",
+    "src/state_machine.js",
+    "src/ui.js"
   ],
-  "main": "src/driver.coffee",
   "repository": {
     "type": "git",
     "url": "https://github.com/tmroeder/meter-rhythm"
@@ -36,12 +35,10 @@
     "babel-register": "^6.7.2",
     "blessed": ">=0.1.0",
     "chai": ">=3.4.1",
-    "coffee-script": ">=1.10",
     "mocha": ">=2.3.4"
   },
   "scripts": {
-    "build": "node_modules/coffee-script/bin/coffee -o lib -c src/*.coffee",
-    "prepublish": "node_modules/coffee-script/bin/coffee -o lib -c src/*.coffee",
-    "test": "node_modules/mocha/bin/mocha --compilers mocha --compilers coffee:coffee-script/register --compilers js:babel-core/register"
+    "prepublish": "node_modules/.bin/babel --preset es2015 -d lib src",
+    "test": "node_modules/mocha/bin/mocha --compilers mocha --compilers js:babel-core/register"
   }
 }
