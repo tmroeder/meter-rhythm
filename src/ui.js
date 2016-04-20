@@ -286,7 +286,7 @@ export class TextDraw extends Draw {
   }
 }
 
-// The Input class is an interface for registering input handlers. Sublcasses
+// The Input class is an interface for registering input handlers. Subclasses
 // need to provide a connection to a source of input events.
 export class Input {
   // registerMove takes a function and registers it to receive notification when
