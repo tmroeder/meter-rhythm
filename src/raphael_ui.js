@@ -64,8 +64,8 @@ export class RaphaelDraw extends Draw {
     this.drawState = new State({});
 
     // Where to write comments and messages.
-    this.text[DrawConstants.comment] = commentDiv;
-    this.text[DrawConstants.message] = messageDiv;
+    this.drawState.text[DrawConstants.comment] = commentDiv;
+    this.drawState.text[DrawConstants.message] = messageDiv;
 
     // Three lines, one for each sound.
     this.drawState.lines[DrawConstants.first] = paper.path("M0,0").hide();
@@ -105,6 +105,22 @@ export class RaphaelDraw extends Draw {
 
   draw(points, state, states, cur) {
     super.draw(points, state, states, cur);
+    let drawKeys = Object.keys(this.drawState);
+    for (let key of drawKeys) {
+      if (!this.state.hasOwnProperty(key)) {
+        continue;
+      }
+
+      let uiValue = this.drawState[key];
+      let value = this.state[key];
+      if (typeof value === "object") {
+        // TODO(tmroeder): It's either a duration object (start, end), or an
+        // object that contains named durations. Pass it to two separate
+        // functions, one for each case.
+      } else if (typeof value === "string") {
+        // TODO(tmroeder): Write the string to the appropriate element.
+      }
+    }
     // TODO(tmroeder): draw the state here by modifying lines. Do this by
     // iterating this.state and drawing corresponding components, hiding and
     // showing them as needed.
