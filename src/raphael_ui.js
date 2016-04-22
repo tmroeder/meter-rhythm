@@ -40,7 +40,7 @@ export class DomInput extends Input {
       for (let i = 0; i < this.moveRegistry.length; i++) {
         this.moveRegistry[i](x, y);
       }
-    }
+    });
   }
 
   registerMove(fn) {
@@ -52,6 +52,10 @@ export class DomInput extends Input {
     if (typeof fn !== "function") return
     this.clickRegistry.push(fn);
   }
+}
+
+function isDuration(obj) {
+  return obj.hasOwnProperty(DrawConstants.start);
 }
 
 // This class draws the current state of events to the Raphael-managed |paper|.
@@ -103,26 +107,66 @@ export class RaphaelDraw extends Draw {
     this.accent = paper.text(0, 0, ">").hide();
   }
 
+
+  composePath(key, value) {
+    let start = value[DrawConstants.start];
+    let end = value[DrawConstants.end];
+    let height = this.elementHeight[key];
+    return "M" + start + "," + height + " L" + end + "," + height;
+  }
+
+  hideObjects(element) {
+    if (element.hasOwnProperty("show") && typeof element.show === "function") {
+      element.show();
+      return;
+    }
+
+    for (let child of Object.keys(element)) {
+      if (typeof child === "object") {
+        hideObjects(child);
+      }
+    }
+  }
+
   draw(points, state, states, cur) {
     super.draw(points, state, states, cur);
     let drawKeys = Object.keys(this.drawState);
     for (let key of drawKeys) {
+      let element = this.drawState[key];
       if (!this.state.hasOwnProperty(key)) {
+        hideObjects(element);
         continue;
       }
 
-      let uiValue = this.drawState[key];
       let value = this.state[key];
-      if (typeof value === "object") {
-        // TODO(tmroeder): It's either a duration object (start, end), or an
-        // object that contains named durations. Pass it to two separate
-        // functions, one for each case.
-      } else if (typeof value === "string") {
-        // TODO(tmroeder): Write the string to the appropriate element.
+      if (typeof value === "string") {
+        element.innerHTML = value;
+        continue;
+      }
+
+      if (typeof value !== "object") {
+        continue;
+      }
+
+      if (value.hasOwnProperty(DrawConstants.start)) {
+        value.attr("path", composePath(key, value)).show();
+        continue;
+      }
+
+      let innerDrawKeys = Object.keys(element);
+      for (let innerKey of innerDrawKeys) {
+        if (!value.hasOwnProperty(innerKey)) {
+          hideObjects(element[innerKey]);
+          continue;
+        }
+
+        let innerValue = value[innerKey];
+        if (!innerValue.hasOwnProperty(DrawConstants.start)) {
+          continue;
+        }
+
+        element[innerKey].attr("path", composePath(key, innerValue)).show();
       }
     }
-    // TODO(tmroeder): draw the state here by modifying lines. Do this by
-    // iterating this.state and drawing corresponding components, hiding and
-    // showing them as needed.
   }
 }
