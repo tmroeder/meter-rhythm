@@ -2,4 +2,4 @@
 
 readonly DIR=$(dirname $(readlink -e "$0"))
 
-node --es_staging "${DIR}/../port/graph.js" | dot -Tpdf -o state_machine.pdf
+node "${DIR}/../lib/graph.js" | dot -Tpdf -o state_machine.pdf
