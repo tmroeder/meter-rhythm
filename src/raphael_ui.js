@@ -15,7 +15,6 @@
 "use strict";
 
 import { Draw, DrawConstants, Input } from "./ui.js";
-import * as raphael from "raphael";
 
 // This class registers for mouse move and click input from the DOM |element|.
 export class DomInput extends Input {
