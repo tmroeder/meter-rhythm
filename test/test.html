@@ -2,22 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8"/>
-    <script type="text/javascript" src="testdata/raphael.min.js"></script>
-    <script type="text/javascript" src="bundle.js"></script>
-    <script type="text/javascript">
-      "use strict;"
-      let canvasDiv = document.getElementById("canvas");
-      let commentDiv = document.getElementById("comment");
-      let messageDiv = document.getElementById("message");
-
-      let paper = new Raphael(canvasDiv, 500, 500);
-      let di = new DomInput(canvasDiv);
-      let rd = new RaphaelDraw(paper, 10, commentDiv, messageDiv);
-    </script>
+    <script type="text/javascript"
+            src="node_modules/raphael/raphael.min.js"></script>
+    <script type="text/javascript" src="tr.js"></script>
   </head>
   <body>
-    <div id="message"></div>
+    <div id="messages"></div>
     <div id="canvas"></div>
-    <div id="comment"></div>
+    <div id="comments"></div>
   </body>
 </html>

@@ -74,13 +74,13 @@ export class Draw {
 
     // Draw the start of the first sound.
     let sound1Start = points.points[PointConstants.sound1First];
-    if (sound1Start === null) {
+    if (sound1Start === undefined) {
       return;
     }
     this.drawPoint(sound1Start, DrawConstants.first, DrawConstants.start);
 
     // Draw the dynamic components of the first sound.
-    if (cur != null && cur !== sound1Start && points.inFirstSound()) {
+    if (cur !== undefined && cur !== sound1Start && points.inFirstSound()) {
       this.drawDuration(sound1Start, cur, DrawConstants.first);
     }
 
@@ -95,7 +95,7 @@ export class Draw {
                           DrawConstants.exp);
     } else if (status === PointConstants.projectionCurrent) {
       // Don't draw a projection that is shorter than an existing first sound.
-      if (sound1End != null && cur < sound1End) {
+      if (sound1End !== undefined && cur < sound1End) {
         this.drawProjection(sound1Start, sound1End, DrawConstants.first,
                             DrawConstants.proj);
       } else {
@@ -119,7 +119,7 @@ export class Draw {
     this.drawPoint(sound2Start, DrawConstants.second, DrawConstants.start);
 
     // Draw the dynamic components of the second sound.
-    if (cur != null && cur > sound2Start && points.inSecondSound()) {
+    if (cur !== undefined && cur > sound2Start && points.inSecondSound()) {
       this.drawDuration(sound2Start, cur, DrawConstants.second);
     }
     status = points.secondProjection(cur);

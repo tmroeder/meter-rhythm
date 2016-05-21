@@ -14,7 +14,7 @@
 
 "use strict";
 
-import { Draw, DrawConstants, Input } from "./ui.js";
+import { Draw, DrawConstants, Input, State } from "./ui.js";
 
 // This class registers for mouse move and click input from the DOM |element|.
 export class DomInput extends Input {
@@ -25,7 +25,7 @@ export class DomInput extends Input {
     this.clickRegistry = [];
 
     element.addEventListener("click", (ev) => {
-      let box = this.element.getClientBoundingRect();
+      let box = this.element.getBoundingClientRect();
       let x = ev.clientX - box.left;
       let y = ev.clientY - box.top;
       for (let i = 0; i < this.clickRegistry.length; i++) {
@@ -34,7 +34,7 @@ export class DomInput extends Input {
     });
 
     element.addEventListener("mousemove", (ev) => {
-      let box = this.element.getClientBoundingRect();
+      let box = this.element.getBoundingClientRect();
       let x = ev.clientX - box.left;
       let y = ev.clientY - box.top;
       for (let i = 0; i < this.moveRegistry.length; i++) {
@@ -62,6 +62,17 @@ function isDuration(obj) {
 export class RaphaelDraw extends Draw {
   constructor(paper, shortSoundLen, commentDiv, messageDiv) {
     super(shortSoundLen, {});
+
+    let textHeight = 300;
+    this.elementHeight = {
+      lines: 200,
+      projs: 100,
+      hiatus: textHeight,
+      accel: textHeight,
+      decel: textHeight,
+      parens: textHeight,
+      accent: textHeight
+    }
     this.paper = paper;
 
     // Use a State object to store graphics objects.
@@ -123,7 +134,7 @@ export class RaphaelDraw extends Draw {
 
     for (let child of Object.keys(element)) {
       if (typeof child === "object") {
-        hideObjects(child);
+        this.hideObjects(child);
       }
     }
   }
@@ -134,7 +145,7 @@ export class RaphaelDraw extends Draw {
     for (let key of drawKeys) {
       let element = this.drawState[key];
       if (!this.state.hasOwnProperty(key)) {
-        hideObjects(element);
+        this.hideObjects(element);
         continue;
       }
 
@@ -149,14 +160,14 @@ export class RaphaelDraw extends Draw {
       }
 
       if (value.hasOwnProperty(DrawConstants.start)) {
-        value.attr("path", composePath(key, value)).show();
+        value.attr("path", this.composePath(key, value)).show();
         continue;
       }
 
       let innerDrawKeys = Object.keys(element);
       for (let innerKey of innerDrawKeys) {
         if (!value.hasOwnProperty(innerKey)) {
-          hideObjects(element[innerKey]);
+          this.hideObjects(element[innerKey]);
           continue;
         }
 
@@ -165,7 +176,8 @@ export class RaphaelDraw extends Draw {
           continue;
         }
 
-        element[innerKey].attr("path", composePath(key, innerValue)).show();
+        element[innerKey].attr("path",
+            this.composePath(key, innerValue)).show();
       }
     }
   }

@@ -14,8 +14,6 @@
 
 "use strict";
 
-var raphael = require("raphael");
-
 var driver = require("./driver.js");
 var state_machine = require("./state_machine.js");
 var raphael_ui = require("./raphael_ui.js");
@@ -29,7 +27,10 @@ var raphael_ui = require("./raphael_ui.js");
 // "require" statements.
 window.onload = function() {
   var canvas = document.getElementById("canvas");
-  var paper = raphael.Raphael(canvas, 500, 500);
+
+  // This line requires raphael.min.js to have been loaded before this script in
+  // a way that leaves Raphael in scope in the Browserified closure.
+  var paper = Raphael(canvas, 500, 500);
 
   var messageDiv = document.getElementById("messages");
   var commentDiv = document.getElementById("comments");
