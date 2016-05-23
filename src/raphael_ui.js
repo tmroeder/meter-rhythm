@@ -63,10 +63,12 @@ export class RaphaelDraw extends Draw {
   constructor(paper, shortSoundLen, commentDiv, messageDiv) {
     super(shortSoundLen, {});
 
-    let textHeight = 300;
+    let textHeight = 250;
     this.elementHeight = {
       lines: 200,
-      projs: 100,
+      proj: 190,
+      weak: 180,
+      exp: 170,
       hiatus: textHeight,
       accel: textHeight,
       decel: textHeight,
@@ -172,6 +174,12 @@ export class RaphaelDraw extends Draw {
         }
 
         let innerValue = value[innerKey];
+        let innerElt = element[innerKey];
+        if (typeof innerValue === "string") {
+          innerElt.innerHTML = innerValue;
+          continue;
+        }
+
         if (!innerValue.hasOwnProperty(DrawConstants.start)) {
           continue;
         }
