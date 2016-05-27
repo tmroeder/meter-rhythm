@@ -66,9 +66,9 @@ export class RaphaelDraw extends Draw {
     let textHeight = 250;
     this.elementHeight = {
       lines: 200,
-      proj: 190,
-      weak: 180,
-      exp: 170,
+      [DrawConstants.proj]: 190,
+      [DrawConstants.weak]: 180,
+      [DrawConstants.exp]: 170,
       hiatus: textHeight,
       accel: textHeight,
       decel: textHeight,
@@ -143,49 +143,82 @@ export class RaphaelDraw extends Draw {
 
   draw(points, state, states, cur) {
     super.draw(points, state, states, cur);
+    console.log("State is", this.state);
     let drawKeys = Object.keys(this.drawState);
-    for (let key of drawKeys) {
-      let element = this.drawState[key];
-      if (!this.state.hasOwnProperty(key)) {
-        this.hideObjects(element);
+    for (let drawKey of drawKeys) {
+      let drawValue = this.drawState[drawKey];
+      if (!this.state.hasOwnProperty(drawKey)) {
+        this.hideObjects(drawValue);
         continue;
       }
 
-      let value = this.state[key];
-      if (typeof value === "string") {
-        element.innerHTML = value;
+      let stateValue = this.state[drawKey];
+      if (typeof stateValue === "string") {
+        drawValue.innerHTML = stateValue;
         continue;
       }
 
-      if (typeof value !== "object") {
+      if (typeof stateValue !== "object") {
         continue;
       }
 
-      if (value.hasOwnProperty(DrawConstants.start)) {
-        value.attr("path", this.composePath(key, value)).show();
+      if (stateValue.hasOwnProperty(DrawConstants.start)) {
+        // E.g., drawKey might be "lines".
+        drawValue.attr("path", this.composePath(drawKey, stateValue)).show();
         continue;
       }
 
-      let innerDrawKeys = Object.keys(element);
-      for (let innerKey of innerDrawKeys) {
-        if (!value.hasOwnProperty(innerKey)) {
-          this.hideObjects(element[innerKey]);
+      // At this point, the state object is an object, and it doesn't have a key
+      // DrawConstants.start. So, we iterate over its inner structure to try to
+      // find more lines to draw.
+      let innerDrawKeys = Object.keys(drawValue);
+      for (let innerDrawKey of innerDrawKeys) {
+        if (!stateValue.hasOwnProperty(innerDrawKey)) {
+          this.hideObjects(drawValue[innerDrawKey]);
           continue;
         }
 
-        let innerValue = value[innerKey];
-        let innerElt = element[innerKey];
-        if (typeof innerValue === "string") {
-          innerElt.innerHTML = innerValue;
+        let innerStateValue = stateValue[innerDrawKey];
+        let innerDrawValue = drawValue[innerDrawKey];
+        if (typeof innerStateValue === "string") {
+          innerDrawValue.innerHTML = innerStateValue;
           continue;
         }
 
-        if (!innerValue.hasOwnProperty(DrawConstants.start)) {
+        // Handle the special case of projections, with multiple types.
+        if (drawKey === "projs") {
+          let innerProjDrawKeys = Object.keys(innerDrawValue);
+          for (let innerProjDrawKey of innerProjDrawKeys) {
+            let innerProjDrawValue = innerDrawValue[innerProjDrawKey];
+            if (!innerStateValue.hasOwnProperty(innerProjDrawKey)) {
+              this.hideObjects(innerProjDrawValue);
+              continue;
+            }
+
+            let innerProjStateValue = innerStateValue[innerProjDrawKey];
+            if (typeof innerProjStateValue !== "object" ||
+                !innerProjStateValue.hasOwnProperty(DrawConstants.start)) {
+              this.hideObjects(innerProjDrawValue);
+              continue;
+            }
+
+            if (!innerProjStateValue.hasOwnProperty(DrawConstants.start)) {
+              continue;
+            }
+
+            innerProjDrawValue.attr("path",
+                this.composePath(innerProjDrawKey, innerProjStateValue)).show();
+          }
+
           continue;
         }
 
-        element[innerKey].attr("path",
-            this.composePath(key, innerValue)).show();
+        if (!innerStateValue.hasOwnProperty(DrawConstants.start)) {
+          continue;
+        }
+
+        innerDrawValue.attr("path",
+            this.composePath(drawKey, innerStateValue)).show();
       }
     }
   }
