@@ -114,7 +114,7 @@ export const states = {
   sound1EndsTooLong: {
     comment: "The first sound ends; it is too long to have projective " +
       "potential.",
-    message: "Restart to try again.",
+    message: "Reload to try again.",
     transitions: {
       start: true
     }
@@ -202,7 +202,7 @@ export const states = {
       "the first event that the interonset duration is mensurally " +
       "indeterminate--it has no potential to be reproduced--so there " +
       "is no projection.",
-    message: "Restart to try again.",
+    message: "Reload to try again.",
     transitions: {
       pause1: true,
       start: true
@@ -328,7 +328,7 @@ export const states = {
     comment: "The second sound exceeds the duration projected at its onset.  " +
       "The projection is not clearly realized, as indicated by the changed " +
       "projection.",
-    message: "Restart to try again.",
+    message: "Reload to try again.",
     transitions: {
       start: true
     }
@@ -339,7 +339,7 @@ export const states = {
     comment: "The second sound is so long that it is mensurally " +
       "indeterminate.  Since the projected potential of the first " +
       "interonset duration is denied there is no projection at all.",
-    message: "Restart to try again.",
+    message: "Reload to try again.",
     transitions: {
       start: true
     }
@@ -451,7 +451,7 @@ export const states = {
       "*acceleration* because we sense the realization of the first " +
       "projected duration even as we also perceive the difference " +
       "between the two durations.",
-    message: "Restart to try again.",
+    message: "Reload to try again.",
     transitions: {
       pause2: true,
       start: true
@@ -465,7 +465,7 @@ export const states = {
       "conditioned by the first, in which the second interonset " +
       "duration has the projective potential (the lower arrow) to be " +
       "reproduced.",
-    message: "Restart to try again.",
+    message: "Reload to try again.",
     transitions: {
       pause2: true,
       start: true
@@ -483,7 +483,7 @@ export const states = {
       "potential and a new beginning. A new and relatively " +
       "unconditioned potential emerges from the beginning of the " +
       "third sound.",
-    message: "Restart to try again.",
+    message: "Reload to try again.",
     transitions: {
       pause2: true,
       start: true
@@ -510,7 +510,7 @@ export const states = {
       "second beginning that denies the projection of the first " +
       "interonset duration in order to realize a larger projective " +
       "potential.",
-    message: "Restart to try again",
+    message: "Reload to try again",
     transitions: {
       pause2: true,
       start: true
@@ -523,7 +523,7 @@ export const states = {
       "projected. We hear a *deceleration* because we sense the " +
       "realization of the first projected duration even as we also " +
       "perceive the difference between the two durations.",
-    message: "Restart to try again.",
+    message: "Reload to try again.",
     transitions: {
       pause2: true,
       start: true
@@ -537,7 +537,7 @@ export const states = {
       "emerges, breaking off from the emerging first projection. We " +
       "reject the relevance of the first projection to the mensural " +
       "determinacy of the second interonset duration.",
-    message: "Restart to try again.",
+    message: "Reload to try again.",
     transitions: {
       pause2: true,
       start: true
