@@ -30,14 +30,14 @@ window.onload = function() {
 
   // This line requires raphael.min.js to have been loaded before this script in
   // a way that leaves Raphael in scope in the Browserified closure.
-  var paper = Raphael(canvas, 500, 500);
+  var paper = Raphael(canvas, 600, 70);
 
   var messageDiv = document.getElementById("messages");
   var commentDiv = document.getElementById("comments");
 
   var domInput = new raphael_ui.DomInput(canvas);
   var raphaelDraw =
-    new raphael_ui.RaphaelDraw(paper, 100, commentDiv, messageDiv);
+    new raphael_ui.RaphaelDraw(paper, 200, commentDiv, messageDiv);
 
   // Wire up the input to the output through the Driver.
   new driver.Driver(100, state_machine.states, domInput, raphaelDraw);  

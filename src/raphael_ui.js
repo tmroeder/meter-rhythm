@@ -63,12 +63,12 @@ export class RaphaelDraw extends Draw {
   constructor(paper, shortSoundLen, commentDiv, messageDiv) {
     super(shortSoundLen, {});
 
-    let textHeight = 250;
+    let textHeight = 65;
     this.elementHeight = {
-      lines: 200,
-      [DrawConstants.proj]: 190,
-      [DrawConstants.weak]: 180,
-      [DrawConstants.exp]: 170,
+      lines: 55,
+      [DrawConstants.proj]: 45,
+      [DrawConstants.weak]: 35,
+      [DrawConstants.exp]: 25,
       hiatus: textHeight,
       accel: textHeight,
       decel: textHeight,
