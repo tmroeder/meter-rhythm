@@ -4,5 +4,7 @@ a:link { color:black }
 a:visited { color:black }
 a:active { color:black }
 
-.bordered { border-style:solid; border-width:thin }
-.centered { margin-left:auto; margin-right:auto; text-align:center }
+.bordered { border-style:solid; border-width:thin; }
+.centered { margin-left:auto; margin-right:auto; text-align:center; }
+
+.text { display:block; height:70px; }

@@ -149,7 +149,6 @@ export class RaphaelDraw extends Draw {
 
   draw(points, state, states, cur) {
     super.draw(points, state, states, cur);
-    console.log("State is", this.state);
     let drawKeys = Object.keys(this.drawState);
     for (let drawKey of drawKeys) {
       let drawValue = this.drawState[drawKey];
