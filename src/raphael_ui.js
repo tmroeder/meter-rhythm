@@ -76,6 +76,11 @@ export class RaphaelDraw extends Draw {
       accent: textHeight
     }
     this.paper = paper;
+    paper.rect(0, 0, paper.width, paper.height).attr({
+      stroke: "black",
+      fill: "white",
+      "fill-opacity": 0
+    });
 
     // Use a State object to store graphics objects.
     this.drawState = new State({});
@@ -86,7 +91,7 @@ export class RaphaelDraw extends Draw {
 
     let lineColor = "crimson";
     let projColor = "green";
-    let expColor = "gainsboro";
+    let expColor = "darkgrey";
     let weakColor = "darkseagreen";
 
     // Three lines, one for each sound.
@@ -124,6 +129,15 @@ export class RaphaelDraw extends Draw {
     // TODO(tmroeder): Wrap the actual line in parens instead.
     this.parens = paper.text(0, 0, "()").hide();
     this.accent = paper.text(0, 0, ">").hide();
+
+    // Draw a legend for the colors.
+    let legendEltHeight = 10;
+    let legendEltWidth = 50;
+    let x = paper.width - legendEltWidth;
+    let y = paper.height - legendEltHeight;
+
+    paper.path("M" + x + "," + y + " L" + (x + 10) + "," + y).attr({stroke: lineColor}).show();
+    paper.text(x + 15, y, "sound").attr({"text-anchor": "start"});
   }
 
 

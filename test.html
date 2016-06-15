@@ -5,11 +5,14 @@
 		<link type="text/css" href="test.css" rel="stylesheet" />
     <script type="text/javascript"
             src="node_modules/raphael/raphael.min.js"></script>
+    <!-- To generate tr.js, run
+      node_modules/.bin/browserify src/*.js -o tr.js -t babelify -presets es2015
+    -->
     <script type="text/javascript" src="tr.js"></script>
   </head>
   <body>
     <div id="messages" class="text"></div>
-    <div id="canvas" class="bordered"></div>
+    <div id="canvas"></div>
     <div id="comments" class="text"></div>
   </body>
 </html>
