@@ -91,8 +91,8 @@ export class RaphaelDraw extends Draw {
 
     let lineColor = "crimson";
     let projColor = "green";
-    let expColor = "darkgrey";
-    let weakColor = "darkseagreen";
+    let expColor = "darkorchid";
+    let weakColor = "deepskyblue";
 
     // Three lines, one for each sound.
     this.drawState.lines[DrawConstants.first] =
@@ -130,14 +130,33 @@ export class RaphaelDraw extends Draw {
     this.parens = paper.text(0, 0, "()").hide();
     this.accent = paper.text(0, 0, ">").hide();
 
+    // TODO(tmroeder): This (and other numbers here) are not good responsive
+    // design. This code needs to register for events that change the size of
+    // the window and adapt the lengths accordingly.
+    //
     // Draw a legend for the colors.
+    let canvasWidth = document.getElementById("canvas").clientWidth;
     let legendEltHeight = 10;
-    let legendEltWidth = 50;
-    let x = paper.width - legendEltWidth;
-    let y = paper.height - legendEltHeight;
+    let legendEltWidth = 100;
+    let x = canvasWidth - legendEltWidth;
+    let y = legendEltHeight;
 
+    // TODO(tmroeder): refactor this into a loop over an array of name/color
+    // pairs.
     paper.path("M" + x + "," + y + " L" + (x + 10) + "," + y).attr({stroke: lineColor}).show();
     paper.text(x + 15, y, "sound").attr({"text-anchor": "start"});
+
+    y = y + legendEltHeight;
+    paper.path("M" + x + "," + y + " L" + (x + 10) + "," + y).attr({stroke: projColor}).show();
+    paper.text(x + 15, y, "projection").attr({"text-anchor": "start"});
+
+    y = y + legendEltHeight;
+    paper.path("M" + x + "," + y + " L" + (x + 10) + "," + y).attr({stroke: expColor}).show();
+    paper.text(x + 15, y, "expectation").attr({"text-anchor": "start"});
+
+    y = y + legendEltHeight;
+    paper.path("M" + x + "," + y + " L" + (x + 10) + "," + y).attr({stroke: weakColor}).show();
+    paper.text(x + 15, y, "weak projection").attr({"text-anchor": "start"});
   }
 
 

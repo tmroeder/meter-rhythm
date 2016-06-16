@@ -30,7 +30,7 @@ window.onload = function() {
 
   // This line requires raphael.min.js to have been loaded before this script in
   // a way that leaves Raphael in scope in the Browserified closure.
-  var paper = Raphael(canvas, 600, 70);
+  var paper = Raphael(canvas, "100%", 70);
 
   var messageDiv = document.getElementById("messages");
   var commentDiv = document.getElementById("comments");
