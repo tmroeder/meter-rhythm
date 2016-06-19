@@ -63,7 +63,7 @@ export class RaphaelDraw extends Draw {
   constructor(paper, shortSoundLen, commentDiv, messageDiv) {
     super(shortSoundLen, {});
 
-    let textHeight = 65;
+    let textHeight = 15;
     this.elementHeight = {
       lines: 55,
       [DrawConstants.proj]: 45,
@@ -81,6 +81,8 @@ export class RaphaelDraw extends Draw {
       fill: "white",
       "fill-opacity": 0
     });
+
+    this.gapWidth = 10;
 
     // Use a State object to store graphics objects.
     this.drawState = new State({});
@@ -139,37 +141,39 @@ export class RaphaelDraw extends Draw {
     let legendEltHeight = 10;
     let legendEltWidth = 100;
     let x = canvasWidth - legendEltWidth;
-    let y = legendEltHeight;
+    let y = legendEltHeight + 10;
+    let barWidth = 20;
+    let textStart = 25;
 
     // TODO(tmroeder): refactor this into a loop over an array of name/color
     // pairs.
-    paper.path("M" + x + "," + y + " L" + (x + 10) + "," + y).attr({stroke: lineColor}).show();
-    paper.text(x + 15, y, "sound").attr({"text-anchor": "start"});
+    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({stroke: lineColor}).show();
+    paper.text(x + textStart, y, "sound").attr({"text-anchor": "start"});
 
     y = y + legendEltHeight;
-    paper.path("M" + x + "," + y + " L" + (x + 10) + "," + y).attr({stroke: projColor}).show();
-    paper.text(x + 15, y, "projection").attr({"text-anchor": "start"});
+    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({stroke: projColor}).show();
+    paper.text(x + textStart, y, "projection").attr({"text-anchor": "start"});
 
     y = y + legendEltHeight;
-    paper.path("M" + x + "," + y + " L" + (x + 10) + "," + y).attr({stroke: expColor}).show();
-    paper.text(x + 15, y, "expectation").attr({"text-anchor": "start"});
+    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({stroke: expColor}).show();
+    paper.text(x + textStart, y, "expectation").attr({"text-anchor": "start"});
 
     y = y + legendEltHeight;
-    paper.path("M" + x + "," + y + " L" + (x + 10) + "," + y).attr({stroke: weakColor}).show();
-    paper.text(x + 15, y, "weak projection").attr({"text-anchor": "start"});
+    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({stroke: weakColor}).show();
+    paper.text(x + textStart, y, "weak projection").attr({"text-anchor": "start"});
   }
 
 
   composePath(key, value) {
     let start = value[DrawConstants.start];
-    let end = value[DrawConstants.end];
+    let end = value[DrawConstants.end] - this.gapWidth;
     let height = this.elementHeight[key];
     return "M" + start + "," + height + " L" + end + "," + height;
   }
 
   hideObjects(element) {
-    if (element.hasOwnProperty("show") && typeof element.show === "function") {
-      element.show();
+    if (element.hasOwnProperty("hide") && typeof element.hide === "function") {
+      element.hide();
       return;
     }
 
