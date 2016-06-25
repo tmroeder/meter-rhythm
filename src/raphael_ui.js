@@ -66,9 +66,9 @@ export class RaphaelDraw extends Draw {
     let textHeight = 15;
     this.elementHeight = {
       lines: 55,
-      [DrawConstants.proj]: 45,
-      [DrawConstants.weak]: 35,
-      [DrawConstants.exp]: 25,
+      [DrawConstants.proj]: 55,
+      [DrawConstants.weak]: 55,
+      [DrawConstants.exp]: 55,
       hiatus: textHeight,
       accel: textHeight,
       decel: textHeight,
@@ -164,11 +164,18 @@ export class RaphaelDraw extends Draw {
   }
 
 
-  composePath(key, value) {
+  composeLine(key, value) {
     let start = value[DrawConstants.start];
     let end = value[DrawConstants.end] - this.gapWidth;
     let height = this.elementHeight[key];
     return "M" + start + "," + height + " L" + end + "," + height;
+  }
+
+  composeArc(key, value) {
+    let start = value[DrawConstants.start];
+    let end = value[DrawConstants.end] - this.gapWidth;
+    let height = this.elementHeight[key];
+    return "M" + start + "," + height + " A25,25 0 0,1 " + end + "," + height;
   }
 
   hideObjects(element) {
@@ -206,7 +213,7 @@ export class RaphaelDraw extends Draw {
 
       if (stateValue.hasOwnProperty(DrawConstants.start)) {
         // E.g., drawKey might be "lines".
-        drawValue.attr("path", this.composePath(drawKey, stateValue)).show();
+        drawValue.attr("path", this.composeLine(drawKey, stateValue)).show();
         continue;
       }
 
@@ -249,7 +256,7 @@ export class RaphaelDraw extends Draw {
             }
 
             innerProjDrawValue.attr("path",
-                this.composePath(innerProjDrawKey, innerProjStateValue)).show();
+                this.composeArc(innerProjDrawKey, innerProjStateValue)).show();
           }
 
           continue;
@@ -260,7 +267,7 @@ export class RaphaelDraw extends Draw {
         }
 
         innerDrawValue.attr("path",
-            this.composePath(drawKey, innerStateValue)).show();
+            this.composeLine(drawKey, innerStateValue)).show();
       }
     }
   }

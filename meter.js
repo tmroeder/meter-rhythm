@@ -253,7 +253,7 @@ var RaphaelDraw = exports.RaphaelDraw = function (_Draw) {
     var textHeight = 15;
     _this2.elementHeight = (_this2$elementHeight = {
       lines: 55
-    }, _defineProperty(_this2$elementHeight, _ui.DrawConstants.proj, 45), _defineProperty(_this2$elementHeight, _ui.DrawConstants.weak, 35), _defineProperty(_this2$elementHeight, _ui.DrawConstants.exp, 25), _defineProperty(_this2$elementHeight, "hiatus", textHeight), _defineProperty(_this2$elementHeight, "accel", textHeight), _defineProperty(_this2$elementHeight, "decel", textHeight), _defineProperty(_this2$elementHeight, "parens", textHeight), _defineProperty(_this2$elementHeight, "accent", textHeight), _this2$elementHeight);
+    }, _defineProperty(_this2$elementHeight, _ui.DrawConstants.proj, 55), _defineProperty(_this2$elementHeight, _ui.DrawConstants.weak, 55), _defineProperty(_this2$elementHeight, _ui.DrawConstants.exp, 55), _defineProperty(_this2$elementHeight, "hiatus", textHeight), _defineProperty(_this2$elementHeight, "accel", textHeight), _defineProperty(_this2$elementHeight, "decel", textHeight), _defineProperty(_this2$elementHeight, "parens", textHeight), _defineProperty(_this2$elementHeight, "accent", textHeight), _this2$elementHeight);
     _this2.paper = paper;
     paper.rect(0, 0, paper.width, paper.height).attr({
       stroke: "black",
@@ -337,12 +337,20 @@ var RaphaelDraw = exports.RaphaelDraw = function (_Draw) {
   }
 
   _createClass(RaphaelDraw, [{
-    key: "composePath",
-    value: function composePath(key, value) {
+    key: "composeLine",
+    value: function composeLine(key, value) {
       var start = value[_ui.DrawConstants.start];
       var end = value[_ui.DrawConstants.end] - this.gapWidth;
       var height = this.elementHeight[key];
       return "M" + start + "," + height + " L" + end + "," + height;
+    }
+  }, {
+    key: "composeArc",
+    value: function composeArc(key, value) {
+      var start = value[_ui.DrawConstants.start];
+      var end = value[_ui.DrawConstants.end] - this.gapWidth;
+      var height = this.elementHeight[key];
+      return "M" + start + "," + height + " A25,25 0 0,1 " + end + "," + height;
     }
   }, {
     key: "hideObjects",
@@ -410,7 +418,7 @@ var RaphaelDraw = exports.RaphaelDraw = function (_Draw) {
 
           if (stateValue.hasOwnProperty(_ui.DrawConstants.start)) {
             // E.g., drawKey might be "lines".
-            drawValue.attr("path", this.composePath(drawKey, stateValue)).show();
+            drawValue.attr("path", this.composeLine(drawKey, stateValue)).show();
             continue;
           }
 
@@ -465,7 +473,7 @@ var RaphaelDraw = exports.RaphaelDraw = function (_Draw) {
                       continue;
                     }
 
-                    innerProjDrawValue.attr("path", this.composePath(innerProjDrawKey, innerProjStateValue)).show();
+                    innerProjDrawValue.attr("path", this.composeArc(innerProjDrawKey, innerProjStateValue)).show();
                   }
                 } catch (err) {
                   _didIteratorError4 = true;
@@ -489,7 +497,7 @@ var RaphaelDraw = exports.RaphaelDraw = function (_Draw) {
                 continue;
               }
 
-              innerDrawValue.attr("path", this.composePath(drawKey, innerStateValue)).show();
+              innerDrawValue.attr("path", this.composeLine(drawKey, innerStateValue)).show();
             }
           } catch (err) {
             _didIteratorError3 = true;
