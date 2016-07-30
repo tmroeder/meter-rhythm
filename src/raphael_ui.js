@@ -173,7 +173,7 @@ export class RaphaelDraw extends Draw {
     let start = value[DrawConstants.start];
     let end = value[DrawConstants.end];
     let height = this.elementHeight[key];
-    return "M" + start + "," + height + " A25,25 0 0,1 " + end + "," + height;
+    return "M" + start + "," + height + " A50,30 0 0,1 " + end + "," + height;
   }
 
   hideObjects(element) {
