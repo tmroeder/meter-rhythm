@@ -37,7 +37,7 @@ window.onload = function() {
 
   var domInput = new raphael_ui.DomInput(canvas);
   var raphaelDraw =
-    new raphael_ui.RaphaelDraw(paper, 200, commentDiv, messageDiv);
+    new raphael_ui.RaphaelDraw(paper, 400, commentDiv, messageDiv);
 
   // Wire up the input to the output through the Driver.
   new driver.Driver(100, state_machine.states, domInput, raphaelDraw);  

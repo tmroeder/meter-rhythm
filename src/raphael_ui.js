@@ -82,8 +82,6 @@ export class RaphaelDraw extends Draw {
       "fill-opacity": 0
     });
 
-    this.gapWidth = 10;
-
     // Use a State object to store graphics objects.
     this.drawState = new State({});
 
@@ -166,14 +164,14 @@ export class RaphaelDraw extends Draw {
 
   composeLine(key, value) {
     let start = value[DrawConstants.start];
-    let end = value[DrawConstants.end] - this.gapWidth;
+    let end = value[DrawConstants.end];
     let height = this.elementHeight[key];
     return "M" + start + "," + height + " L" + end + "," + height;
   }
 
   composeArc(key, value) {
     let start = value[DrawConstants.start];
-    let end = value[DrawConstants.end] - this.gapWidth;
+    let end = value[DrawConstants.end];
     let height = this.elementHeight[key];
     return "M" + start + "," + height + " A25,25 0 0,1 " + end + "," + height;
   }
