@@ -96,30 +96,30 @@ export class RaphaelDraw extends Draw {
 
     // Three lines, one for each sound.
     this.drawState.lines[DrawConstants.first] =
-      paper.path("M0,0").attr({stroke: lineColor}).hide();
-    this.drawState.lines[DrawConstants.second] = paper.path("M0,0").attr({stroke: lineColor}).hide();
-    this.drawState.lines[DrawConstants.third] = paper.path("M0,0").attr({stroke: lineColor}).hide();
+      paper.path("M0,0").attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
+    this.drawState.lines[DrawConstants.second] = paper.path("M0,0").attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
+    this.drawState.lines[DrawConstants.third] = paper.path("M0,0").attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
 
     // A projection and an expected projection for the first sound.
     this.drawState.projs[DrawConstants.first] = {};
     this.drawState.projs[DrawConstants.first][DrawConstants.proj] =
-      paper.path("M0,0").attr({stroke: projColor}).hide();
+      paper.path("M0,0").attr({stroke: projColor, "arrow-end": "block-wide-long"}).hide();
     this.drawState.projs[DrawConstants.first][DrawConstants.exp] =
-      paper.path("M0,0").attr({stroke: expColor}).hide();
+      paper.path("M0,0").attr({stroke: expColor, "arrow-end": "block-wide-long"}).hide();
 
     // A projection and a weak projection for the second sound.
     this.drawState.projs[DrawConstants.second] = {};
     this.drawState.projs[DrawConstants.second][DrawConstants.proj] =
-      paper.path("M0,0").attr({stroke: projColor}).hide();
+      paper.path("M0,0").attr({stroke: projColor, "arrow-end": "block-wide-long"}).hide();
     this.drawState.projs[DrawConstants.second][DrawConstants.weak] =
-      paper.path("M0,0").attr({stroke: weakColor}).hide();
+      paper.path("M0,0").attr({stroke: weakColor, "arrow-end": "block-wide-long"}).hide();
 
     // A projection and an expected projection for the third sound.
     this.drawState.projs[DrawConstants.third] = {};
     this.drawState.projs[DrawConstants.third][DrawConstants.proj] =
-      paper.path("M0,0").attr({stroke: projColor}).hide();
+      paper.path("M0,0").attr({stroke: projColor, "arrow-end": "block-wide-long"}).hide();
     this.drawState.projs[DrawConstants.third][DrawConstants.exp] =
-      paper.path("M0,0").attr({stroke: expColor}).hide();
+      paper.path("M0,0").attr({stroke: expColor, "arrow-end": "block-wide-long"}).hide();
 
     // Hiatus, accel, decel, parens, and accent marks.
     this.hiatus = paper.text(0, 0, "||").hide();
