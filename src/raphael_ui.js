@@ -96,9 +96,14 @@ export class RaphaelDraw extends Draw {
 
     // Three lines, one for each sound.
     this.drawState.lines[DrawConstants.first] =
-      paper.path("M0,0").attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
-    this.drawState.lines[DrawConstants.second] = paper.path("M0,0").attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
-    this.drawState.lines[DrawConstants.third] = paper.path("M0,0").attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
+      paper.path("M0,0")
+          .attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
+    this.drawState.lines[DrawConstants.second] =
+      paper.path("M0,0")
+          .attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
+    this.drawState.lines[DrawConstants.third] =
+      paper.path("M0,0")
+          .attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
 
     // A projection and an expected projection for the first sound.
     this.drawState.projs[DrawConstants.first] = {};
@@ -112,23 +117,31 @@ export class RaphaelDraw extends Draw {
     this.drawState.projs[DrawConstants.second][DrawConstants.proj] =
       paper.path("M0,0").attr({stroke: projColor, "arrow-end": "block-wide-long"}).hide();
     this.drawState.projs[DrawConstants.second][DrawConstants.weak] =
-      paper.path("M0,0").attr({stroke: weakColor, "arrow-end": "block-wide-long"}).hide();
+      paper.path("M0,0")
+          .attr({stroke: weakColor, "arrow-end": "block-wide-long"}).hide();
 
     // A projection and an expected projection for the third sound.
     this.drawState.projs[DrawConstants.third] = {};
     this.drawState.projs[DrawConstants.third][DrawConstants.proj] =
-      paper.path("M0,0").attr({stroke: projColor, "arrow-end": "block-wide-long"}).hide();
+      paper.path("M0,0")
+          .attr({stroke: projColor, "arrow-end": "block-wide-long"}).hide();
     this.drawState.projs[DrawConstants.third][DrawConstants.exp] =
-      paper.path("M0,0").attr({stroke: expColor, "arrow-end": "block-wide-long"}).hide();
+      paper.path("M0,0")
+          .attr({stroke: expColor, "arrow-end": "block-wide-long"}).hide();
 
     // Hiatus, accel, decel, parens, and accent marks.
-    this.hiatus = paper.text(0, 0, "||").hide();
-    this.accel = paper.text(0, 0, "accel").hide();
-    this.decel = paper.text(0, 0, "decel").hide(); 
+    this.drawState.hiatus = paper.text(0, this.elementHeight["hiatus"], "||")
+      .attr({"text-anchor": "start"}).hide();
+    this.drawState.accel = paper.text(0, this.elementHeight["accel"], "accel")
+      .attr({"text-anchor": "start"}).hide();
+    this.drawState.decel = paper.text(0, this.elementHeight["decel"], "decel")
+      .attr({"text-anchor": "start"}).hide();
 
     // TODO(tmroeder): Wrap the actual line in parens instead.
-    this.parens = paper.text(0, 0, "()").hide();
-    this.accent = paper.text(0, 0, ">").hide();
+    this.drawState.parens = paper.text(0, this.elementHeight["parens"], "()")
+      .attr({"text-anchor": "start"}).hide();
+    this.drawState.accent = paper.text(0, this.elementHeight["accent"], ">")
+      .attr({"text-anchor": "start"}).hide();
 
     // TODO(tmroeder): This (and other numbers here) are not good responsive
     // design. This code needs to register for events that change the size of
@@ -200,8 +213,8 @@ export class RaphaelDraw extends Draw {
       }
 
       let stateValue = this.state[drawKey];
-      if (typeof stateValue === "string") {
-        drawValue.innerHTML = stateValue;
+      if (typeof stateValue === "number" && stateValue > 0) {
+        drawValue.attr({x: stateValue}).show();
         continue;
       }
 
