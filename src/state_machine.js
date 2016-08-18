@@ -176,9 +176,9 @@ export const states = {
   sound2Starts: {
     comment: "This beginning of the second sound 'realizes' the projective " +
       "potential of the duration begun by the first event's attack. " +
-      "The new line represents this projective potential. The " +
+      "The new arc represents this projective potential. The " +
       "event now beginning has the potential to reproduce this past " +
-      "duration. The new projection, extending for this duration into the " +
+      "duration. The dashed arc, extending for this duration into the " +
       "future, symbolizes this 'projected potential'.",
     message: "Perform the second sound by moving to the right.",
     transitions: {
@@ -212,10 +212,10 @@ export const states = {
   // the second sound continues and is not too long.
   sound2Continues: {
     comment: "The accumulating duration of the second sound is realizing the " +
-      "expected projected potential of the first interonset duration. " +
+      "projected potential of the first interonset duration. " +
       "Simultaneously the present event accumulates its own projective " +
-      "potential (represented by the growing projection) to be reproduced by " +
-      "a successive, third event.",
+      "potential (represented by the second solid arc) to be realized by " +
+      "the onset of a third event.",
     message: "Click to end the second sound.",
     transitions: {
       sound2Continues: true,
@@ -254,11 +254,15 @@ export const states = {
     }
   },
 
+  // TODO(tmroeder): Need X through the projection.
+  // TODO(tmroeder): Arcs need to be open, not complete. It comes up and goes
+  // straight and only closes the curve when it becomes a real projective
+  // potential.
   // The second sound continues too long to realize its projection.
   sound2ContinuesWithoutProjection: {
     comment: "The second sound exceeds the duration projected at its onset; " +
-      "the projection is not clearly realized, as indicated by the change in " +
-      "the projection.",
+      "the projection is not clearly realized, as indicated by the X through " +
+      "the dashed arc.",
     message: "Move to the left to shorten the second sound, or " +
       "click to end it.",
     transitions: {
@@ -279,7 +283,7 @@ export const states = {
     clickHandler: () => "sound2EndsWithoutProjection"
   },
 
-  // the second sound continues too long to be mensurally determinate.
+  // The second sound continues too long to be mensurally determinate.
   sound2ContinuesTooLong: {
     comment: "The second sound is so long that it is mensurally " +
       "indeterminate. (The projection of the first interonset " +
@@ -303,7 +307,7 @@ export const states = {
     clickHandler: () => "sound2EndsTooLong"
   },
 
-  // The second sound ends, realizing its projection.
+  // The second sound ends, realizing the first projection.
   sound2Ends: {
     comment: "The second sound ends. Its duration is 'mensurally " +
       "determinate' because it has the potential for being precisely " +
@@ -326,8 +330,8 @@ export const states = {
   // The second sound ends without realizing its projection.
   sound2EndsWithoutProjection: {
     comment: "The second sound exceeds the duration projected at its onset.  " +
-      "The projection is not clearly realized, as indicated by the changed " +
-      "projection.",
+      "The projection is not clearly realized, as indicated by the X through " +
+      "the dashed arc.";
     message: "Reload to try again.",
     transitions: {
       start: true
@@ -458,12 +462,18 @@ export const states = {
     }
   },
 
+  // TODO(tmroeder): Need a parameter to give slack. This is 10% in the
+  // original.
+  // TODO(tmroeder): The arcs need to be below the sounds.
+  // TODO(tmroeder): The second arc needs to be separated from the dashed arc
+  // and below it.
+  // TODO(tmroeder): The hiatus needs to be between the two sounds.
   sound3StartsExactly: {
-    comment: "Since the third sound begins exactly at the end of the " +
-      "projected duration (the upper dashed arc), the projected " +
+    comment: "Since the third sound begins close to the end of the " +
+      "projected duration (the dashed arc), the projected " +
       "duration is 'realized'. A new projection is created, " +
       "conditioned by the first, in which the second interonset " +
-      "duration has the projective potential (the lower arrow) to be " +
+      "duration has the projective potential (the lower solid arc) to be " +
       "reproduced.",
     message: "Reload to try again.",
     transitions: {
@@ -492,9 +502,11 @@ export const states = {
 
   // The third sound starts, realizing the first projection and suggesting a
   // new projection.
+  // TODO(tmroeder): See the photo of the two interpretations. This needs
+  // revision.
   sound3StartsRealized: {
     comment: "The projection of the first interonset duration is realized. " +
-      "As show, another projection can be completed within the promised " +
+      "As shown, another projection can be completed within the promised " +
       "duration, so may enhance its mensural determinacy. The emergence of " +
       "a new beginning, shown in parentheses, would clarify this.",
     message: "Click anywhere to see an alternate interpretation.",
@@ -518,6 +530,9 @@ export const states = {
   },
 
   // The third sound starts later than expected.
+  // TODO(tmroeder): change decel to rall.
+  // TODO(tmroeder): Look up this book in the UBC Library: Hasty Meter Rhythm.
+  // Part II, Chapter 7.
   sound3StartsSlightlyLate: {
     comment: "The beginning of the third sound is slightly later than " +
       "projected. We hear a *deceleration* because we sense the " +
@@ -533,7 +548,7 @@ export const states = {
   // The third sound starts slightly late and suggests a new projection.
   sound3StartsSlightlyLateNewProjection: {
     comment: "The third sound begins somewhat later than projected. A new " +
-      "projection, indicated by the lowest arrow and dashed arc, " +
+      "projection, indicated by the second solid arc and new dashed arc, " +
       "emerges, breaking off from the emerging first projection. We " +
       "reject the relevance of the first projection to the mensural " +
       "determinacy of the second interonset duration.",
