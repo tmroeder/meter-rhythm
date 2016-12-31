@@ -331,7 +331,7 @@ export const states = {
   sound2EndsWithoutProjection: {
     comment: "The second sound exceeds the duration projected at its onset.  " +
       "The projection is not clearly realized, as indicated by the X through " +
-      "the dashed arc.";
+      "the dashed arc.",
     message: "Reload to try again.",
     transitions: {
       start: true
