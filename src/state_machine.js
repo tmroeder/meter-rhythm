@@ -18,7 +18,6 @@
 // a set of named states (like "start"), each with a comment and a message. The
 // comment provides an interpretation of the current state, and the message
 // suggests actions to take in the current state.
-// TODO(tmroeder): Add the comments back from the CoffeeScript version.
 export const states = {
   // The starting state of the program.
   start: {
@@ -209,7 +208,7 @@ export const states = {
     }
   },
 
-  // the second sound continues and is not too long.
+  // The second sound continues and is not too long.
   sound2Continues: {
     comment: "The accumulating duration of the second sound is realizing the " +
       "projected potential of the first interonset duration. " +
