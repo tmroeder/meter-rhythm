@@ -186,7 +186,27 @@ export class RaphaelDraw extends Draw {
     let start = value[DrawConstants.start];
     let end = value[DrawConstants.end];
     let height = this.elementHeight[key];
-    return "M" + start + "," + height + " A50,30 0 0,1 " + end + "," + height;
+    return "M" + start + "," + height + " A50,-30 0 0,1 " + end + "," + height;
+  }
+
+  // To form the long-extended/incomplete arc, use a Bézier curve. The rule is
+  // simple: M x0,y0 C x1,y1 x2,y2 x3,y3. (x0, y0) and (x3, y3) are the starting
+  // and ending points, respectively, and the other two are control points. It's
+  // easy to get the asymptotic curve: put y1 == y2 == y3, and put x0 == x1, and
+  // put x2 close to the beginning. The distance between y0 and y{1,2,3}
+  // determines how steep the bend can be, as well as the distance between x1
+  // and x2.
+  composeUnfinishedArc(key, value) {
+    let start = value[DrawConstants.start];
+    let end = value[DrawConstants.end];
+    let height = this.elementHeight[key];
+    let curveHeight = height + 30;
+
+    // Put the intermediate point 1/5th of the way between start and end.
+    let curveBend = start + (start + end)/5;
+
+    return "M" + start + "," + height + " C " + start + "," + curveHeight +
+      " " + curveBend + "," + curveHeight + " " + end + "," + height;
   }
 
   hideObjects(element) {
