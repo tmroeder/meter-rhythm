@@ -14,7 +14,12 @@
 
 "use strict";
 
-import { Draw, DrawConstants, Input, State } from "./ui.js";
+import {
+  Draw,
+  DrawConstants,
+  Input,
+  State
+} from "./ui.js";
 
 // This class registers for mouse move and click input from the DOM |element|.
 export class DomInput extends Input {
@@ -97,51 +102,88 @@ export class RaphaelDraw extends Draw {
     // Three lines, one for each sound.
     this.drawState.lines[DrawConstants.first] =
       paper.path("M0,0")
-          .attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
+      .attr({
+        stroke: lineColor,
+        "arrow-end": "block-wide-long"
+      }).hide();
     this.drawState.lines[DrawConstants.second] =
       paper.path("M0,0")
-          .attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
+      .attr({
+        stroke: lineColor,
+        "arrow-end": "block-wide-long"
+      }).hide();
     this.drawState.lines[DrawConstants.third] =
       paper.path("M0,0")
-          .attr({stroke: lineColor, "arrow-end": "block-wide-long"}).hide();
+      .attr({
+        stroke: lineColor,
+        "arrow-end": "block-wide-long"
+      }).hide();
 
     // A projection and an expected projection for the first sound.
     this.drawState.projs[DrawConstants.first] = {};
     this.drawState.projs[DrawConstants.first][DrawConstants.proj] =
-      paper.path("M0,0").attr({stroke: projColor, "arrow-end": "block-wide-long"}).hide();
+      paper.path("M0,0").attr({
+        stroke: projColor,
+        "arrow-end": "block-wide-long"
+      }).hide();
     this.drawState.projs[DrawConstants.first][DrawConstants.exp] =
-      paper.path("M0,0").attr({stroke: expColor, "arrow-end": "block-wide-long"}).hide();
+      paper.path("M0,0").attr({
+        stroke: expColor,
+        "arrow-end": "block-wide-long"
+      }).hide();
 
     // A projection and a weak projection for the second sound.
     this.drawState.projs[DrawConstants.second] = {};
     this.drawState.projs[DrawConstants.second][DrawConstants.proj] =
-      paper.path("M0,0").attr({stroke: projColor, "arrow-end": "block-wide-long"}).hide();
+      paper.path("M0,0").attr({
+        stroke: projColor,
+        "arrow-end": "block-wide-long"
+      }).hide();
     this.drawState.projs[DrawConstants.second][DrawConstants.weak] =
       paper.path("M0,0")
-          .attr({stroke: weakColor, "arrow-end": "block-wide-long"}).hide();
+      .attr({
+        stroke: weakColor,
+        "arrow-end": "block-wide-long"
+      }).hide();
 
     // A projection and an expected projection for the third sound.
     this.drawState.projs[DrawConstants.third] = {};
     this.drawState.projs[DrawConstants.third][DrawConstants.proj] =
       paper.path("M0,0")
-          .attr({stroke: projColor, "arrow-end": "block-wide-long"}).hide();
+      .attr({
+        stroke: projColor,
+        "arrow-end": "block-wide-long"
+      }).hide();
     this.drawState.projs[DrawConstants.third][DrawConstants.exp] =
       paper.path("M0,0")
-          .attr({stroke: expColor, "arrow-end": "block-wide-long"}).hide();
+      .attr({
+        stroke: expColor,
+        "arrow-end": "block-wide-long"
+      }).hide();
 
     // Hiatus, accel, decel, parens, and accent marks.
     this.drawState.hiatus = paper.text(0, this.elementHeight["hiatus"], "||")
-      .attr({"text-anchor": "start"}).hide();
+      .attr({
+        "text-anchor": "start"
+      }).hide();
     this.drawState.accel = paper.text(0, this.elementHeight["accel"], "accel")
-      .attr({"text-anchor": "start"}).hide();
+      .attr({
+        "text-anchor": "start"
+      }).hide();
     this.drawState.decel = paper.text(0, this.elementHeight["decel"], "decel")
-      .attr({"text-anchor": "start"}).hide();
+      .attr({
+        "text-anchor": "start"
+      }).hide();
 
     // TODO(tmroeder): Wrap the actual line in parens instead.
     this.drawState.parens = paper.text(0, this.elementHeight["parens"], "()")
-      .attr({"text-anchor": "start"}).hide();
+      .attr({
+        "text-anchor": "start"
+      }).hide();
     this.drawState.accent = paper.text(0, this.elementHeight["accent"], ">")
-      .attr({"text-anchor": "start"}).hide();
+      .attr({
+        "text-anchor": "start"
+      }).hide();
 
     // TODO(tmroeder): This (and other numbers here) are not good responsive
     // design. This code needs to register for events that change the size of
@@ -158,20 +200,36 @@ export class RaphaelDraw extends Draw {
 
     // TODO(tmroeder): refactor this into a loop over an array of name/color
     // pairs.
-    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({stroke: lineColor}).show();
-    paper.text(x + textStart, y, "sound").attr({"text-anchor": "start"});
+    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({
+      stroke: lineColor
+    }).show();
+    paper.text(x + textStart, y, "sound").attr({
+      "text-anchor": "start"
+    });
 
     y = y + legendEltHeight;
-    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({stroke: projColor}).show();
-    paper.text(x + textStart, y, "projection").attr({"text-anchor": "start"});
+    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({
+      stroke: projColor
+    }).show();
+    paper.text(x + textStart, y, "projection").attr({
+      "text-anchor": "start"
+    });
 
     y = y + legendEltHeight;
-    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({stroke: expColor}).show();
-    paper.text(x + textStart, y, "expectation").attr({"text-anchor": "start"});
+    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({
+      stroke: expColor
+    }).show();
+    paper.text(x + textStart, y, "expectation").attr({
+      "text-anchor": "start"
+    });
 
     y = y + legendEltHeight;
-    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({stroke: weakColor}).show();
-    paper.text(x + textStart, y, "weak projection").attr({"text-anchor": "start"});
+    paper.path("M" + x + "," + y + " L" + (x + barWidth) + "," + y).attr({
+      stroke: weakColor
+    }).show();
+    paper.text(x + textStart, y, "weak projection").attr({
+      "text-anchor": "start"
+    });
   }
 
 
@@ -214,7 +272,9 @@ export class RaphaelDraw extends Draw {
 
       let stateValue = this.state[drawKey];
       if (typeof stateValue === "number" && stateValue > 0) {
-        drawValue.attr({x: stateValue}).show();
+        drawValue.attr({
+          x: stateValue
+        }).show();
         continue;
       }
 
@@ -257,7 +317,7 @@ export class RaphaelDraw extends Draw {
 
             let innerProjStateValue = innerStateValue[innerProjDrawKey];
             if (typeof innerProjStateValue !== "object" ||
-                !innerProjStateValue.hasOwnProperty(DrawConstants.start)) {
+              !innerProjStateValue.hasOwnProperty(DrawConstants.start)) {
               this.hideObjects(innerProjDrawValue);
               continue;
             }
@@ -267,7 +327,7 @@ export class RaphaelDraw extends Draw {
             }
 
             innerProjDrawValue.attr("path",
-                this.composeArc(innerProjDrawKey, innerProjStateValue)).show();
+              this.composeArc(innerProjDrawKey, innerProjStateValue)).show();
           }
 
           continue;
@@ -278,7 +338,7 @@ export class RaphaelDraw extends Draw {
         }
 
         innerDrawValue.attr("path",
-            this.composeLine(drawKey, innerStateValue)).show();
+          this.composeLine(drawKey, innerStateValue)).show();
       }
     }
   }

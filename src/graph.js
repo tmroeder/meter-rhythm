@@ -14,7 +14,10 @@
 
 "use strict";
 
-import { states, writeGraph } from "./state_machine.js";
+import {
+  states,
+  writeGraph
+} from "./state_machine.js";
 console.log("strict digraph Meter {");
 console.log(writeGraph(states));
 console.log("}");

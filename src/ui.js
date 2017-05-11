@@ -14,7 +14,9 @@
 
 "use strict";
 
-import { PointConstants } from "./state_machine.js";
+import {
+  PointConstants
+} from "./state_machine.js";
 
 // UIError is thrown for error cases that happen in methods of the Draw
 // classes.
@@ -27,8 +29,17 @@ export class UIError extends Error {
 }
 
 export class State {
-  constructor({lines = {}, projs = {}, text = {}, hiatus = 0, accel = 0,
-      decel = 0, parens = 0, accent = 0, short = 0} = {}) {
+  constructor({
+    lines = {},
+    projs = {},
+    text = {},
+    hiatus = 0,
+    accel = 0,
+    decel = 0,
+    parens = 0,
+    accent = 0,
+    short = 0
+  } = {}) {
     this.lines = lines;
     this.projs = projs;
     this.text = text;
@@ -90,17 +101,17 @@ export class Draw {
       let end = points.points[PointConstants.sound2First];
       let difference = end - sound1Start;
       this.drawProjection(sound1Start, end, DrawConstants.first,
-                          DrawConstants.proj);
+        DrawConstants.proj);
       this.drawProjection(end, end + difference, DrawConstants.first,
-                          DrawConstants.exp);
+        DrawConstants.exp);
     } else if (status === PointConstants.projectionCurrent) {
       // Don't draw a projection that is shorter than an existing first sound.
       if (sound1End !== undefined && cur < sound1End) {
         this.drawProjection(sound1Start, sound1End, DrawConstants.first,
-                            DrawConstants.proj);
+          DrawConstants.proj);
       } else {
         this.drawProjection(sound1Start, cur, DrawConstants.first,
-                            DrawConstants.proj);
+          DrawConstants.proj);
       }
     }
 
@@ -124,13 +135,13 @@ export class Draw {
     }
     status = points.secondProjection(cur);
     if (status === PointConstants.projectionOn ||
-        status === PointConstants.projectionCurrent) {
+      status === PointConstants.projectionCurrent) {
       this.drawProjection(sound2Start, cur, DrawConstants.second,
-                          DrawConstants.proj);
+        DrawConstants.proj);
     } else if (points.secondProjection(cur) ===
-               PointConstants.projectionWeak) {
+      PointConstants.projectionWeak) {
       this.drawProjection(sound2Start, cur, DrawConstants.second,
-                          DrawConstants.weak);
+        DrawConstants.weak);
     }
 
     // Draw the end of the second sound.
@@ -172,40 +183,40 @@ export class Draw {
       this.drawAccel(sound3Start);
       return;
     }
-    
+
     if (realized) {
       if (state === "sound3StartsRealized") {
         this.drawProjection(sound3Start, sound3End, DrawConstants.third,
-                            DrawConstants.exp);
+          DrawConstants.exp);
         this.drawParens(sound3Start);
         return;
       }
-      
+
       if (state === "sound3StartsAltInterpretation") {
         this.drawAccent(sound3Start);
         this.drawProjection(sound3Start, sound3End + sound3Length,
-                            DrawConstants.third, DrawConstants.proj);
+          DrawConstants.third, DrawConstants.proj);
         return;
       }
 
       return;
     }
-    
+
     if (points.isSlightlyLate(sound2Start, sound3Start)) {
       this.drawDecel(sound3Start);
       return;
     }
-    
+
     if (points.isSlightlyLateNewProjection(sound2Start, sound3Start)) {
       this.drawProjection(sound3Start, sound3End, DrawConstants.third,
-                          DrawConstants.proj);
+        DrawConstants.proj);
       return;
     }
-    
+
     if (!points.isDeterminate(sound2Start, sound3Start)) {
       this.drawHiatus(sound3Start);
       this.drawProjection(sound3Start, sound3End + sound3Length,
-                          DrawConstants.third, DrawConstants.proj);
+        DrawConstants.third, DrawConstants.proj);
     }
   }
 
