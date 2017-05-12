@@ -14,7 +14,9 @@
 
 "use strict";
 
-import { MockInput } from "./mock_ui.js";
+import {
+  MockInput
+} from "./mock_ui.js";
 import * as chai from "chai";
 let expect = chai.expect;
 let should = chai.should();

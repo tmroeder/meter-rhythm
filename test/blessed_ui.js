@@ -14,10 +14,20 @@
 
 "use strict";
 
-import { Screen, Box } from "blessed";
-import { Driver } from "../lib/driver.js";
-import { states } from  "../lib/state_machine.js";
-import { Draw, Input } from "../lib/ui.js";
+import {
+  Screen,
+  Box
+} from "blessed";
+import {
+  Driver
+} from "../src/driver.js";
+import {
+  States
+} from "../src/state_machine.js";
+import {
+  Draw,
+  Input
+} from "../src/ui.js";
 
 // BlessedInput tracks an implicit horizontal position on the window.  It sends
 // click and move events to registered handlers.  Click and move keys are
@@ -109,8 +119,12 @@ export class BlessedDraw extends Draw {
 
   // The BlessedDraw class takes a structure that gives the parameters of the
   // screen and the heights and positions of the elements.
-  constructor({title = "Meter as Rhythm", logName = "meter.log", boxHeight = 6,
-               pos = 0} = {}) {
+  constructor({
+    title = "Meter as Rhythm",
+    logName = "meter.log",
+    boxHeight = 6,
+    pos = 0
+  } = {}) {
     super(shortSoundLen);
     this.title = title;
     this.logName = logName;
@@ -160,15 +174,15 @@ export class BlessedDraw extends Draw {
   }
 
   // draw calls the parent Draw class and follows it by rendering the screen.
-  draw(points, state, states, cur) {
-    super.draw(points, state, states, cur);
+  draw(points, state, States, cur) {
+    super.draw(points, state, States, cur);
     this.updateElements();
     this.screen.render();
   }
 
   updateElements() {
     this.stateBox.setContent("pos: " + this.pos + "\n" +
-        JSON.stringify(this.state, null, 2));
+      JSON.stringify(this.state, null, 2));
   }
 }
 
@@ -177,6 +191,6 @@ export function StartUI() {
   let draw = new BlessedDraw();
   let input = new BlessedInput(draw.screen, 2, "space", "left", "right");
   input.registerMove(draw.moveHandler);
-  let driver = new Driver(maxLen, states, input, draw);
+  let driver = new Driver(maxLen, States, input, draw);
   draw.screen.render();
 };

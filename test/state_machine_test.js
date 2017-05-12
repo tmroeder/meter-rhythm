@@ -14,7 +14,14 @@
 
 "use strict";
 
-import { PointError, Points, PointConstants, states, writeGraph, visit } from "../lib/state_machine.js";
+import {
+  PointError,
+  Points,
+  PointConstants,
+  States,
+  writeGraph,
+  visit
+} from "../src/state_machine.js";
 
 let projectionOff = PointConstants.projectionOff;
 let projectionOn = PointConstants.projectionOn;
@@ -27,13 +34,13 @@ let should = chai.should();
 
 describe("The state machine", () => {
   it("should have a start state", () => {
-    states.should.have.property("start");
+    States.should.have.property("start");
   });
 
   it("should have at least one end state", () => {
     let endNodes = [];
-    for (let src in states) {
-      let val = states[src];
+    for (let src in States) {
+      let val = States[src];
       if ("start" in val.transitions) {
         endNodes.push(src);
       }
@@ -42,7 +49,7 @@ describe("The state machine", () => {
   });
 
   it("should be able to reach every node from start", () => {
-    let visited = visit(states);
+    let visited = visit(States);
     let unvisited = [];
     for (let src in visited) {
       let val = visited[src];
@@ -58,7 +65,7 @@ const edgeRegex = /^\s*\w+ -> \w+$/;
 
 describe("The writeGraph function", () => {
   it("should a graph that matches its input", () => {
-    let states = {
+    let States = {
       start: {
         transitions: {
           second: true
@@ -76,15 +83,15 @@ describe("The writeGraph function", () => {
         }
       }
     };
-    let graph = writeGraph(states);
+    let graph = writeGraph(States);
     let expected = "  start -> second\n  second -> end\n  second -> start\n  " +
-                   "end -> second";
+      "end -> second";
     expect(graph).to.not.be.empty;
     graph.should.equal(expected);
   });
 
   it("should return a valid GraphViz graph", () => {
-    let graph = writeGraph(states);
+    let graph = writeGraph(States);
     let lines = graph.split("\n");
     expect(lines).to.not.be.empty;
     for (let i = 0; i < lines.length; i++) {

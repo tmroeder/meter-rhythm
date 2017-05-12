@@ -14,7 +14,9 @@
 
 "use strict";
 
-import { Input } from "../lib/ui.js";
+import {
+  Input
+} from "../src/ui.js";
 
 export class MockInput extends Input {
   constructor() {

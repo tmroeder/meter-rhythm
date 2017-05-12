@@ -14,11 +14,11 @@
 
 'use strict';
 
-// The states object holds the state machine for the simulation. It consists of
+// The States object holds the state machine for the simulation. It consists of
 // a set of named states (like "start"), each with a comment and a message. The
 // comment provides an interpretation of the current state, and the message
 // suggests actions to take in the current state.
-export const states = {
+export const States = {
   // The starting state of the program.
   start: {
     comment: 'This demonstrates the concepts in Chapter 7 of Christopher ' +
@@ -128,7 +128,7 @@ export const states = {
   pause1: {
     comment: 'There is a pause between the first two sounds. Its duration is ' +
       'relatively indeterminate, if our attention is focused on the ' +
-      'beginning of sounds. The growing line indicates that the ' +
+      'beginning of sounds. The growing arc indicates that the ' +
       'duration of the first sound *plus* the following silence ' +
       'itself has the \'projective potential\' to be reproduced.',
     message: 'Click to begin the second sound.',
@@ -144,7 +144,7 @@ export const states = {
       }
       return 'pause1';
     },
-    clickHandler: function(points, x) {
+    clickHandler: (points, x) => {
       if (!points.isDeterminate(points.points[PointConstants.sound1First], x)) {
         return 'sound2StartsTooLong';
       }

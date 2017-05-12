@@ -14,17 +14,25 @@
 
 "use strict";
 
-import { Driver } from "../lib/driver.js";
-import { states } from "../lib/state_machine.js";
-import { TextDraw } from "../lib/ui.js";
-import { MockInput } from "./mock_ui.js";
+import {
+  Driver
+} from "../src/driver.js";
+import {
+  States
+} from "../src/state_machine.js";
+import {
+  TextDraw
+} from "../src/ui.js";
+import {
+  MockInput
+} from "./mock_ui.js";
 
 export class TextSimulator {
   constructor(maxLen) {
     this.maxLen = maxLen;
     this.draw = new TextDraw();
     this.input = new MockInput();
-    this.driver = new Driver(this.maxLen, states, this.input, this.draw);
+    this.driver = new Driver(this.maxLen, States, this.input, this.draw);
   }
 
   c(x) {
