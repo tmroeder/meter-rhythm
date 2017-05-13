@@ -18,7 +18,7 @@ import {
   States
 } from "./state_machine.js";
 
-// ArgumentError is throw for argument errors.
+// ArgumentError is thrown for argument errors.
 export class ArgumentError extends Error {
   constructor(message) {
     super(message);
@@ -27,114 +27,145 @@ export class ArgumentError extends Error {
   }
 }
 
+// FailedPreconditionError is thrown when some precondition is not true.
+export class FailedPreconditionError extends Error {
+  constructor(message) {
+    super(message);
+    this.message = message;
+    this.name = "FailedPreconditionError";
+  }
+}
+
 // Duration is the base class for Sounds, ProjectivePotentials, and
 // ProjectedPotentials. It represents something that has a duration, and it
 // provides methods for evaluating this duration. It also encapsulates the
 // notion of mensural determinacy.
 export class Duration {
-  constructor(mensuralDeterminacyLen, start, cur, end) {
-    if (arguments.length == 0) {
+  constructor(mensuralDeterminacyLen, start, end) {
+    if (arguments.length === 0) {
       throw new ArgumentError("Must supply a length for mensural determinacy");
     }
-    if (arguments.length > 4) {
-      throw new ArgumentError("At most 4 arguments can be supplied to the " +
+    if (arguments.length > 3) {
+      throw new ArgumentError("At most 3 arguments can be supplied to the " +
         "Duration constructor");
     }
     this.mensuralDeterminacyLen = mensuralDeterminacyLen
 
-    if (arguments.length == 1) {
+    if (arguments.length === 1) {
       return;
     }
 
-    this.start = start;
-    if (arguments.length == 2) {
-      this.cur = start;
+    this.startPos = start;
+    if (arguments.length === 2) {
+      this.curPos = start;
       return;
     }
 
-    this.cur = cur;
-    if (arguments.length == 3) {
-      return;
-    }
-
-    this.end = end;
+    // If both start and end are set, then cur is at the end.
+    this.curPos = end;
+    this.endPos = end;
   }
-
-
 
   // Sets the start value if it has not been set. This method, along with setCur
   // and setEnd, maintains the class invariant that the only possible sets of
   // defined values are (start), (start, cur), and (start, cur, end). Also,
   // start and end can only be set once each.
-  setStart(start) {
-    if (this.start !== undefined) {
-      throw new ArgumentError("Cannot set start after it has been set once");
+  set start(value) {
+    if (value === undefined) {
+      throw new ArgumentError("Must supply a value to the start setter");
     }
-    this.start = start;
+    if (this.startPos !== undefined) {
+      throw new FailedPreconditionError("Cannot set start after it has been " +
+        "set once");
+    }
+    this.curPos = value;
+    this.startPos = value;
   }
 
-  getStart() {
-    return this.start;
+  // Gets the current position of start, but throws if start is undefined.
+  get start() {
+    if (this.startPos === undefined) {
+      throw new FailedPreconditionError("Start is not defined");
+    }
+    return this.startPos;
   }
 
   // Sets the cur value if the Duration is not complete. Note that cur might be
   // a nonsensical value for a real Duration (like being before this.start), but
   // this is allowed, and the other methods of this class will handle it.
-  setCur(cur) {
-    if (this.isComplete()) {
-      throw new ArgumentError("Cannot set cur for a complete event");
+  set cur(value) {
+    if (value === undefined) {
+      throw new ArgumentError("Must supply a value to the cur setter");
     }
-    if (this.start === undefined) {
-      throw new ArgumentError("Cannot set cur when there is no start value");
+    if (this.complete) {
+      throw new FailedPreconditionError("Cannot set cur for a complete event");
     }
-    this.cur = cur;
+    if (this.startPos === undefined) {
+      throw new FailedPreconditionError("Cannot set cur when there is no " +
+        "start value");
+    }
+    this.curPos = value;
   }
 
-  getCur() {
-    return this.cur;
+  // Gets the current position of cur, but throws if cur is undefined.
+  get cur() {
+    if (this.curPos === undefined) {
+      throw new FailedPreconditionError("Cur is not defined");
+    }
+    return this.curPos;
   }
 
   // Sets the end of the Duration if the value for end satisfies the conditions:
   // - end has not already been set
-  // - start and cur are defined
+  // - start is defined
   // - the supplied end value is >= start.
-  setEnd(end) {
-    if (this.isComplete()) {
-      throw new ArgumentError("Cannot set end on a complete event");
+  set end(value) {
+    if (value === undefined) {
+      throw new ArgumentError("Must supply a value to the end setter");
     }
-    if (this.start === undefined || this.cur === undefined) {
-      throw new ArgumentError("Cannot set end on an event that does not have " +
-        "both start and cur set");
+    if (this.complete) {
+      throw new FailedPreconditionError("Cannot set end on a complete event");
     }
-    if (end < this.start) {
-      throw new ArgumentError("Cannot set an end that is before start");
+    if (this.startPos === undefined) {
+      throw new FailedPreconditionError("Cannot set end on an event that " +
+        "does not have start set");
     }
-    this.end = end;
+    if (value < this.startPos) {
+      throw new FailedPreconditionError("Cannot set an end that is before " +
+        "start");
+    }
+    // Setting end automatically sets cur to end.
+    this.curPos = value;
+    this.endPos = value;
   }
 
-  getEnd() {
-    return this.end;
+  // Gets the current position of end, but throws if end is undefined.
+  get end() {
+    if (this.endPos === undefined) {
+      throw new FailedPreconditionError("End is not defined");
+    }
+    return this.endPos;
   }
 
   // A Duration is defined if it has started and has a current value.
-  isDefined() {
-    return this.start !== undefined && this.cur !== undefined;
+  get defined() {
+    return this.startPos !== undefined && this.curPos !== undefined;
   }
 
   // Returns true if there is an end point.
-  isComplete() {
-    return this.end !== undefined;
+  get complete() {
+    return this.endPos !== undefined;
   }
 
   // Checks the start and cur (or end) to see if their difference is less than
   // the maximum amount for mensurally determinate sounds.
-  isMensurallyDeterminate() {
-    let endpoint = this.end === undefined ? this.cur : this.end;
+  get isMensurallyDeterminate() {
     // This condition could reasonably be <= rather than <. The current
     // implementation interprets events that have no duration as not being
-    // mensurally determinate.
-    return this.start < endpoint &&
-      endpoint - this.start <= this.mensuralDeterminacyLen;
+    // mensurally determinate. Note that cur is always defined and is the same
+    // as this.end if this.end is defined.
+    return this.start < this.cur &&
+      this.cur - this.start <= this.mensuralDeterminacyLen;
   }
 
   // The constant multiplicative factor for weak mensural determinacy.
@@ -145,34 +176,39 @@ export class Duration {
   // isWeaklyMensurallyDeterminate is like isMensurallyDeterminate, but it fails
   // if second <= 2 * first. In other words, it's the upper range of mensural
   // determinacy.
-  isWeaklyMensurallyDeterminate() {
-    let endpoint = this.end === undefined ? this.cur : this.end;
-    return this.isMensurallyDeterminate() &&
-      endpoint > Duration.weaklyDeterminateFactor * this.start;
+  get isWeaklyMensurallyDeterminate() {
+    return this.isMensurallyDeterminate &&
+      this.cur > Duration.weaklyDeterminateFactor * this.start;
   }
 }
 
 // A ProjectivePotential is tied to a Sound and represents the total duration
 // that can be realized by another Sound.
 export class ProjectivePotential extends Duration {
-  constructor(mensuralDeterminacyLen, start, cur, end) {
-    super(mensuralDeterminacyLen, start, cur, end);
+  constructor(mensuralDeterminacyLen, start, end) {
+    super(mensuralDeterminacyLen, start, end);
   }
 }
 
 // A ProjectedPotential is tied to a Sound and represents the realization of a
 // ProjectivePotential from another Sound.
 export class ProjectedPotential extends Duration {
-  constructor(mensuralDeterminacyLen, start, cur, end) {
-    super(mensuralDeterminacyLen, start, cur, end);
+  constructor(mensuralDeterminacyLen, start, end) {
+    super(mensuralDeterminacyLen, start, end);
     this.isRealized = true;
   }
 
   // The realized value can flip between true and false many times depending on
   // other factors.
   set realized(value) {
+    if (value === undefined) {
+      throw new ArgumentError("Must supply a value to the realized setter");
+    }
     this.isRealized = value;
   }
+
+  // Gets the current value of realized. It is a class invariant that realized
+  // is always defined.
   get realized() {
     return this.isRealized;
   }
@@ -215,6 +251,9 @@ export class Attributes {
 
   // Checks if the given value can be interpreted as an attribute.
   static isAttribute(value) {
+    if (value === undefined) {
+      return false;
+    }
     return value >= Attributes.none && value <= Attributes.last_attribute;
   }
 }
@@ -222,14 +261,14 @@ export class Attributes {
 // A Sound is the central concept in an Example. It represents a perceived
 // duration, and it has attributes and potentials associated with it.
 export class Sound extends Duration {
-  constructor(mensuralDeterminacyLen, start, cur, end) {
-    super(mensuralDeterminacyLen, start, cur, end);
+  constructor(mensuralDeterminacyLen, start, end) {
+    super(mensuralDeterminacyLen, start, end);
 
     // The projective potential generally extends beyond the duration of a
     // sound, so don't pass in the end, since that would close off the potential
     // from further extension.
     this.projectivePotential =
-      new ProjectivePotential(mensuralDeterminacyLen, start, cur);
+      new ProjectivePotential(mensuralDeterminacyLen, start);
 
     // The length of projected potential is not provided in the constructor, and
     // it needs to be set by another call.
@@ -242,47 +281,45 @@ export class Sound extends Duration {
   }
 
   // Adds a projected potential with a given duration.
-  setProjectedPotential(duration) {
-    if (this.start === undefined) {
-      throw new ArgumentError("Cannot set a projected potential without " +
-        "having already set start");
-    }
-    this.projectedPotential.setStart(this.start);
+  addProjectedPotential(duration) {
+    // This call to the start getter will throw if startPos is not defined.
+    this.projectedPotential.start = this.start;
+
     let endpoint = this.start + duration;
-    this.projectedPotential.setCur(endpoint);
-    this.projectedPotential.setEnd(endpoint);
+    this.projectedPotential.cur = endpoint;
+    this.projectedPotential.end = endpoint;
   }
 
   // Because projected potential is defined in one stroke, a Sound has a
   // projected potential if their projected potential object is complete.
-  hasProjectedPotential() {
-    return this.projectedPotential.isComplete();
+  get hasProjectedPotential() {
+    return this.projectedPotential.complete;
   }
 
   // A sound has projective potential iff it plus the silence following it is
   // mensurally determinate. That is represented by the mensural determinacy of
   // the projectivePotential object.
-  hasProjectivePotential() {
-    return this.projectivePotential.isMensurallyDeterminate();
+  get hasProjectivePotential() {
+    return this.projectivePotential.isMensurallyDeterminate;
   }
 
-  // Performs the Duration setStart operation and passes the operation to its
+  // Performs the Duration set start operation and passes the operation to its
   // projective potential.
-  setStart(start) {
-    super.setStart(start);
-    this.projectivePotential.setStart(start);
+  set start(value) {
+    super.start = value;
+    this.projectivePotential.start = value;
   }
 
-  // Performs the Duration setCur operation if the sound object is not complete,
-  // and passes setCur to its projective potential either way.
-  setCur(cur) {
-    if (!this.isComplete()) {
-      super.setCur(cur);
+  // Performs the Duration set cur operation if the sound object is not
+  // complete, and passes set cur to its projective potential either way.
+  set cur(value) {
+    if (!this.complete) {
+      super.cur = value;
     }
-    this.projectivePotential.setCur(cur);
+    this.projectivePotential.cur = value;
   }
 
-  // setEnd is not overriden, since the end of a sound does not mean the end of
+  // set end is not overriden, since the end of a sound does not mean the end of
   // its projective potential.
 
   // Sets the end of the projective potential.
