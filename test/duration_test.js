@@ -217,4 +217,91 @@ describe("The Duration class properties", () => {
     d.cur = 11;
     d.isMensurallyDeterminate.should.be.false;
   });
+  it("should be weakly mensurally determinate when in bounds", () => {
+    let d = new Duration(11, 5);
+    d.isWeaklyMensurallyDeterminate.should.be.false;
+
+    d.cur = 11;
+    d.isWeaklyMensurallyDeterminate.should.be.true;
+  });
+});
+
+describe("The ProjectivePotential class", () => {
+  it("should be constructible like Duration", () => {
+    expect(() => {
+      new ProjectivePotential(10);
+    }).to.not.throw;
+    expect(() => {
+      new ProjectivePotential(10, 0);
+    }).to.not.throw;
+    expect(() => {
+      new ProjectivePotential(10, 0, 10);
+    }).to.not.throw;
+  });
+});
+
+describe("The ProjectedPotential class", () => {
+  it("should be constructible like Duration", () => {
+    expect(() => {
+      new ProjectedPotential(10);
+    }).to.not.throw;
+    expect(() => {
+      new ProjectedPotential(10, 0);
+    }).to.not.throw;
+    expect(() => {
+      new ProjectedPotential(10, 0, 10);
+    }).to.not.throw;
+  });
+  it("should allow realized to be set and read", () => {
+    let pp = new ProjectedPotential(10, 0, 10);
+    pp.realized = true;
+    pp.realized.should.be.true;
+  });
+});
+
+describe("The Sound class", () => {
+  it("should be constructible like Duration", () => {
+    expect(() => {
+      new Sound(10);
+    }).to.not.throw;
+    expect(() => {
+      new Sound(10, 0);
+    }).to.not.throw;
+    expect(() => {
+      new Sound(10, 0, 10);
+    }).to.not.throw;
+  });
+  it("should set startPos and projectivePotential.startPos on start", () => {
+    let s = new Sound(10);
+    s.start = 2;
+    s.startPos.should.equal(2);
+    s.projectivePotential.startPos.should.equal(2);
+  });
+  it("should set curPos and projectivePotential.curPos on cur", () => {
+    let s = new Sound(10, 2);
+    s.cur = 3;
+    s.curPos.should.equal(3);
+    s.projectivePotential.curPos.should.equal(3);
+  });
+  it("should not set projectivePotential.endPos on end", () => {
+    let s = new Sound(10, 2);
+    s.end = 3;
+    s.endPos.should.equal(3);
+    // The endPos is not defined, so accessing end is an error.
+    expect(() => {
+      s.projectivePotential.end
+    }).to.throw;
+  });
+  it("should set projectivePotential.endPos on specialized function", () => {
+    let s = new Sound(10, 2);
+    s.end = 3;
+    s.endPos.should.equal(3);
+    // The endPos is not defined, so accessing end is an error.
+    expect(() => {
+      s.projectivePotential.end
+    }).to.throw;
+
+    s.projectivePotentialEnd = 5;
+    s.projectivePotential.endPos.should.equal(5);
+  });
 });

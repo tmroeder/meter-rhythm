@@ -323,8 +323,8 @@ export class Sound extends Duration {
   // its projective potential.
 
   // Sets the end of the projective potential.
-  setProjectivePotentialEnd(end) {
-    this.projectivePotential(end);
+  set projectivePotentialEnd(value) {
+    this.projectivePotential.end = value;
   }
 
   // Gets the before attribute.
