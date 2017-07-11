@@ -15,37 +15,48 @@
 "use strict";
 
 import {
-  Points
+  Sound
+} from "./duration.js"
+
+import {
+  States,
+  StartState
 } from "./state_machine.js";
 
 export class Driver {
-  constructor(maxLen, states, input, ui) {
-    this.cur = "start";
-    this.maxLen = maxLen;
-    this.states = states;
-    this.points = new Points(maxLen);
+  constructor(maxLen, input) {
+    this.state = StartState;
+    // The first sound always starts at 0, and it starts at the beginning,
+    // without a click.
+    this.sounds = [
+      new Sound(maxLen, 0),
+      new Sound(maxLen),
+      new Sound(maxLen)
+    ];
+    this.currentSound = 0;
 
     input.registerMove(this.handleMove.bind(this));
     input.registerClick(this.handleClick.bind(this));
-
-    this.ui = ui;
-    this.ui.draw(this.points, this.cur, this.states);
   }
 
   handleMove(x, y) {
-    let handler = this.states[this.cur].moveHandler;
+    let handler = States[this.state].moveHandler;
+    // All a move event can ever do is change the current position and maybe the
+    // state. However, it does need to know the current sounds.
+    let sound = this.sounds[this.currentSound];
+    sound.cur = x;
+
     if (handler != null) {
-      this.cur = handler(this.points, x);
-      this.ui.draw(this.points, this.cur, this.states, x);
+      this.state = handler(sound, x);
     }
   }
 
   handleClick(x, y) {
-    let handler = this.states[this.cur].clickHandler;
+    let handler = States[this.state].clickHandler;
     if (handler != null) {
-      let skipPointCreation = this.states[this.cur].skipPointCreation;
+      let skipPointCreation = States[this.state].skipPointCreation;
       let skipPoint = (skipPointCreation != null) && skipPointCreation;
-      this.cur = handler(this.points, x);
+      this.state = handler(this.sounds, x);
       if (!skipPoint) {
         this.points.pushPoint(x);
       }

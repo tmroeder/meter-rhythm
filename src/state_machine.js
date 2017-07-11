@@ -14,6 +14,9 @@
 
 'use strict';
 
+// The starting state in the state machine.
+export const StartState = "start";
+
 // The States object holds the state machine for the simulation. It consists of
 // a set of named states (like "start"), each with a comment and a message. The
 // comment provides an interpretation of the current state, and the message
@@ -28,10 +31,7 @@ export const States = {
     message: 'You may perform graphically up to three successive sounds by ' +
       'clicking and moving. The first click sets the beginning of the sound ' +
       'at time 0. Click but don\'t move.',
-    transitions: {
-      sound1Starts: true
-    },
-    clickHandler: () => 'sound1Starts'
+    clicks: 'sound1Starts'
   },
 
   //
@@ -43,10 +43,7 @@ export const States = {
     comment: 'The first sound begins, but time 0 will not be a beginning ' +
       'until it is past.',
     message: 'Perform the first sound by moving to the right.',
-    transitions: {
-      sound1Continues: true
-    },
-    moveHandler: () => 'sound1Continues'
+    moves: 'sound1Continues'
   },
 
   // The first sound continues and isn't too long.
@@ -56,19 +53,11 @@ export const States = {
       'reproduced by a successive duration--accumulates, as indicated ' +
       'by the solid arc.',
     message: 'End the first sound by clicking.',
-    transitions: {
-      sound1Continues: true,
-      sound1ContinuesTooLong: true,
-      sound1Ends: true
+    moves: {
+      indeterminate: 'sound1ContinuesTooLong',
+      determinate: 'sound1Continues'
     },
-    moveHandler: (points, x) => {
-      let startPoint = points.points[PointConstants.sound1First];
-      if (startPoint < x && !points.isDeterminate(startPoint, x)) {
-        return 'sound1ContinuesTooLong';
-      }
-      return 'sound1Continues';
-    },
-    clickHandler: () => 'sound1Ends'
+    clicks: 'sound1Ends'
   },
 
   // The first sound is too long.
@@ -78,18 +67,11 @@ export const States = {
       'reproduced.',
     message: 'To make the first sound\'s duration determinate, move back to ' +
       'the left. Or click to end the sound.',
-    transitions: {
-      sound1Continues: true,
-      sound1ContinuesTooLong: true,
-      sound1EndsTooLong: true
+    moves: {
+      indeterminate: 'sound1ContinuesTooLong',
+      determinate: 'sound1Continues'
     },
-    moveHandler: (points, x) => {
-      if (!points.isDeterminate(points.points[PointConstants.sound1First], x)) {
-        return 'sound1ContinuesTooLong';
-      }
-      return 'sound1Continues';
-    },
-    clickHandler: () => 'sound1EndsTooLong'
+    clicks: 'sound1EndsTooLong'
   },
 
   // The first sound ends with a length that isn't too long.
@@ -98,16 +80,7 @@ export const States = {
       'determinate\' because it has the potential for being precisely ' +
       'reproduced.',
     message: 'To begin the second sound, click.',
-    transitions: {
-      pause1: true,
-      pause1Negative: true
-    },
-    moveHandler: (points, x) => {
-      if (x < points.points[PointConstants.sound1Second]) {
-        return 'pause1Negative';
-      }
-      return 'pause1';
-    }
+    moves: 'pause1'
   },
 
   // The first sound ends with a length that exceeds kMaxSoundLen.
@@ -115,9 +88,6 @@ export const States = {
     comment: 'The first sound ends; it is too long to have projective ' +
       'potential.',
     message: 'Reload to try again.',
-    transitions: {
-      start: true
-    }
   },
 
   //
@@ -132,40 +102,27 @@ export const States = {
       'duration of the first sound *plus* the following silence ' +
       'itself has the \'projective potential\' to be reproduced.',
     message: 'Click to begin the second sound.',
-    transitions: {
-      pause1: true,
-      pause1Negative: true,
-      sound2Starts: true,
-      sound2StartsTooLong: true
+    moves: {
+      determinate: 'pause1'
+      indeterminate: 'pause1TooLong'
     },
-    moveHandler: (points, x) => {
-      if (points.points[PointConstants.sound1Second] > x) {
-        return 'pause1Negative';
-      }
-      return 'pause1';
-    },
-    clickHandler: (points, x) => {
-      if (!points.isDeterminate(points.points[PointConstants.sound1First], x)) {
-        return 'sound2StartsTooLong';
-      }
-      return 'sound2Starts';
+    clicks: {
+      determinateSilence: 'sound2Starts',
+      indeterminate: 'sound2StartsTooLong'
     }
   },
 
-  // The pause between sounds can't be negative.
-  pause1Negative: {
-    comment: '',
-    message: 'Click at the end of the first sound or later.',
-    transitions: {
-      pause1: true,
-      pause1Negative: true
-    },
-    moveHandler: (points, x) => {
-      if (x < points.points[PointConstants.sound1Second]) {
-        return 'pause1Negative';
-      }
-      return 'pause1';
+  // The length of the sound and pause together is not mensurally determinate.
+  pause1TooLong: {
+    comment: 'The time since the beginning of the first sound is mensurally ' +
+      'indeterminate, having no projective potential to be reproduced.',
+    message: 'Click to begin the second sound (earlier if you want a ' +
+      'projection).',
+    moves: {
+      determinate: 'pause1',
+      indeterminate: 'pause1TooLong'
     }
+    clicks: 'sound2StartsTooLong'
   },
 
   //
@@ -181,21 +138,16 @@ export const States = {
       'duration. The dashed arc, extending for this duration into the ' +
       'future, symbolizes this \'projected potential\'.',
     message: 'Perform the second sound by moving to the right.',
-    transitions: {
-      sound2Continues: true
-    },
-    moveHandler: (points, x) => {
-      let start = points.points[PointConstants.sound2First];
-      if (points.isWeakDeterminate(start, x)) {
-        return 'sound2ContinuesWithoutProjection';
-      } else if (points.isDeterminate(start, x)) {
-        return 'sound2Continues';
+    moves: {
+      indeterminate: 'sound2ContinuesTooLong'
+      determinate: {
+        unrealized: 'sound2ContinuesWithoutProjection',
+        _: 'sound2Continues'
       }
-      return 'sound2ContinuesTooLong';
     }
   },
 
-  // the beginning of the second sound after too long a duration since the first
+  // The beginning of the second sound after too long a duration since the first
   // sound started.
   sound2StartsTooLong: {
     comment: 'The second sound begins. It is so long since the beginning of ' +
@@ -203,10 +155,6 @@ export const States = {
       'indeterminate--it has no potential to be reproduced--so there ' +
       'is no projection.',
     message: 'Reload to try again.',
-    transitions: {
-      pause1: true,
-      start: true
-    }
   },
 
   // The second sound continues and is not too long.
@@ -217,41 +165,14 @@ export const States = {
       'potential (represented by the second solid arc) to be realized by ' +
       'the onset of a third event.',
     message: 'Click to end the second sound.',
-    transitions: {
-      sound2Continues: true,
-      sound2ContinuesNegative: true,
-      sound2ContinuesWithoutProjection: true,
-      sound2Ends: true
-    },
-    moveHandler: (points, x) => {
-      let start = points.points[PointConstants.sound2First];
-      if (start > x) {
-        return 'sound2ContinuesNegative';
-      } else if (points.isWeakDeterminate(start, x)) {
-        return 'sound2ContinuesWithoutProjection';
-      } else if (points.isDeterminate(start, x)) {
-        return 'sound2Continues';
+    moves: {
+      indeterminate: 'sound2ContinuesTooLong',
+      determinate: {
+        unrealized: 'sound2ContinuesWithoutProjection',
+        _: 'sound2Continues'
       }
-      return 'sound2ContinuesTooLong';
     },
-    clickHandler: () => 'sound2Ends'
-  },
-
-  // The second sound has a negative duration.
-  sound2ContinuesNegative: {
-    comment: '',
-    message: 'Move to the right to perform the second sound.',
-    transitions: {
-      sound2ContinuesNegative: true,
-      sound2Continues: true
-    },
-    moveHandler: (points, x) => {
-      let start = points.points[PointConstants.sound2First];
-      if (start <= x) {
-        return 'sound2Continues';
-      }
-      return 'sound2ContinuesNegative';
-    }
+    clicks: 'sound2Ends'
   },
 
   // TODO(tmroeder): Need X through the projection.
@@ -265,22 +186,14 @@ export const States = {
       'through the dashed arc.',
     message: 'Move to the left to shorten the second sound, or ' +
       'click to end it.',
-    transitions: {
-      sound2Continues: true,
-      sound2ContinuesWithoutProjection: true,
-      sound2ContinuesTooLong: true,
-      sound2EndsWithoutProjection: true
-    },
-    moveHandler: (points, x) => {
-      let start = points.points[PointConstants.sound2First];
-      if (points.isWeakDeterminate(start, x)) {
-        return 'sound2ContinuesWithoutProjection';
-      } else if (points.isDeterminate(start, x)) {
-        return 'sound2Continues';
+    moves: {
+      indeterminate: 'sound2ContinuesTooLong',
+      determinate: {
+        unrealized: 'sound2ContinuesWithoutProjection',
+        _: 'sound2Continues'
       }
-      return 'sound2ContinuesTooLong';
     },
-    clickHandler: () => 'sound2EndsWithoutProjection'
+    clicks: 'sound2EndsWithoutProjection'
   },
 
   // The second sound continues too long to be mensurally determinate.
@@ -290,21 +203,14 @@ export const States = {
       'duration is not realized.)',
     message: 'Move to the left to shorten the second sound, or ' +
       'click to end it.',
-    transitions: {
-      sound2ContinuesWithoutProjection: true,
-      sound2ContinuesTooLong: true,
-      sound2EndsTooLong: true
-    },
-    moveHandler: (points, x) => {
-      let start = points.points[PointConstants.sound2First];
-      if (points.isWeakDeterminate(start, x)) {
-        return 'sound2ContinuesWithoutProjection';
-      } else if (points.isDeterminate(start, x)) {
-        return 'sound2Continues';
+    moves: {
+      indeterminate: 'sound2ContinuesTooLong',
+      determinate: {
+        unrealized: 'sound2ContinuesWithoutProjection',
+        _: 'sound2Continues'
       }
-      return 'sound2ContinuesTooLong';
     },
-    clickHandler: () => 'sound2EndsTooLong'
+    clicks: 'sound2EndsTooLong'
   },
 
   // The second sound ends, realizing the first projection.
@@ -314,17 +220,7 @@ export const States = {
       'reproduced. But it does not affect the projection of the first ' +
       'interonset duration, as shown.',
     message: 'Click to begin the third sound.',
-    transitions: {
-      pause2: true,
-      pause2Negative: true
-    },
-    moveHandler: (points, x) => {
-      let start = points.points[PointConstants.sound2Second];
-      if (x < start) {
-        return 'pause2Negative';
-      }
-      return 'pause2';
-    }
+    moves: 'pause2'
   },
 
   // The second sound ends without realizing its projection.
@@ -333,9 +229,6 @@ export const States = {
       'The projection is not clearly realized, as indicated by the X ' +
       'through the dashed arc.',
     message: 'Reload to try again.',
-    transitions: {
-      start: true
-    }
   },
 
   // The second sound ends but is too long.
@@ -344,9 +237,6 @@ export const States = {
       'indeterminate.  Since the projected potential of the first ' +
       'interonset duration is denied there is no projection at all.',
     message: 'Reload to try again.',
-    transitions: {
-      start: true
-    }
   },
 
   //
@@ -361,26 +251,20 @@ export const States = {
       'the beginning of the second sound up to now, including the ' +
       'silence, has \'projective potential\' to be reproduced.',
     message: 'Click to begin the third sound.',
-    transitions: {
-      pause2: true,
-      pause2Negative: true,
-      pause2TooLong: true,
-      sound3StartsAccel: true,
-      sound3StartsRealized: true,
-      sound3StartsExactly: true,
-      sound3StartsSlightlyLate: true,
-      sound3StartsSlightlyLateNewProjection: true
+    moves: {
+      determinate: 'pause2',
+      indeterminate: 'pause2TooLong'
     },
-    moveHandler: (points, x) => {
-      let start = points.points[PointConstants.sound2Second];
-      if (x < start) {
-        return 'pause2Negative';
-      }
-      if (!points.isDeterminate(start, x)) {
-        return 'pause2TooLong';
-      }
-      return 'pause2';
-    },
+    clicks: {
+      determinate: {
+        accel: 'sound3StartsAccel',
+        realized: 'sound3StartsRealized',
+        exact: 'sound3StartsExactly',
+        rall: 'sound3StartsSlightlyLate',
+        unrealized: 'sound3StartsSlightlyLateNewProjection'
+      },
+      indeterminate: 'sound3StartsTooLate'
+    }
     clickHandler: (points, x) => {
       let first = points.points[PointConstants.sound2First];
       let second = points.points[PointConstants.sound2Second];

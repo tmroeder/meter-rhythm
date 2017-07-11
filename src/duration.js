@@ -157,15 +157,20 @@ export class Duration {
     return this.endPos !== undefined;
   }
 
-  // Checks the start and cur (or end) to see if their difference is less than
-  // the maximum amount for mensurally determinate sounds.
+  // Checks the start and cur to see if their difference is less than the
+  // maximum amount for mensurally determinate sounds.
   get isMensurallyDeterminate() {
+    return this.isRelativelyMensurallyDeterminate(this.cur);
+  }
+
+  // Checks pos against the start to see if it is mensurally determinate.
+  isRelativelyMensurallyDeterminate(pos) {
     // This condition could reasonably be <= rather than <. The current
     // implementation interprets events that have no duration as not being
     // mensurally determinate. Note that cur is always defined and is the same
     // as this.end if this.end is defined.
-    return this.start < this.cur &&
-      this.cur - this.start <= this.mensuralDeterminacyLen;
+    return this.start < pos &&
+      pos - this.start <= this.mensuralDeterminacyLen;
   }
 
   // The constant multiplicative factor for weak mensural determinacy.
@@ -177,8 +182,62 @@ export class Duration {
   // if second <= 2 * first. In other words, it's the upper range of mensural
   // determinacy.
   get isWeaklyMensurallyDeterminate() {
-    return this.isMensurallyDeterminate &&
-      this.cur > Duration.weaklyDeterminateFactor * this.start;
+    return this.isRelativelyWeaklyMensurallyDeterminate(this.cur);
+  }
+
+  // Checks pos against the start to see if it is weakly mensurally determinate.
+  isRelativelyWeaklyMensurallyDeterminate(pos) {
+    return this.isRelativelyMensurallyDeterminate(pos) &&
+      pos > Duration.weaklyDeterminateFactor * this.start;
+  }
+
+}
+
+// A set of constant-like values to return from functions that answer questions
+// about determinacy.
+export class DeterminacyType {
+  static get negativeSound() {
+    return 'negativeSound';
+  }
+
+  static get negativeSilence() {
+    return 'negativeSilence';
+  }
+
+  static get indeterminate() {
+    return 'indeterminate';
+  }
+
+  static get determinate() {
+    return 'determinate';
+  }
+
+  static get determinateSilence() {
+    return 'determinateSilence';
+  }
+}
+
+// The following kinds of determinacy can only be created when there is not
+// only a sound, but also a projection.
+export class RealizationType {
+  static get accel() {
+    return 'accel';
+  }
+
+  static get realized() {
+    return 'realized';
+  }
+
+  static get exact() {
+    return 'exact';
+  }
+
+  static get rall() {
+    return 'rall';
+  }
+
+  static get separate() {
+    return 'separate';
   }
 }
 
