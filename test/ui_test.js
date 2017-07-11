@@ -14,15 +14,24 @@
 
 "use strict";
 
-import { Points, states } from "../lib/state_machine.js";
-import { Draw, DrawConstants, TextDraw, UIError } from "../lib/ui.js";
+import {
+  Points
+} from "../src/state_machine.js";
+import {
+  Draw,
+  DrawConstants,
+  TextDraw,
+  UIError
+} from "../src/ui.js";
 import * as chai from "chai";
 let expect = chai.expect;
 let should = chai.should();
 
 describe("The TextDraw object", () => {
   it("should succeed in its constructor", () => {
-    let instantiate = () => { let t = new TextDraw(); };
+    let instantiate = () => {
+      let t = new TextDraw();
+    };
     expect(instantiate).to.not.throw(Error);
     expect(instantiate).to.not.throw(UIError);
   });

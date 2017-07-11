@@ -14,7 +14,9 @@
 
 "use strict";
 
-import { Points } from "./state_machine.js";
+import {
+  Points
+} from "./state_machine.js";
 
 export class Driver {
   constructor(maxLen, states, input, ui) {
