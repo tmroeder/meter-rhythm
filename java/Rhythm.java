@@ -128,7 +128,6 @@ public class Rhythm extends Applet {
 	final static String instrA25bPbPLimitEvent =  "Click on \"Back one step\" to define a different third sound\n or \"Restart\" to begin again.";
 
 	public void init() {
-
 		/* This gridbag code is used to set everything up in its
 		 *  proper place.
 		 */
@@ -442,8 +441,9 @@ public class Rhythm extends Applet {
 		return wherein;
 	}
 
-	public void main(String argv[]) {
-		init();
+	public static void main(String argv[]) {
+    Rhythm rhythm = new Rhythm();
+		rhythm.init();
 	}
 
 }
