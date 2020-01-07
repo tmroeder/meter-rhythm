@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
-import java.applet.Applet;
 
 /*
  * The basic structure of this code originates in a Sun
@@ -17,7 +16,7 @@ import java.applet.Applet;
  *  Java programming: Tom Roeder, 1998.
  */
 
-public class Rhythm extends Applet {
+public class Rhythm extends Panel {
 	CoordinateArea coordinateArea; // the area receiving the clicks
 	TextArea label; // to hold the instructions to the user
 	Button button1, button2; // the "Back one step" and "Restart" buttons
@@ -442,8 +441,20 @@ public class Rhythm extends Applet {
 	}
 
 	public static void main(String argv[]) {
+  	Frame frame = new Frame();
+		frame.addWindowListener(new WindowAdapter() {
+				 public void windowClosing(WindowEvent event) {
+				   System.exit(0);
+				 };
+			 });
+
     Rhythm rhythm = new Rhythm();
-		rhythm.init();
+    rhythm.setSize(400, 350);
+    frame.add(rhythm);
+    frame.pack();
+    rhythm.init();
+    frame.setSize(400,450);
+    frame.setVisible(true);
 	}
 
 }

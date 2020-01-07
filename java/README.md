@@ -8,3 +8,13 @@ To run the original applet, first compile the code with `javac Rhythm.java`,
 then call `appletviewer page.html` or `javaws page.html`. The `appletviewer`
 program will produce fewer complaints, since it is intended for debugging, not
 production code.
+
+# Creating a JAR file
+
+The file `manifest.txt` contains the JAR manifest. Build a JAR file using the
+`jar` tool as follows.
+
+```
+$ javac Rhythm.java
+$ jar cvfm MeterAsRhythm.jar manifest.txt *.class
+```
