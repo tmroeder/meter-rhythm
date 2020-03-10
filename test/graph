@@ -1,5 +1,0 @@
-#!/bin/bash
-
-readonly DIR=$(dirname $(readlink -e "$0"))
-
-node "${DIR}/../lib/graph.js" | dot -Tpdf -o state_machine.pdf
