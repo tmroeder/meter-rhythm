@@ -1,13 +1,10 @@
-# The original applet
+# Meter as Rhythm
 
-The java files in this directory make up the original applet implementation from
-1998. The code quality is low and there aren't any automatic tests. But this is
-the version that was originally published.
-
-To run the original applet, first compile the code with `javac Rhythm.java`,
-then call `appletviewer page.html` or `javaws page.html`. The `appletviewer`
-program will produce fewer complaints, since it is intended for debugging, not
-production code.
+The Java source in this directory was originally an applet that demonstrated
+concepts from Chapter 7 of Christopher Hasty's Meter as Rhythm. It has been
+slightly updated from the original 1998 version to run as a desktop Java
+application from a jar file. The code has otherwise been left in its original
+state.
 
 # Creating a JAR file
 
