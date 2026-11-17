@@ -1,0 +1,44 @@
+<line x1="0" y1="10" x2="399" y2="10" stroke="black" stroke-width="1">
+</line>
+<line x1="0" y1="8" x2="0" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="26.6" y1="8" x2="26.6" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="53.2" y1="8" x2="53.2" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="79.8" y1="8" x2="79.8" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="106.4" y1="8" x2="106.4" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="133" y1="8" x2="133" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="159.6" y1="8" x2="159.6" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="186.2" y1="8" x2="186.2" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="212.8" y1="8" x2="212.8" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="239.4" y1="8" x2="239.4" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="266" y1="8" x2="266" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="292.6" y1="8" x2="292.6" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="319.2" y1="8" x2="319.2" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="345.8" y1="8" x2="345.8" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="372.4" y1="8" x2="372.4" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="0" y1="5" x2="0" y2="15" stroke="black" stroke-width="1">
+</line>
+<text x="3" y="25" font-size="9" font-family="serif" text-anchor="start" data-role="axis-label">0</text>
+<line x1="133" y1="5" x2="133" y2="15" stroke="black" stroke-width="1">
+</line>
+<text x="133" y="25" font-size="9" font-family="serif" text-anchor="middle" data-role="axis-label">Lim</text>
+<line x1="266" y1="5" x2="266" y2="15" stroke="black" stroke-width="1">
+</line>
+<text x="266" y="25" font-size="9" font-family="serif" text-anchor="middle" data-role="axis-label">2*Lim</text>
+<line x1="399" y1="5" x2="399" y2="15" stroke="black" stroke-width="1">
+</line>
+<text x="398" y="25" font-size="9" font-family="serif" text-anchor="end" data-role="axis-label">3*Lim</text>

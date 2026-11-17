@@ -1,0 +1,123 @@
+<line x1="0" y1="10" x2="399" y2="10" stroke="black" stroke-width="1">
+</line>
+<line x1="0" y1="8" x2="0" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="26.6" y1="8" x2="26.6" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="53.2" y1="8" x2="53.2" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="79.8" y1="8" x2="79.8" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="106.4" y1="8" x2="106.4" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="133" y1="8" x2="133" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="159.6" y1="8" x2="159.6" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="186.2" y1="8" x2="186.2" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="212.8" y1="8" x2="212.8" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="239.4" y1="8" x2="239.4" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="266" y1="8" x2="266" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="292.6" y1="8" x2="292.6" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="319.2" y1="8" x2="319.2" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="345.8" y1="8" x2="345.8" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="372.4" y1="8" x2="372.4" y2="12" stroke="black" stroke-width="0.5">
+</line>
+<line x1="0" y1="5" x2="0" y2="15" stroke="black" stroke-width="1">
+</line>
+<text x="3" y="25" font-size="9" font-family="serif" text-anchor="start" data-role="axis-label">0</text>
+<line x1="133" y1="5" x2="133" y2="15" stroke="black" stroke-width="1">
+</line>
+<text x="133" y="25" font-size="9" font-family="serif" text-anchor="middle" data-role="axis-label">Lim</text>
+<line x1="266" y1="5" x2="266" y2="15" stroke="black" stroke-width="1">
+</line>
+<text x="266" y="25" font-size="9" font-family="serif" text-anchor="middle" data-role="axis-label">2*Lim</text>
+<line x1="399" y1="5" x2="399" y2="15" stroke="black" stroke-width="1">
+</line>
+<text x="398" y="25" font-size="9" font-family="serif" text-anchor="end" data-role="axis-label">3*Lim</text>
+<rect x="-1" y="49" width="2" height="2" fill="black" data-role="point">
+</rect>
+<rect x="59" y="49" width="2" height="2" fill="black" data-role="point">
+</rect>
+<rect x="95" y="49" width="2" height="2" fill="black" data-role="point">
+</rect>
+<rect x="149" y="49" width="2" height="2" fill="black" data-role="point">
+</rect>
+<rect x="209" y="49" width="2" height="2" fill="black" data-role="point">
+</rect>
+<rect x="229" y="49" width="2" height="2" fill="black" data-role="point">
+</rect>
+<line x1="0" y1="50" x2="60" y2="50" stroke="black" stroke-width="2" data-role="event-line">
+</line>
+<line x1="96" y1="50" x2="150" y2="50" stroke="black" stroke-width="2" data-role="event-line">
+</line>
+<line x1="210" y1="50" x2="230" y2="50" stroke="black" stroke-width="2" data-role="event-line">
+</line>
+<path d="M 96 70 A 48 15 0 0 1 0 70" fill="none" stroke="black" stroke-width="1" data-role="projection-arc">
+</path>
+<g data-role="arrowhead">
+<line x1="96" y1="65" x2="91" y2="70" stroke="black" stroke-width="1">
+</line>
+<line x1="96" y1="65" x2="101" y2="70" stroke="black" stroke-width="1">
+</line>
+<line x1="91" y1="70" x2="101" y2="70" stroke="black" stroke-width="1">
+</line>
+</g>
+<text x="190" y="119" font-size="10" font-family="serif" data-role="tempo-label">rall.</text>
+<g data-role="dashed-arc">
+<path d="M 210 70 A 57 15 0 0 1 209.13 72.6" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 206.56 75.13 A 57 15 0 0 1 202.36 77.5" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 196.66 79.64 A 57 15 0 0 1 189.64 81.49" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 181.5 82.99 A 57 15 0 0 1 172.5 84.1" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 162.9 84.77 A 57 15 0 0 1 153 85" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 143.1 84.77 A 57 15 0 0 1 133.5 84.1" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 124.5 82.99 A 57 15 0 0 1 116.36 81.49" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 109.34 79.64 A 57 15 0 0 1 103.64 77.5" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 99.44 75.13 A 57 15 0 0 1 96.87 72.6" fill="none" stroke="black" stroke-width="1">
+</path>
+</g>
+<path d="M 210 95 A 57 15 0 0 1 96 95" fill="none" stroke="black" stroke-width="1" data-role="projection-arc">
+</path>
+<g data-role="arrowhead">
+<line x1="210" y1="90" x2="205" y2="95" stroke="black" stroke-width="1">
+</line>
+<line x1="210" y1="90" x2="215" y2="95" stroke="black" stroke-width="1">
+</line>
+<line x1="205" y1="95" x2="215" y2="95" stroke="black" stroke-width="1">
+</line>
+</g>
+<g data-role="dashed-arc">
+<path d="M 324 95 A 57 15 0 0 1 323.13 97.6" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 320.56 100.13 A 57 15 0 0 1 316.36 102.5" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 310.66 104.64 A 57 15 0 0 1 303.64 106.49" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 295.5 107.99 A 57 15 0 0 1 286.5 109.1" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 276.9 109.77 A 57 15 0 0 1 267 110" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 257.1 109.77 A 57 15 0 0 1 247.5 109.1" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 238.5 107.99 A 57 15 0 0 1 230.36 106.49" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 223.34 104.64 A 57 15 0 0 1 217.64 102.5" fill="none" stroke="black" stroke-width="1">
+</path>
+<path d="M 213.44 100.13 A 57 15 0 0 1 210.87 97.6" fill="none" stroke="black" stroke-width="1">
+</path>
+</g>

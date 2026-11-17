@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meter as Rhythm — Interactive Projection Demo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400&display=swap');
+
+  :root {
+    --bg: #f5f0e8;
+    --fg: #2a2520;
+    --accent: #8b4513;
+    --panel-bg: #ebe6dc;
+    --border: #c8bfb0;
+    --svg-bg: #faf8f4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Crimson Pro', Georgia, serif;
+    background: var(--bg);
+    color: var(--fg);
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 720px;
+    width: 100%;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--accent);
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    font-style: italic;
+    margin-bottom: 1.25rem;
+    color: #6b5e50;
+  }
+
+  .panel {
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    overflow-y: auto;
+  }
+
+  #commentary {
+    height: 9em;
+  }
+
+  #instructions {
+    height: 4em;
+  }
+
+  /* Phones. The commentary sits above the drawing and keeps a fixed height,
+     so the drawing does not jump under the finger when it changes; it is
+     taller here because the text wraps more. The instructions sit below,
+     where growing only pushes the buttons down. */
+  @media (max-width: 600px) {
+    body { padding: 1rem 0.75rem; }
+    h1 { font-size: 1.25rem; }
+    .subtitle { margin-bottom: 0.75rem; }
+    #commentary { height: 12.5em; }
+    #instructions { height: auto; min-height: 4em; }
+    /* The drawing scales down to fit, which leaves its labels at about
+       8px; these sizes are in viewBox units, about 12px on a phone. The
+       saved SVG keeps the desktop sizes. */
+    #mainSvg [data-role=axis-label] { font-size: 13.5px; }
+    #mainSvg [data-role=tempo-label] { font-size: 12.5px; }
+    #mainSvg [data-role=parenth] text { font-size: 13px; }
+  }
+
+  .panel-label {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent);
+    margin-bottom: 0.3rem;
+  }
+
+  .svg-container {
+    position: relative;
+    background: var(--svg-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    margin-bottom: 0.75rem;
+    cursor: crosshair;
+    user-select: none;
+    -webkit-user-select: none;
+    /* Drags on the drawing drive the demo; the page must not pan or zoom. */
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Touch: which stretch the finger is drawing. It rides above the
+     drawing's top edge, clear of the fingertip. */
+  .finger-tag {
+    position: absolute;
+    top: -6px;
+    transform: translate(-50%, -100%);
+    background: var(--accent);
+    color: var(--svg-bg);
+    font: 600 0.75rem 'Crimson Pro', Georgia, serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.1rem 0.5rem;
+    border-radius: 3px;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 1px 2px rgba(42, 37, 32, 0.25);
+  }
+  .finger-tag::after {
+    content: "";
+    position: absolute;
+    left: var(--pointer, 50%);
+    bottom: -4px;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-bottom: 0;
+    border-top-color: var(--accent);
+  }
+
+  .steps-label { display: flex; align-items: center; gap: 0.6rem; }
+  .steps { display: flex; gap: 0.35rem; align-items: flex-end; margin-left: auto; }
+  .steps[hidden] { display: none; }
+  .steps figure {
+    display: flex; flex-direction: column; align-items: center; gap: 1px;
+    font-size: 0.7rem; letter-spacing: 0.06em; color: #b3a898;
+  }
+  .steps svg { width: 40px; height: 14px; border-radius: 2px; }
+  .steps figure.done { color: #6b5e50; }
+  .steps figure.now { color: var(--accent); }
+  .steps figure.now svg { background: #e3d6c4; }
+
+  #mainSvg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .button-row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  button {
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    padding: 0.4rem 1.2rem;
+    background: var(--panel-bg);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+    color: var(--fg);
+    transition: background 0.15s;
+  }
+
+  @media (hover: hover) {
+    button:hover {
+      background: #ddd6c8;
+    }
+  }
+
+  button:active {
+    background: #ddd6c8;
+  }
+
+  /* Finger-sized targets on touch screens. */
+  @media (pointer: coarse) {
+    button {
+      min-height: 44px;
+      padding: 0.5rem 0.9rem;
+    }
+  }
+
+  button.save-btn {
+    margin-left: auto;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .credit {
+    font-size: 0.8rem;
+    color: #8b8078;
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Meter as Rhythm</h1>
+  <div class="subtitle">Interactive demonstration of projection — after Christopher Hasty (1997)</div>
+
+  <div class="panel-label">Commentary</div>
+  <div class="panel" id="commentary"></div>
+
+  <div class="svg-container" id="svgContainer">
+    <div class="finger-tag" id="fingerTag" hidden></div>
+    <svg id="mainSvg" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+    </svg>
+  </div>
+
+  <div class="panel-label steps-label">Instructions
+    <!-- Touch only: the four stretches a finger draws, in the drawing's own
+         marks (a bar for a sound, a dashed arc for a silence). -->
+    <span class="steps" id="steps" hidden aria-hidden="true">
+      <figure data-step="0"><svg viewBox="0 0 40 14"><line x1="3" y1="9" x2="37" y2="9" stroke="currentColor" stroke-width="3"/></svg>sound</figure>
+      <figure data-step="1"><svg viewBox="0 0 40 14"><path d="M3 3 Q20 15 37 3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 2"/></svg>silence</figure>
+      <figure data-step="2"><svg viewBox="0 0 40 14"><line x1="3" y1="9" x2="37" y2="9" stroke="currentColor" stroke-width="3"/></svg>sound</figure>
+      <figure data-step="3"><svg viewBox="0 0 40 14"><path d="M3 3 Q20 15 37 3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 2"/></svg>silence</figure>
+    </span>
+  </div>
+  <div class="panel" id="instructions"></div>
+
+  <div class="button-row">
+    <button id="backBtn">Back one step</button>
+    <button id="restartBtn">Restart</button>
+    <button class="save-btn" id="saveBtn">Save SVG</button>
+  </div>
+
+  <div class="credit">
+    Program design: John Roeder · Original Java: Tom Roeder, 1998 · TypeScript port: 2026
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
