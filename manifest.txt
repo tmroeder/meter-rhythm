@@ -1,4 +1,0 @@
-Main-Class: Rhythm
-Permissions: sandbox
-Codebase: https://www.unarcane.net
-Application-Name: A Interactive Simulation of Chapter 7 of Christopher Hasty's "Meter as Rhythm"
